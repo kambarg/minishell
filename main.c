@@ -9,9 +9,10 @@ int main(void)
 	
 	while (1)
 	{
-		input = readline("enter your input message\n");
+		input = readline("Enter your input message:\n");
 		if (!input)
 			break;
+		add_history(input); // save input line in history to let user find it with UP key
 		printf("You entered: %s\n", input);
 		free(input);
 	}
