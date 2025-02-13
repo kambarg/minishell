@@ -14,7 +14,8 @@ READLINE_LIB = -lreadline
 HEADERS = minishell.h 
 
 SOURCES = \
-			main.c
+			main.c \
+			lexer/lexer.c
 			
 OBJECTS = $(SOURCES:.c=.o)
 
