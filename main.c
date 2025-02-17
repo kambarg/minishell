@@ -1,8 +1,8 @@
+#include "minishell.h"
 #include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <stdlib.h>
-#include "minishell.h"
 
 //int	ft_strncmp(const char *s1, const char *s2, size_t n)
 //{

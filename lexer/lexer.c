@@ -1,4 +1,5 @@
-#include "../minishell.h"
+#include <../includes/lexer.h>
+// #include "../minishell.h" //// Only if needed for global structures/macros
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -62,16 +63,17 @@ char **tokenize(char *input)
 }
 
 // Test function
-//int main() {
-//    char input[] = "echo  Hello > file.txt | cat < input.txt";
-//    char **tokens = tokenize(input);
+int lexer() 
+{
+    char input[] = "echo  Hello > file.txt | cat < input.txt";
+    char **tokens = tokenize(input);
 
-//    // Print tokens
-//    for (int i = 0; tokens[i]; i++) {
-//        printf("Token[%d]: %s\n", i, tokens[i]);
-//        free(tokens[i]); // Free each token
-//    }
-//    free(tokens); // Free the token array
+    // Print tokens
+    for (int i = 0; tokens[i]; i++) {
+        printf("Token[%d]: %s\n", i, tokens[i]);
+        free(tokens[i]); // Free each token
+    }
+    free(tokens); // Free the token array
 
-//    return 0;
-//}
+    return 0;
+}
