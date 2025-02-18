@@ -3,4 +3,6 @@
 
 # include "../libft/libft.h"
 
+int	lexer(char *input);
+
 #endif
