@@ -12,7 +12,7 @@ int	is_operator(char c)
 	return (c == '|' || c == '<' || c == '>');
 }
 
-// Function to check if a character is a white space (like ctype.h lib function isspace)
+// aka ctype.h lib function isspace
 int	is_space(char c)
 {
 	return (c == '\t' || c == '\n' || c == '\v' || c == '\f' || c == '\r'
@@ -23,44 +23,62 @@ int	is_space(char c)
 char	**tokenize(char *input)
 {
 	char	**tokens;
-	int		i;
-	int		j;
-	int		token_count;
+	size_t	i;
+	size_t	input_len;
+	size_t	token_count;
+	size_t	token_length;
+	size_t	start;
 
-	tokens = malloc(MAX_TOKENS * sizeof(char *));
+	if (!input) return NULL;
+	input_len = ft_strlen(input);
+	tokens = malloc((input_len + 1) * sizeof(char *));
+    if (!tokens) 
+	{
+		ft_putstr_fd("Memory allocation error\n", 2);
+        return NULL;
+    }
 	i = 0;
-	j = 0;
 	token_count = 0;
-	char token[256]; // Temporary storage for each token
-	while (input[i])
+	while (i < input_len)
 	{
 		// Skip spaces
-		if (is_space(input[i]))
-		{
+		while (i < input_len && is_space(input[i]))
 			i++;
-			continue ;
-		}
-		j = 0;
-		// Handle operators (|, <, >)
-		if (is_operator(input[i]))
+		if (i >= input_len) break; // End of input
+			
+		start = i;
+		// Handle operators (|, <, >, >>, <<)
+        if (is_operator(input[i])) 
 		{
-			token[j++] = input[i++];
-			if ((token[0] == '>' || token[0] == '<') && input[i] == token[0])
+            i++;
+            if ((input[start] == '>' || input[start] == '<') && input[i] == input[start]) 
 			{
-				token[j++] = input[i++]; // Handle ">>" or "<<"
-			}
-		}
-		// Handle normal words
-		else
+                i++; // Handle ">>" or "<<"
+            }
+        } 
+        // Handle normal words
+        else 
 		{
-			while (input[i] && !is_space(input[i]) && !is_operator(input[i]))
+            while (i < input_len && !is_space(input[i]) && !is_operator(input[i])) 
 			{
-				token[j++] = input[i++];
-			}
-		}
-		token[j] = '\0'; // Null-terminate the token
-		tokens[token_count++] = ft_strdup(token);
+                i++;
+            }
+        }
+		// Allocate memory for the token and copy it
+        token_length = i - start;
+        tokens[token_count] = malloc(token_length + 1);
+        if (!tokens[token_count]) 
+		{
+            ft_putstr_fd("Memory allocation error\n", 2);
+            return NULL;
+        }
+		ft_memcpy(tokens[token_count], &input[start], token_length);
+		// ft_strlcpy(tokens[token_count], &input[start], token_length);
+        // strncpy(tokens[token_count], &input[start], token_length);
+        tokens[token_count][token_length] = '\0'; // Null-terminate the token
+        token_count++;
 	}
+
 	tokens[token_count] = NULL; // Null-terminate the token array
 	return (tokens);
 }
