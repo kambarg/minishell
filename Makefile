@@ -15,7 +15,8 @@ HEADERS = minishell.h
 
 SOURCES = \
 			main.c \
-			lexer/lexer.c
+			lexer/lexer.c \
+			parser/parser.c
 			
 OBJECTS = $(SOURCES:.c=.o)
 

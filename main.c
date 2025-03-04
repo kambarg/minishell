@@ -4,6 +4,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// "ls -l | grep txt > output.txt";
+int	main(void)
+{
+	char	input[] = "cat file.txt | grep hello > output.txt";
+	char	**tokens;
+	t_ast	*root;
+
+	// Step 1: Tokenize
+	tokens = tokenize(input);
+	// Step 2: Parse
+	root = parse_tokens(tokens);
+	// Step 3: Print or Execute the AST (To Be Implemented)
+	print_ast(root, 0);
+	// Free memory (To Be Implemented)
+	free_ast(root);
+	return (0);
+}
+
+/* Main function to demo lexer functionality
 int	main(void)
 {
 	char	*input;
@@ -26,9 +45,9 @@ int	main(void)
 		free(input);
 	}
 	return (0);
-}
+}*/
 
-/*
+/* Main function to demo readline functionality
 int	main(int argc, char *argv[])
 {
 		char *res;
@@ -42,5 +61,4 @@ int	main(int argc, char *argv[])
 	else
 		readline("input text string");
 	return (0);
-}
-*/
+}*/
