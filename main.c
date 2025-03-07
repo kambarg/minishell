@@ -4,8 +4,42 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// "ls -l | grep txt > output.txt";
+// ls -l | grep "hello $USER" > output.txt
+// cat file.txt | grep hello > output.txt
 int	main(void)
+{
+	char	*input;
+	char	**tokens;
+	t_ast	*root;
+
+	while (1)
+	{
+		input = readline("Enter your input message:\n");
+		if (!input)
+			return (1);
+		add_history(input);
+			// save input line in history to let user find it with UP key
+		if (ft_strncmp("exit", input, 6) == 0)
+		{
+			free(input);
+			exit(0);
+		}
+		else
+		{
+			// printf("You entered: %s\n", input);
+			lexer(input);
+			tokens = tokenize(input);
+			root = parse_tokens(tokens);
+			print_ast(root, 0);
+			free_ast(root);
+		}
+		free(input);
+	}
+	return (0);
+}
+
+// Main function to demo parser functionality
+/* int	main(void)
 {
 	char	input[] = "cat file.txt | grep hello > output.txt";
 	char	**tokens;
@@ -20,10 +54,11 @@ int	main(void)
 	// Free memory (To Be Implemented)
 	free_ast(root);
 	return (0);
-}
+} */
 
-/* Main function to demo lexer functionality
-int	main(void)
+// Main function to demo lexer functionality
+// "ls -l | grep txt > output.txt";
+/* int	main(void)
 {
 	char	*input;
 
