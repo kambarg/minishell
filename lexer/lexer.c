@@ -183,6 +183,39 @@ char	**tokenize(char *input)
 	return (tokens);
 }
 
+// Print tokens
+void print_tokens(char **tokens)
+{
+	int		i;
+
+	if (!tokens)
+		return;
+	i = 0;
+	while (tokens[i])
+	{
+		printf("Token[%d]: %s\n", i, tokens[i]);
+		i++;
+	}
+}
+
+// Recursively free tokens
+void free_tokens(char **tokens)
+{
+	int		i;
+
+	if (!tokens)
+		return;
+	i = 0;
+	while (tokens[i])
+	{
+		free(tokens[i]);
+		i++;
+	}
+	free(tokens);
+}
+
+
+
 // Test function prints tokens
 // char input[] = "echo  "Hello    $USER" > file.txt | cat < input.txt";
 int	lexer(char *input)

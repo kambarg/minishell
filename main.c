@@ -27,9 +27,12 @@ int	main(void)
 		else
 		{
 			// printf("You entered: %s\n", input);
-			lexer(input);
 			tokens = tokenize(input);
+			free(input);
+			print_tokens(tokens);
 			root = parse_tokens(tokens);
+			free_tokens(tokens);
+			printf("Abstract Syntax Tree:\n");
 			print_ast(root, 0);
 			free_ast(root);
 		}
