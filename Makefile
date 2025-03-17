@@ -2,8 +2,9 @@ NAME = minishell
 
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror
-LDFLAGS = -lreadline
-INCLUDES = -I./includes -I$(LIBFT_DIR) -I/usr/local/include
+LDFLAGS = -L$(HOME)/.local/lib -lreadline
+INCLUDES = -I./includes -I$(LIBFT_DIR) -I$(HOME)/.local/include 
+# -I/usr/local/include 
 RM = rm -f
 
 SRCS = 	src/main.c \
