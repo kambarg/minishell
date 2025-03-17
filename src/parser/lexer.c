@@ -90,6 +90,7 @@ static int	handle_operator(char *input, int *i, t_token **tokens)
 	char	*value;
 	int		type;
 
+	type = 0;
 	if (input[*i] == '|')
 		type = T_PIPE;
 	else if (input[*i] == '<')
