@@ -52,4 +52,10 @@ fclean: clean
 
 re: fclean all
 
-.PHONY: all clean fclean re 
+leaks : debug
+		valgrind --show-leak-kinds=all --leak-check=full --suppressions=vg_rlsuppressions.supp ./$(NAME)
+
+debug : C_FLAGS += -g3
+debug : re
+
+.PHONY: all clean fclean re leaks debug

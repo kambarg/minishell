@@ -1,3 +1,8 @@
+===
+To check for memory leaks run:
+make leaks
+
+===
 In modern compilers, using an undeclared function (rl_clear_history) leads to an error.
 On Linux, Readline is installed and provides rl_clear_history(), so no error occurs.
 MacOS provides BSD libedit by default, which is not fully compatible with GNU Readline.
