@@ -64,8 +64,8 @@ typedef struct s_shell
 }	t_shell;
 
 /* Global variables */
-extern int	g_exec_status; /* 0: interactive, 1: executing command, 2: heredoc */
-extern int	g_sigint_received; /* Flag to indicate if SIGINT was received */
+extern int	g_exec_status; /* 0: interactive, 1: executing command, 2: heredoc, 3: if SIGINT was received */
+// extern int	g_sigint_received; /* Flag to indicate if SIGINT was received */
 
 /* Main functions */
 void	init_shell(t_shell *shell, char **env);

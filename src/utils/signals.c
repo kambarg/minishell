@@ -2,14 +2,14 @@
 
 /* Global variables to track execution state and signals */
 int	g_exec_status = 0;
-int	g_sigint_received = 0;
+// int	g_sigint_received = 0;
 
 /* Signal handler for interactive mode (waiting for input) */
 void	handle_signals(int signum)
 {
 	if (signum == SIGINT)
 	{
-		g_sigint_received = 1;
+		// g_sigint_received = 1;
 		if (g_exec_status == 0) /* Interactive mode */
 		{
 			write(STDOUT_FILENO, "\n", 1);
@@ -23,7 +23,8 @@ void	handle_signals(int signum)
 			close(STDIN_FILENO); /* Force heredoc to exit */
 			g_exec_status = 0;
 		}
-		/* In execution mode, do nothing - let the child process handle it */
+		g_exec_status = 3; /* Signal received */
+		/* In execution mode 1, do nothing - let the child process handle it */
 	}
 }
 
@@ -31,7 +32,7 @@ void	handle_signals(int signum)
 void	setup_signals_interactive(void)
 {
 	g_exec_status = 0;
-	g_sigint_received = 0;
+	// g_sigint_received = 0;
 	signal(SIGINT, handle_signals);
 	signal(SIGQUIT, SIG_IGN);
 }
@@ -40,7 +41,7 @@ void	setup_signals_interactive(void)
 void	setup_signals_executing(void)
 {
 	g_exec_status = 1;
-	g_sigint_received = 0;
+	// g_sigint_received = 0;
 	signal(SIGINT, SIG_IGN);
 	signal(SIGQUIT, SIG_IGN);
 }
@@ -49,7 +50,7 @@ void	setup_signals_executing(void)
 void	setup_signals_heredoc(void)
 {
 	g_exec_status = 2;
-	g_sigint_received = 0;
+	// g_sigint_received = 0;
 	signal(SIGINT, handle_signals);
 	signal(SIGQUIT, SIG_IGN);
 }

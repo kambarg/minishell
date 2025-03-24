@@ -49,11 +49,13 @@ void	run_shell(t_shell *shell)
 	{
 		setup_signals_interactive();
 		input = readline("minishell$ ");
-		if (!input || g_sigint_received == 1)
+		// if (!input || g_sigint_received == 1)
+		if (!input || g_exec_status == 3)
 		{
 			if (!input)
 				printf("exit\n");
-			if (g_sigint_received == 1)
+			//if (g_sigint_received == 1)
+			if (g_exec_status == 3)
 				shell->exit_status = 130; /* 130 is the standard exit code for SIGINT */
 			if (input)
 				free(input);
