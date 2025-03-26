@@ -203,15 +203,21 @@ int	execute_commands(t_shell *shell)
 	
 	/* Wait for all child processes to complete */
 	last_status = 0;
-	
+
 	/* Wait for the last command specifically to get its exit status */
 	if (last_pid != -1)
 	{
 		waitpid(last_pid, &status, 0);
-		if (WIFEXITED(status))
-			last_status = WEXITSTATUS(status);
-		else if (WIFSIGNALED(status))
-			last_status = 128 + WTERMSIG(status);
+		
+		/* Manual implementation of status checking without macros */
+		if ((status & 0x7f) == 0) /* Process exited normally (equivalent to WIFEXITED) */
+		{
+			last_status = (status >> 8) & 0xff; /* Extract exit code (equivalent to WEXITSTATUS) */
+		}
+		else if (((status & 0x7f) + 1) >> 1 > 0) /* Process terminated by signal (equivalent to WIFSIGNALED) */
+		{
+			last_status = 128 + (status & 0x7f); /* 128 + signal number (equivalent to WTERMSIG) */
+		}
 			
 		/* Then wait for any other remaining children */
 		while (waitpid(-1, NULL, 0) > 0)
