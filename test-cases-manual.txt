@@ -1,3 +1,4 @@
+===Redirections==========================
 ==ok==
 $ cat test.txt | grep "hello" < test2.txt
 zsh: no such file or directory: test2.txt
@@ -27,7 +28,16 @@ bash: f.txt: No such file or directory
 t.txt is created
 
 
+===Edge cases=========================
+==ok==
+$        echo      hello     world    
+hello world
 
+==ok==
+$ echo ""
+
+
+== 
 
 ==fail==
 $ > test2.txt < test.txt
@@ -56,6 +66,12 @@ bash: file2.txt: No such file or directory
 file.txt	test-cases.txt	test.txt	test2.tx
 ==No message "No such file.."
 
+==fail==
+$ |
+bash: syntax error near unexpected token `|'
+$ echo $?
+258
+== Not correct exit code
 
 
 
