@@ -68,6 +68,7 @@ int	execute_commands(t_shell *shell)
 	int			stdout_backup;
 	pid_t		pid;
 	int			status;
+	pid_t		last_pid;
 
 	/* Backup original stdin and stdout */
 	stdin_backup = dup(STDIN_FILENO);
@@ -84,7 +85,7 @@ int	execute_commands(t_shell *shell)
 	
 	/* Set up pipes between commands */
 	cmd = shell->commands;
-	while (cmd && cmd->next)
+	while (cmd)
 	{
 		setup_pipes(cmd);
 		cmd = cmd->next;
@@ -92,6 +93,7 @@ int	execute_commands(t_shell *shell)
 	
 	/* Execute each command */
 	cmd = shell->commands;
+	last_pid = -1;
 	while (cmd)
 	{
 		/* Skip empty commands */
@@ -101,8 +103,8 @@ int	execute_commands(t_shell *shell)
 			continue;
 		}
 		
-		/* For built-in commands, execute directly */
-		if (is_builtin(cmd->args[0]))
+		/* For built-in commands, execute directly only if it's a single command or the last one */
+		if (is_builtin(cmd->args[0]) && (!cmd->next || shell->commands == cmd))
 		{
 			/* Set up stdin/stdout redirections for pipes */
 			if (cmd->pipe_fd[0] != -1)
@@ -113,6 +115,8 @@ int	execute_commands(t_shell *shell)
 			/* Handle redirections */
 			if (handle_redirections(cmd->redirects) != ERROR)
 				last_status = execute_builtin(cmd, shell);
+			else
+				last_status = 1;
 			
 			/* Close pipe file descriptors */
 			if (cmd->pipe_fd[0] != -1)
@@ -124,7 +128,7 @@ int	execute_commands(t_shell *shell)
 			dup2(stdin_backup, STDIN_FILENO);
 			dup2(stdout_backup, STDOUT_FILENO);
 		}
-		/* For external commands, fork and execute */
+		/* For external commands or builtins in a pipeline, fork and execute */
 		else
 		{
 			pid = fork();
@@ -143,7 +147,7 @@ int	execute_commands(t_shell *shell)
 				if (cmd->pipe_fd[1] != -1)
 					dup2(cmd->pipe_fd[1], STDOUT_FILENO);
 				
-				/* Close all pipe file descriptors */
+				/* Close all pipe file descriptors in the child process */
 				t_command *tmp = shell->commands;
 				while (tmp)
 				{
@@ -158,25 +162,36 @@ int	execute_commands(t_shell *shell)
 				if (handle_redirections(cmd->redirects) == ERROR)
 					exit(1);
 				
-				/* Execute the command */
-				char *cmd_path = find_command_path(cmd->args[0], shell->env);
-				if (!cmd_path)
+				/* Execute builtin in child process if it's in a pipeline */
+				if (is_builtin(cmd->args[0]))
 				{
-					print_error(cmd->args[0], "command not found");
-					exit(127);
+					exit(execute_builtin(cmd, shell));
 				}
-				
-				reset_signals_default();
-				execve(cmd_path, cmd->args, shell->env);
-				
-				/* If execve fails */
-				print_error(cmd->args[0], strerror(errno));
-				free(cmd_path);
-				exit(126);
+				else
+				{
+					/* Execute the external command */
+					char *cmd_path = find_command_path(cmd->args[0], shell->env);
+					if (!cmd_path)
+					{
+						print_error(cmd->args[0], "command not found");
+						exit(127);
+					}
+					
+					reset_signals_default();
+					execve(cmd_path, cmd->args, shell->env);
+					
+					/* If execve fails */
+					print_error(cmd->args[0], strerror(errno));
+					free(cmd_path);
+					exit(126);
+				}
 			}
 			
 			/* Parent process */
-			/* Close pipe file descriptors for this command */
+			/* Track the last command's pid for exit status */
+			last_pid = pid;
+			
+			/* Close pipe file descriptors for this command in parent */
 			if (cmd->pipe_fd[0] != -1)
 				close(cmd->pipe_fd[0]);
 			if (cmd->pipe_fd[1] != -1)
@@ -187,12 +202,20 @@ int	execute_commands(t_shell *shell)
 	}
 	
 	/* Wait for all child processes to complete */
-	while (waitpid(-1, &status, 0) > 0)
+	last_status = 0;
+	
+	/* Wait for the last command specifically to get its exit status */
+	if (last_pid != -1)
 	{
+		waitpid(last_pid, &status, 0);
 		if (WIFEXITED(status))
 			last_status = WEXITSTATUS(status);
 		else if (WIFSIGNALED(status))
 			last_status = 128 + WTERMSIG(status);
+			
+		/* Then wait for any other remaining children */
+		while (waitpid(-1, NULL, 0) > 0)
+			;
 	}
 	
 	/* Close backup file descriptors */

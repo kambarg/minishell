@@ -21,7 +21,10 @@ char	*get_quoted_str(char *input, int *i, char quote)
 	while (input[*i] && input[*i] != quote)
 		(*i)++;
 	if (!input[*i])
+	{
+		print_error(NULL, "syntax error: unclosed quotes");
 		return (NULL);
+	}
 	len = *i - start;
 	str = (char *)malloc(sizeof(char) * (len + 1));
 	if (!str)
@@ -116,6 +119,40 @@ static int	handle_operator(char *input, int *i, t_token **tokens)
 	value = ft_substr(input, *i - (type == T_HEREDOC || type == T_APPEND), \
 			(type == T_HEREDOC || type == T_APPEND) ? 2 : 1);
 	add_token(tokens, create_token(value, type));
+	return (1);
+}
+
+int	validate_tokens(t_token *tokens)
+{
+	t_token *current;
+	t_token *next;
+
+	if (!tokens)
+		return (1);
+	
+	current = tokens;
+	while (current)
+	{
+		next = current->next;
+		
+		/* Check for empty pipe (pipe followed by nothing or another pipe) */
+		if (current->type == T_PIPE && (!next || next->type == T_PIPE))
+		{
+			print_error(NULL, "syntax error near unexpected token `|'");
+			return (0);
+		}
+		
+		/* Check for redirection without target */
+		if ((current->type >= T_REDIR_IN && current->type <= T_APPEND) && 
+		    (!next || next->type != T_WORD))
+		{
+			print_error(NULL, "syntax error near unexpected token");
+			return (0);
+		}
+		
+		current = current->next;
+	}
+	
 	return (1);
 }
 

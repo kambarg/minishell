@@ -73,6 +73,7 @@ void	cleanup_shell(t_shell *shell);
 
 /* Parser functions */
 t_token		*lexer(char *input);
+int			validate_tokens(t_token *tokens);
 t_command	*parser(t_token *tokens);
 void		expand_variables(t_command *cmd, t_shell *shell);
 t_token		*create_token(char *value, int type);

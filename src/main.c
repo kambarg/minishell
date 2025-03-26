@@ -65,15 +65,23 @@ void	run_shell(t_shell *shell)
 			tokens = lexer(input);
 			if (tokens)
 			{
-				shell->commands = parser(tokens);
-				if (shell->commands)
+				/* Validate token stream for syntax errors */
+				if (validate_tokens(tokens))
 				{
-					expand_variables(shell->commands, shell);
-					setup_signals_executing();
-					shell->exit_status = execute_commands(shell);
-					setup_signals_interactive();
-					free_commands(shell->commands);
-					shell->commands = NULL;
+					shell->commands = parser(tokens);
+					if (shell->commands)
+					{
+						expand_variables(shell->commands, shell);
+						setup_signals_executing();
+						shell->exit_status = execute_commands(shell);
+						setup_signals_interactive();
+						free_commands(shell->commands);
+						shell->commands = NULL;
+					}
+				}
+				else
+				{
+					shell->exit_status = 2; /* Syntax error */
 				}
 				free_tokens(tokens);
 			}
