@@ -81,7 +81,7 @@ void	run_shell(t_shell *shell)
 				}
 				else
 				{
-					shell->exit_status = 2; /* Syntax error */
+					shell->exit_status = 258; /* Syntax error (exit status = err code 2 + 256) */
 				}
 				free_tokens(tokens);
 			}
