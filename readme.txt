@@ -1,3 +1,4 @@
+test
 ===memory leaks checks with valgrind================
 To check for memory leaks run:
 make leaks
