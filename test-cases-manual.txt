@@ -84,3 +84,35 @@ hahaha
 ==Linux==
 $ ls | cat < test2.txt
 hahaha
+
+== If user deletes ls executable file ==
+After deleting ls executable file (ie /usr/bin/ls)
+the command
+$ ls
+hash: ls: command not found
+
+In minishell the program will 
+fail because executable is being executed with execve or similar function.  
+
+
+==Heredoc==
+===example 1===
+cat << TEXT > out.txt
+One
+Two
+Three
+TEXT
+
+===example 2===
+cat <<EOF1 > out.txt | cat <<EOF2
+1
+2
+3
+EOF1
+AA
+BB
+CC
+EOF2
+AA
+BB
+CC
