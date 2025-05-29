@@ -96,15 +96,29 @@ fail because executable is being executed with execve or similar function.
 
 
 ==Heredoc==
-===example 1===
-cat << TEXT > out.txt
+===ok===
+cat << TEXT
 One
 Two
 Three
 TEXT
 
-===example 2===
-cat <<EOF1 > out.txt | cat <<EOF2
+===ok===
+$ cat << TEXT > out.txt
+One
+Two
+Three
+TEXT
+$ cat out.txt
+One
+Two
+Three
+# There should be file out.txt. with heredoc text written in it
+
+
+===error===
+command:
+$ cat <<EOF1 > out.txt | cat <<EOF2
 1
 2
 3
@@ -113,6 +127,15 @@ AA
 BB
 CC
 EOF2
+
+result:
+In the output it is
 AA
 BB
 CC
+in the out.txt. file it is
+1
+2
+3
+
+error: minishell doesn't process newline \n proper way

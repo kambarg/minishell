@@ -24,7 +24,9 @@ SRCS = 	src/main.c \
 		src/utils/signals.c \
 		src/utils/environment.c \
 		src/utils/error.c \
-		src/utils/memory.c
+		src/utils/memory.c \
+		src/debug/debug_tools.c 
+		
 
 OBJS = $(SRCS:.c=.o)
 

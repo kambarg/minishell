@@ -115,4 +115,7 @@ void	free_tokens(t_token *tokens);
 void	free_commands(t_command *commands);
 void	free_array(char **array);
 
+/* Debugging */
+void	print_tokens(t_token *tokens);
+
 #endif 
