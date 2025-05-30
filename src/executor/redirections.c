@@ -3,14 +3,21 @@
 static int	handle_heredoc(char *delimiter)
 {
 	char	*line;
-	int		pipe_fd[2];
+	char	temp_template[] = "/tmp/minishell_heredoc_XXXXXX";
+	int		temp_fd;
+	int		read_fd;
 
-	if (pipe(pipe_fd) == -1)
+	/* Create unique temporary file */
+	temp_fd = mkstemp(temp_template);
+	if (temp_fd == -1)
 	{
 		print_error("heredoc", strerror(errno));
 		return (ERROR);
 	}
+	
 	setup_signals_heredoc();
+	
+	/* Write heredoc content to temporary file */
 	while (1)
 	{
 		line = readline("> ");
@@ -19,18 +26,36 @@ static int	handle_heredoc(char *delimiter)
 			free(line);
 			break ;
 		}
-		ft_putendl_fd(line, pipe_fd[1]);
+		ft_putendl_fd(line, temp_fd);
 		free(line);
 	}
+	
 	setup_signals_interactive();
-	close(pipe_fd[1]);
-	if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
+	
+	/* Close write end of temp file */
+	close(temp_fd);
+	
+	/* Reopen temp file for reading */
+	read_fd = open(temp_template, O_RDONLY);
+	if (read_fd == -1)
 	{
 		print_error("heredoc", strerror(errno));
-		close(pipe_fd[0]);
+		unlink(temp_template);  /* Clean up on error */
 		return (ERROR);
 	}
-	close(pipe_fd[0]);
+	
+	/* Mark file for deletion (it will be deleted when last fd is closed) */
+	unlink(temp_template);
+	
+	/* Redirect stdin to the temporary file */
+	if (dup2(read_fd, STDIN_FILENO) == -1)
+	{
+		print_error("heredoc", strerror(errno));
+		close(read_fd);
+		return (ERROR);
+	}
+	
+	close(read_fd);
 	return (SUCCESS);
 }
 
