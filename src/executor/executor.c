@@ -70,6 +70,10 @@ int	execute_commands(t_shell *shell)
 	int			status;
 	pid_t		last_pid;
 
+	/* Pre-process all heredocs in parent process before forking */
+	if (preprocess_heredocs(shell->commands) == ERROR)
+		return (ERROR);
+
 	/* Backup original stdin and stdout */
 	stdin_backup = dup(STDIN_FILENO);
 	stdout_backup = dup(STDOUT_FILENO);

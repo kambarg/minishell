@@ -1,17 +1,25 @@
 #include "../../includes/minishell.h"
 
-static int	handle_heredoc(char *delimiter)
+static int	create_heredoc_temp_file(char *delimiter, char **temp_path)
 {
 	char	*line;
 	char	temp_template[] = "/tmp/minishell_heredoc_XXXXXX";
 	int		temp_fd;
-	int		read_fd;
 
 	/* Create unique temporary file */
 	temp_fd = mkstemp(temp_template);
 	if (temp_fd == -1)
 	{
 		print_error("heredoc", strerror(errno));
+		return (ERROR);
+	}
+	
+	/* Store the temp file path for later use */
+	*temp_path = ft_strdup(temp_template);
+	if (!*temp_path)
+	{
+		close(temp_fd);
+		unlink(temp_template);
 		return (ERROR);
 	}
 	
@@ -36,29 +44,41 @@ static int	handle_heredoc(char *delimiter)
 	close(temp_fd);
 	
 	/* DEBUG: Show temp file after writing content */
-	print_heredoc_temp_files(temp_template);
+	print_heredoc_temp_files(*temp_path);
 	
-	/* Reopen temp file for reading */
-	read_fd = open(temp_template, O_RDONLY);
-	if (read_fd == -1)
+	return (SUCCESS);
+}
+
+/* Pre-process all heredocs in parent process before forking */
+int	preprocess_heredocs(t_command *commands)
+{
+	t_command	*cmd;
+	t_redirect	*redir;
+	char		*temp_path;
+
+	cmd = commands;
+	while (cmd)
 	{
-		print_error("heredoc", strerror(errno));
-		unlink(temp_template);  /* Clean up on error */
-		return (ERROR);
+		redir = cmd->redirects;
+		while (redir)
+		{
+			if (redir->type == REDIR_HEREDOC)
+			{
+				/* Create temp file and process heredoc in parent */
+				if (create_heredoc_temp_file(redir->file, &temp_path) == ERROR)
+					return (ERROR);
+				
+				/* Replace delimiter with temp file path */
+				free(redir->file);
+				redir->file = temp_path;
+				
+				/* Convert heredoc to regular file input redirect */
+				redir->type = REDIR_IN;
+			}
+			redir = redir->next;
+		}
+		cmd = cmd->next;
 	}
-	
-	/* Mark file for deletion (it will be deleted when last fd is closed) */
-	unlink(temp_template);
-	
-	/* Redirect stdin to the temporary file */
-	if (dup2(read_fd, STDIN_FILENO) == -1)
-	{
-		print_error("heredoc", strerror(errno));
-		close(read_fd);
-		return (ERROR);
-	}
-	
-	close(read_fd);
 	return (SUCCESS);
 }
 
@@ -124,8 +144,9 @@ int	handle_redirections(t_redirect *redirects)
 		}
 		else if (redirects->type == REDIR_HEREDOC)
 		{
-			if (handle_heredoc(redirects->file) == ERROR)
-				return (ERROR);
+			/* This should not happen anymore after preprocessing */
+			print_error("heredoc", "unexpected heredoc in child process");
+			return (ERROR);
 		}
 		else if (redirects->type == REDIR_APPEND)
 		{
