@@ -35,6 +35,9 @@ static int	handle_heredoc(char *delimiter)
 	/* Close write end of temp file */
 	close(temp_fd);
 	
+	/* DEBUG: Show temp file after writing content */
+	print_heredoc_temp_files(temp_template);
+	
 	/* Reopen temp file for reading */
 	read_fd = open(temp_template, O_RDONLY);
 	if (read_fd == -1)

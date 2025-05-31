@@ -117,5 +117,6 @@ void	free_array(char **array);
 
 /* Debugging */
 void	print_tokens(t_token *tokens);
+void	print_heredoc_temp_files(char *temp_path);
 
 #endif 

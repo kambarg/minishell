@@ -47,7 +47,7 @@ void	print_tokens(t_token *tokens)
 	
 	current = tokens;
 	count = 1;
-	ft_putstr_fd("Resulting Token List:\n", fd);
+	ft_putstr_fd("=== Resulting Tokens List ===\n", fd);
 	while (current)
 	{
 		ft_putnbr_fd(count, fd);
@@ -60,4 +60,47 @@ void	print_tokens(t_token *tokens)
 		count++;
 	}
 	close(fd);
+}
+
+// Debug function to print heredoc temporary file info
+void	print_heredoc_temp_files(char *temp_path)
+{
+	int		debug_fd;
+	int		temp_fd;
+	char	buffer[1024];
+	int		bytes_read;
+
+	debug_fd = open("debug.txt", O_WRONLY | O_CREAT | O_APPEND, 0644);
+	if (debug_fd == -1)
+	{
+		printf("Failed to open debug.txt file\n");
+		return ;
+	}
+
+	ft_putstr_fd("\n=== Heredoc temp file ===\n", debug_fd);
+	ft_putstr_fd("Temp file path: ", debug_fd);
+	ft_putstr_fd(temp_path, debug_fd);
+	ft_putstr_fd("\n", debug_fd);
+
+	// Try to open and read the temp file
+	temp_fd = open(temp_path, O_RDONLY);
+	if (temp_fd == -1)
+	{
+		ft_putstr_fd("Status: FILE NOT FOUND (possibly deleted)\n", debug_fd);
+		ft_putstr_fd("================================\n\n", debug_fd);
+		close(debug_fd);
+		return ;
+	}
+	ft_putstr_fd("File content:\n", debug_fd);
+	
+	// Read and print file content
+	while ((bytes_read = read(temp_fd, buffer, sizeof(buffer) - 1)) > 0)
+	{
+		buffer[bytes_read] = '\0';
+		ft_putstr_fd(buffer, debug_fd);
+	}
+	ft_putstr_fd("\n", debug_fd);
+
+	close(temp_fd);
+	close(debug_fd);
 }
