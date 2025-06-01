@@ -7,6 +7,43 @@ $ bash
 $ which bash
 This usually returns /bin/bash or /usr/bin/bash.
 
+=== subject requirements=================
+===ok==
+===Display a prompt when waiting for a new command:
+~$ ./minishell 
+minishell$
+
+===fail==
+===Have a working history:
+minishell$ history
+minishell: history: command not found
+
+===fail?==
+===Search and launch the right executable 
+(based on the PATH variable or using a
+relative or an absolute path)
+$ # type ls
+ls is /usr/bin/ls
+$ ls
+# files and directories listed
+$ /usr/bin/ls
+# files and directories listed
+
+$ mv /usr/bin/ls /usr/bin/ls_backup
+$ ls
+Command 'ls' not found, but can be installed with:
+apt install coreutils
+
+$ ./my_program
+./my_program: No such file or directory
+$ nonexistent
+command not found: nonexistent
+
+!!! In minishell error message is:
+$ <command>
+minishell: <command>: command not found
+No detailed wordings. Is it ok?
+
 ===Redirections==========================
 ==ok==
 $ cat test.txt | grep "hello" < test2.txt
