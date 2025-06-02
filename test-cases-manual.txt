@@ -44,6 +44,93 @@ $ <command>
 minishell: <command>: command not found
 No detailed wordings. Is it ok?
 
+===?==
+===Signal handler =========================
+= Avoid using more than one global variable to indicate 
+a received signal.
+= signal handler will not access your
+main data structures
+
+===fail==
+===Single quote==============================
+Handle ’ (single quote) which should prevent the shell 
+from interpreting the metacharacters in the quoted sequence.
+
+$ echo '$HOME'
+$HOME
+$ echo $HOME
+/home/goha
+$ echo "$HOME"
+/home/goha
+$ echo '*.txt'
+*.txt
+$ echo 'can't'
+> '
+cant
+$ echo 'can'\''t'
+can't
+
+!!! In minishell error:
+minishell$ echo '$HOME'
+/home/goha
+$ echo 'can't'
+syntax error: unclosed quotes
+$ echo 'can'\''t'
+syntax error: unclosed quotes
+
+
+===ok==
+===double quotes=================================
+Handle " (double quote) which should prevent the shell 
+from interpreting the metacharacters in the quoted 
+sequence except for $ (dollar sign).
+
+$ echo $HOME
+/home/<user_name>
+$ echo "$HOME"
+/home/<user_name>
+
+===fail==
+===environment variables=======================
+Handle environment variables ($ followed by a sequence 
+of characters) which should expand to their values.
+$ env
+<will print all exported environment variables>
+HOME=/home/goha
+USER=goha
+PATH=/usr/local/bin:/usr/bin:/bin
+...
+$ echo $HOME
+/home/goha
+$ echo $NOTSET
+
+$ export EMPTY=
+$ echo $EMPTY
+
+$ echo "User is $USER"
+User is goha
+$ echo $
+$
+$ echo test$
+test$
+$  export A=bye B=tester
+$ echo $A $B
+bye tester
+$ export TEMPVAR=hello
+$ unset TEMPVAR
+$ echo $TEMPVAR
+
+
+in minishell enviroment variables are expanded 
+inside single quotes, but should not
+$ echo '$USER'
+goha
+$ export USER=goha
+$ echo "Hi, '$USER', welcome!"
+Hi, 'goha', welcome!
+
+
+
 ===Redirections==========================
 ==ok==
 $ cat test.txt | grep "hello" < test2.txt
