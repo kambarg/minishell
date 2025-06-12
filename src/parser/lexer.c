@@ -116,8 +116,10 @@ static int	handle_operator(char *input, int *i, t_token **tokens)
 		else
 			type = T_REDIR_OUT;
 	}
-	value = ft_substr(input, *i - (type == T_HEREDOC || type == T_APPEND), \
-			(type == T_HEREDOC || type == T_APPEND) ? 2 : 1);
+	if (type == T_HEREDOC || type == T_APPEND)
+		value = ft_substr(input, *i - 1, 2);
+	else
+		value = ft_substr(input, *i , 1);
 	add_token(tokens, create_token(value, type));
 	return (1);
 }
@@ -182,5 +184,6 @@ t_token	*lexer(char *input)
 			add_token(&tokens, create_token(word, T_WORD));
 		}
 	}
+	print_tokens (tokens); // !!! debug
 	return (tokens);
 } 

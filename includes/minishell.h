@@ -86,6 +86,7 @@ int			is_whitespace(char c);
 /* Executor functions */
 int		execute_commands(t_shell *shell);
 int		handle_redirections(t_redirect *redirects);
+int		preprocess_heredocs(t_command *commands);
 void	setup_pipes(t_command *cmd);
 char	*find_command_path(char *cmd, char **env);
 int		execute_builtin(t_command *cmd, t_shell *shell);
@@ -114,5 +115,9 @@ void	print_error(const char *cmd, const char *msg);
 void	free_tokens(t_token *tokens);
 void	free_commands(t_command *commands);
 void	free_array(char **array);
+
+/* Debugging */
+void	print_tokens(t_token *tokens);
+void	print_heredoc_temp_files(char *temp_path);
 
 #endif 

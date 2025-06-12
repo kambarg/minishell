@@ -1,3 +1,136 @@
+===Subject of the minishell says ========
+==='take bash as a reference'============
+$ echo $SHELL
+/bin/bash
+if the output is not bash than you need to switch
+$ bash
+$ which bash
+This usually returns /bin/bash or /usr/bin/bash.
+
+=== subject requirements=================
+===ok==
+===Display a prompt when waiting for a new command:
+~$ ./minishell 
+minishell$
+
+===fail==
+===Have a working history:
+minishell$ history
+minishell: history: command not found
+
+===fail?==
+===Search and launch the right executable 
+(based on the PATH variable or using a
+relative or an absolute path)
+$ # type ls
+ls is /usr/bin/ls
+$ ls
+# files and directories listed
+$ /usr/bin/ls
+# files and directories listed
+
+$ mv /usr/bin/ls /usr/bin/ls_backup
+$ ls
+Command 'ls' not found, but can be installed with:
+apt install coreutils
+
+$ ./my_program
+./my_program: No such file or directory
+$ nonexistent
+command not found: nonexistent
+
+!!! In minishell error message is:
+$ <command>
+minishell: <command>: command not found
+No detailed wordings. Is it ok?
+
+===?==
+===Signal handler =========================
+= Avoid using more than one global variable to indicate 
+a received signal.
+= signal handler will not access your
+main data structures
+
+===fail==
+===Single quote==============================
+Handle ’ (single quote) which should prevent the shell 
+from interpreting the metacharacters in the quoted sequence.
+
+$ echo '$HOME'
+$HOME
+$ echo $HOME
+/home/goha
+$ echo "$HOME"
+/home/goha
+$ echo '*.txt'
+*.txt
+$ echo 'can't'
+> '
+cant
+$ echo 'can'\''t'
+can't
+
+!!! In minishell error:
+minishell$ echo '$HOME'
+/home/goha
+$ echo 'can't'
+syntax error: unclosed quotes
+$ echo 'can'\''t'
+syntax error: unclosed quotes
+
+
+===ok==
+===double quotes=================================
+Handle " (double quote) which should prevent the shell 
+from interpreting the metacharacters in the quoted 
+sequence except for $ (dollar sign).
+
+$ echo $HOME
+/home/<user_name>
+$ echo "$HOME"
+/home/<user_name>
+
+===fail==
+===environment variables=======================
+Handle environment variables ($ followed by a sequence 
+of characters) which should expand to their values.
+$ env
+<will print all exported environment variables>
+HOME=/home/goha
+USER=goha
+PATH=/usr/local/bin:/usr/bin:/bin
+...
+$ echo $HOME
+/home/goha
+$ echo $NOTSET
+
+$ export EMPTY=
+$ echo $EMPTY
+
+$ echo "User is $USER"
+User is goha
+$ echo $
+$
+$ echo test$
+test$
+$  export A=bye B=tester
+$ echo $A $B
+bye tester
+$ export TEMPVAR=hello
+$ unset TEMPVAR
+$ echo $TEMPVAR
+
+
+in minishell enviroment variables are expanded 
+inside single quotes, but should not
+$ echo '$USER'
+goha
+$ export USER=goha
+$ echo "Hi, '$USER', welcome!"
+Hi, 'goha', welcome!
+
+
+
 ===Redirections==========================
 ==ok==
 $ cat test.txt | grep "hello" < test2.txt
@@ -71,16 +204,83 @@ $ |
 bash: syntax error near unexpected token `|'
 $ echo $?
 258
+or 
+2
+== !!! We have to check which code is correct
 == Not correct exit code
 
 
-
-== Mac zsh /Linux bash behaivor differs==
-==Mac zsh==
-% ls | cat < test2.txt
-test-cases.txt
-test2.txt
-hahaha
-==Linux==
+== ok ==
+$ echo "hahaha" > test2.txt
 $ ls | cat < test2.txt
 hahaha
+
+== If user deletes ls executable file ==
+After deleting ls executable file (ie /usr/bin/ls)
+the command
+$ ls
+hash: ls: command not found
+
+In minishell the program will 
+fail because executable is being executed with execve or similar function.  
+
+
+==Heredoc=================
+===ok===
+$ cat << TEXT
+> One
+> Two
+> Three
+> TEXT
+
+===ok===
+$ cat << TEXT > out.txt
+> One
+> Two
+> Three
+TEXT
+$ cat out.txt
+> One
+> Two
+> Three
+# There should be file out.txt. with heredoc text written in it
+
+
+=== ok ===
+command:
+$ cat <<EOF1 > out.txt | cat <<EOF2
+> 1
+> 2
+> 3
+> EOF1
+> AA
+> BB
+> CC
+> EOF2
+
+result:
+In the output it is
+AA
+BB
+CC
+in the out.txt. file it is
+1
+2
+3
+
+== ok ==
+$ cat << eof | grep b | wc -l
+> a
+> b 
+> c 
+> eof
+
+== ok ==
+$ cat << eof > out.txt | cat << text
+> a 
+> b 
+> c 
+> eof 
+> hello 
+> bye 
+> text
