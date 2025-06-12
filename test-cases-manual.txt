@@ -175,6 +175,9 @@ $ echo ""
 ==fail==
 $ > test2.txt < test.txt
 zsh: no such file or directory: test.txt
+== we need write printf to print_error
+
+
 gkambarb@lab1r3s6 tmp % ls -l
 total 0
 -rw-r--r--  1 gkambarb  2024_abu-dhabi  0 Mar 24 18:21 test2.txt

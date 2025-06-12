@@ -151,6 +151,12 @@ int	validate_tokens(t_token *tokens)
 			print_error(NULL, "syntax error near unexpected token");
 			return (0);
 		}
+		if((current->type == T_REDIR_IN)&& fopen("next", "r")== NULL)
+		{
+            //  print_error(NULL, "No such file or directory");
+			printf("%s:No such file or directory\n",next->value);
+			 return (1);
+		}
 		
 		current = current->next;
 	}
