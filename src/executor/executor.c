@@ -100,15 +100,8 @@ int	execute_commands(t_shell *shell)
 	last_pid = -1;
 	while (cmd)
 	{
-		/* Skip empty commands */
-		if (!cmd->args || !cmd->args[0])
-		{
-			cmd = cmd->next;
-			continue;
-		}
-		
 		/* For built-in commands, execute directly only if it's a single command or the last one */
-		if (is_builtin(cmd->args[0]) && (!cmd->next || shell->commands == cmd))
+		if (cmd->args && cmd->args[0] && is_builtin(cmd->args[0]) && (!cmd->next || shell->commands == cmd))
 		{
 			/* Set up stdin/stdout redirections for pipes */
 			if (cmd->pipe_fd[0] != -1)
@@ -118,7 +111,13 @@ int	execute_commands(t_shell *shell)
 			
 			/* Handle redirections */
 			if (handle_redirections(cmd->redirects) != ERROR)
-				last_status = execute_builtin(cmd, shell);
+			{
+				/* Only execute builtin if there are arguments */
+				if (cmd->args && cmd->args[0])
+					last_status = execute_builtin(cmd, shell);
+				else
+					last_status = 0;  // Success for empty command with successful redirections
+			}
 			else
 				last_status = 1;
 			
@@ -166,33 +165,41 @@ int	execute_commands(t_shell *shell)
 				if (handle_redirections(cmd->redirects) == ERROR)
 					exit(1);
 				
-				/* Execute builtin in child process if it's in a pipeline */
-				if (is_builtin(cmd->args[0]))
+				/* Only execute command if there are arguments */
+				if (cmd->args && cmd->args[0])
 				{
-					exit(execute_builtin(cmd, shell));
+					/* Execute builtin in child process if it's in a pipeline */
+					if (is_builtin(cmd->args[0]))
+					{
+						exit(execute_builtin(cmd, shell));
+					}
+					else
+					{
+						/* Execute the external command */
+						char *cmd_path = find_command_path(cmd->args[0], shell->env);
+						if (!cmd_path)
+						{
+							print_error(cmd->args[0], "command not found");
+							exit(127);
+						}
+						
+						reset_signals_default();
+						execve(cmd_path, cmd->args, shell->env);
+						
+						/* If execve fails */
+						print_error(cmd->args[0], strerror(errno));
+						free(cmd_path);
+						exit(126);
+					}
 				}
 				else
 				{
-					/* Execute the external command */
-					char *cmd_path = find_command_path(cmd->args[0], shell->env);
-					if (!cmd_path)
-					{
-						print_error(cmd->args[0], "command not found");
-						exit(127);
-					}
-					
-					reset_signals_default();
-					execve(cmd_path, cmd->args, shell->env);
-					
-					/* If execve fails */
-					print_error(cmd->args[0], strerror(errno));
-					free(cmd_path);
-					exit(126);
+					/* Empty command with successful redirections */
+					exit(0);
 				}
 			}
 			
 			/* Parent process */
-			/* Track the last command's pid for exit status */
 			last_pid = pid;
 			
 			/* Close pipe file descriptors for this command in parent */
