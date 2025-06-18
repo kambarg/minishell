@@ -1,0 +1,3 @@
+=== Resulting Tokens List ===
+1. "make" (T_WORD)
+2. "fclean" (T_WORD)
