@@ -41,17 +41,8 @@ char	*get_word(char *input, int *i)
 	char	*str;
 
 	start = *i;
-	while (input[*i] && !is_whitespace(input[*i]) && !is_operator_char(input[*i]))
-	{
-		if (input[*i] == '\'' || input[*i] == '\"')
-		{
-			str = get_quoted_str(input, i, input[*i]);
-			if (!str)
-				return (NULL);
-			return (str);
-		}
+	while (input[*i] && !is_whitespace(input[*i]) && !is_operator_char(input[*i]) && input[*i] != '\'' && input[*i] != '\"')
 		(*i)++;
-	}
 	len = *i - start;
 	str = (char *)malloc(sizeof(char) * (len + 1));
 	if (!str)
@@ -69,6 +60,21 @@ t_token	*create_token(char *value, int type)
 		return (NULL);
 	token->value = value;
 	token->type = type;
+	token->quote_type = QUOTE_NONE;
+	token->next = NULL;
+	return (token);
+}
+
+t_token	*create_token_with_quote(char *value, int type, int quote_type)
+{
+	t_token	*token;
+
+	token = (t_token *)malloc(sizeof(t_token));
+	if (!token)
+		return (NULL);
+	token->value = value;
+	token->type = type;
+	token->quote_type = quote_type;
 	token->next = NULL;
 	return (token);
 }
@@ -163,6 +169,7 @@ t_token	*lexer(char *input)
 	int		i;
 	char	*word;
 	t_token	*tokens;
+	int		quote_type;
 
 	i = 0;
 	tokens = NULL;
@@ -176,6 +183,14 @@ t_token	*lexer(char *input)
 				return (NULL);
 			i++;
 		}
+		else if (input[i] == '\'' || input[i] == '\"')
+		{
+			quote_type = (input[i] == '\'') ? QUOTE_SINGLE : QUOTE_DOUBLE;
+			word = get_quoted_str(input, &i, input[i]);
+			if (!word)
+				return (NULL);
+			add_token(&tokens, create_token_with_quote(word, T_WORD, quote_type));
+		}
 		else
 		{
 			word = get_word(input, &i);
@@ -184,6 +199,5 @@ t_token	*lexer(char *input)
 			add_token(&tokens, create_token(word, T_WORD));
 		}
 	}
-	print_tokens (tokens); // !!! debug
 	return (tokens);
 } 
