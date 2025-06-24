@@ -27,6 +27,11 @@
 # define T_APPEND 6
 # define T_EOF 7
 
+/* Quote types */
+# define QUOTE_NONE 0
+# define QUOTE_SINGLE 1
+# define QUOTE_DOUBLE 2
+
 /* Redirection types */
 # define REDIR_IN 1
 # define REDIR_OUT 2
@@ -37,6 +42,7 @@ typedef struct s_token
 {
 	char			*value;
 	int				type;
+	int				quote_type;
 	struct s_token	*next;
 }	t_token;
 
@@ -47,12 +53,20 @@ typedef struct s_redirect
 	struct s_redirect	*next;
 }	t_redirect;
 
+typedef struct s_arg_info
+{
+	char	*value;
+	int		quote_type;
+}	t_arg_info;
+
 typedef struct s_command
 {
 	char				**args;
 	t_redirect			*redirects;
 	struct s_command	*next;
 	int					pipe_fd[2];
+	t_arg_info			*arg_infos;
+	int					arg_count;
 }	t_command;
 
 typedef struct s_shell
@@ -76,7 +90,9 @@ t_token		*lexer(char *input);
 int			validate_tokens(t_token *tokens);
 t_command	*parser(t_token *tokens);
 void		expand_variables(t_command *cmd, t_shell *shell);
+char		*expand_string_with_quote_type(char *str, t_shell *shell, int quote_type);
 t_token		*create_token(char *value, int type);
+t_token		*create_token_with_quote(char *value, int type, int quote_type);
 void		add_token(t_token **head, t_token *new_token);
 char		*get_word(char *input, int *i);
 char		*get_quoted_str(char *input, int *i, char quote);
@@ -120,4 +136,4 @@ void	free_array(char **array);
 void	print_tokens(t_token *tokens);
 void	print_heredoc_temp_files(char *temp_path);
 
-#endif 
+#endif

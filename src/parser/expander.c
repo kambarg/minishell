@@ -69,18 +69,23 @@ static char	*expand_var(char *str, t_shell *shell, int *i)
 	return (result);
 }
 
-static char	*expand_string(char *str, t_shell *shell)
+char	*expand_string_with_quote_type(char *str, t_shell *shell, int quote_type)
 {
 	int		i;
 	char	*result;
 	char	*temp;
 	char	*var;
 
+	/* Single quotes: no expansion at all */
+	if (quote_type == QUOTE_SINGLE)
+		return (ft_strdup(str));
+
 	i = 0;
 	result = ft_strdup("");
 	while (str[i])
 	{
-		if (str[i] == '$')
+		/* Variable expansion for double quotes and unquoted */
+		if (str[i] == '$' && (quote_type == QUOTE_DOUBLE || quote_type == QUOTE_NONE))
 		{
 			var = expand_var(str, shell, &i);
 			temp = result;
@@ -110,7 +115,16 @@ void	expand_variables(t_command *cmd, t_shell *shell)
 		i = 0;
 		while (cmd->args && cmd->args[i])
 		{
-			expanded = expand_string(cmd->args[i], shell);
+			/* Use quote type information if available */
+			if (cmd->arg_infos && i < cmd->arg_count)
+			{
+				expanded = expand_string_with_quote_type(cmd->arg_infos[i].value, shell, cmd->arg_infos[i].quote_type);
+			}
+			else
+			{
+				/* Fallback: expand with QUOTE_NONE (allow all expansions) */
+				expanded = expand_string_with_quote_type(cmd->args[i], shell, QUOTE_NONE);
+			}
 			free(cmd->args[i]);
 			cmd->args[i] = expanded;
 			i++;
@@ -120,7 +134,8 @@ void	expand_variables(t_command *cmd, t_shell *shell)
 		{
 			if (redir->type != REDIR_HEREDOC)
 			{
-				expanded = expand_string(redir->file, shell);
+				/* Redirections are always expanded */
+				expanded = expand_string_with_quote_type(redir->file, shell, QUOTE_NONE);
 				free(redir->file);
 				redir->file = expanded;
 			}

@@ -52,6 +52,19 @@ void	free_commands(t_command *commands)
 		if (temp->redirects)
 			free_redirects(temp->redirects);
 		
+		/* Free arg_infos structure */
+		if (temp->arg_infos)
+		{
+			i = 0;
+			while (i < temp->arg_count)
+			{
+				if (temp->arg_infos[i].value)
+					free(temp->arg_infos[i].value);
+				i++;
+			}
+			free(temp->arg_infos);
+		}
+		
 		/* Close any open pipe file descriptors */
 		if (temp->pipe_fd[0] != -1)
 			close(temp->pipe_fd[0]);
