@@ -96,7 +96,7 @@ void	cleanup_shell(t_shell *shell)
 		free_array(shell->env);
 	if (shell->commands)
 		free_commands(shell->commands);
-	rl_clear_history();
+	clear_history();
 }
 
 int	main(int argc, char **argv, char **env)

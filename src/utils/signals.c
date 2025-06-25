@@ -12,7 +12,15 @@ void	handle_signals(int signum)
 		{
 			write(STDOUT_FILENO, "\n", 1);
 			rl_on_new_line();
-			rl_replace_line("", 0);
+			// rl_replace_line("", 0);
+			write(1,"\33[2K\r]", 5);
+			rl_on_new_line();
+			rl_redisplay();
+			// rl_delete_text(0,rl_end);
+			write(1,"\33[2K\r]", 5);
+			rl_on_new_line();
+			rl_redisplay();
+			rl_point =0;
 			rl_redisplay();
 		}
 		else if (g_exec_status == 2) /* Heredoc mode */
