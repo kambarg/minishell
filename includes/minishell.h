@@ -126,6 +126,7 @@ void	reset_signals_default(void);
 char	*get_env_value(char **env, const char *name);
 void	set_env_value(t_shell *shell, const char *name, const char *value);
 void	print_error(const char *cmd, const char *msg);
+int		is_whitespace_only(const char *str);
 
 /* Memory management */
 void	free_tokens(t_token *tokens);

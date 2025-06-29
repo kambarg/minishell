@@ -59,7 +59,7 @@ void	run_shell(t_shell *shell)
 				free(input);
 			break;
 		}
-		if (*input)
+		if (*input && !is_whitespace_only(input))
 		{
 			add_history(input);
 			tokens = lexer(input);
@@ -96,7 +96,7 @@ void	cleanup_shell(t_shell *shell)
 		free_array(shell->env);
 	if (shell->commands)
 		free_commands(shell->commands);
-	clear_history();
+	rl_clear_history();
 }
 
 int	main(int argc, char **argv, char **env)

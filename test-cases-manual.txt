@@ -7,16 +7,24 @@ $ bash
 $ which bash
 This usually returns /bin/bash or /usr/bin/bash.
 
+Note:
+If I execute bash (/usr/bin/bash) in minishell it 
+forks a child process. This child process takes 
+over the terminal, ie terminal is bash instead of 
+minishell. If exit or ctrl+D, bash exits and terminal 
+returns to minishell.  
+
+
 === subject requirements=================
 ===ok==
 ===Display a prompt when waiting for a new command:
 ~$ ./minishell 
 minishell$
 
-===fail==
+===ok==
 ===Have a working history:
 minishell$ history
-minishell: history: command not found
+returns the list of commands entered in terminal
 
 
 ==Cannot check on Mac (no sudo rights to change /usr/bin/ls)==
