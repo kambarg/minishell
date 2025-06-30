@@ -8,58 +8,59 @@ $ which bash
 This usually returns /bin/bash or /usr/bin/bash.
 
 Note:
-If I execute bash (/usr/bin/bash) in minishell it 
+If you execute bash (/usr/bin/bash) in minishell it 
 forks a child process. This child process takes 
 over the terminal, ie terminal is bash instead of 
 minishell. If exit or ctrl+D, bash exits and terminal 
 returns to minishell.  
 
 
-=== subject requirements=================
-===ok==
+===subject requirements=================
+===ok===
 ===Display a prompt when waiting for a new command:
 ~$ ./minishell 
 minishell$
 
-===ok==
+===ok===
 ===Have a working history:
 minishell$ history
 returns the list of commands entered in terminal
 
 
-==Cannot check on Mac (no sudo rights to change /usr/bin/ls)==
+===fail?===
+===!Cannot check on Mac (no sudo rights to change /usr/bin/ls)
 ===Search and launch the right executable 
 (based on the PATH variable or using a
 relative or an absolute path)
-$ # type ls
-ls is /usr/bin/ls
+$ which ls
+/usr/bin/ls
 $ ls
 # files and directories listed
 $ /usr/bin/ls
 # files and directories listed
 
-$ mv /usr/bin/ls /usr/bin/ls_backup
-$ ls
-Command 'ls' not found, but can be installed with:
-apt install coreutils
-
 $ ./my_program
 ./my_program: No such file or directory
+
 $ nonexistent
-command not found: nonexistent
+nonexistent: command not found
 
-$ <command>
-minishell: <command>: command not found
+===fail===
+$ sudo mv /usr/bin/ls /usr/bin/ls_backup
+$ ls
+bash: /usr/bin/ls: No such file or directory
+minishell$ ls
+minishell: ls: command not found
+Error message in minishell differs from the bash error message.
 
-
-===?==
+===?===
 ===Signal handler =========================
 = Avoid using more than one global variable to indicate 
 a received signal.
 = signal handler will not access your
 main data structures
 
-===fail==
+===ok===
 ===Single quote==============================
 Handle ’ (single quote) which should prevent the shell 
 from interpreting the metacharacters in the quoted sequence.
@@ -77,23 +78,16 @@ $ echo '*.txt'
 $ echo 'can't'
 > '
 cant
-
 minishell$ echo 'can't'
 minishell: syntax error: unclosed quotes
 
 $ echo 'can'\''t'
 can't
-
 minishell$ echo 'can'\''t'
 minishell: syntax error: unclosed quote
 
-=== error ==========================================
-minishell$ echo '$HOME'
-/home/goha
 
-
-
-===ok==
+===ok===
 ===double quotes=================================
 Handle " (double quote) which should prevent the shell 
 from interpreting the metacharacters in the quoted 
@@ -104,7 +98,7 @@ $ echo $HOME
 $ echo "$HOME"
 /home/<user_name>
 
-===fail==
+===ok===
 ===environment variables=======================
 Handle environment variables ($ followed by a sequence 
 of characters) which should expand to their values.
@@ -114,13 +108,18 @@ HOME=/home/goha
 USER=goha
 PATH=/usr/local/bin:/usr/bin:/bin
 ...
+$ env | grep -E 'PWD|OLDPWD|USER|HOME'
+<will print main env variables values>
 
-In minishell PATH has extra dir
-In minishell OLDPWD has wrong dir
-env output is not the same on bash and minishell. Is it an error
+Test OLDPWD:
+echo $PWD      # Should show current directory
+echo $OLDPWD   # Should show parent shell's OLDPWD
+cd /tmp
+echo $OLDPWD   # Should show previous directory
+echo $PWD      # Should show /tmp
+cd -           # Should go back to previous directory
+echo $PWD      # Should show original directory
 
-$ echo $HOME
-/home/goha
 $ echo $NOTSET
 
 $ export EMPTY=
@@ -139,8 +138,6 @@ $ export TEMPVAR=hello
 $ unset TEMPVAR
 $ echo $TEMPVAR
 
-
-=== what should be on bash ??? =========
 $ export USER=goha
 $ echo "Hi, '$USER', welcome!"
 Hi, 'goha', welcome!

@@ -6,10 +6,19 @@ int	ft_cd(char **args, t_shell *shell)
 	char	*old_pwd;
 	char	*new_pwd;
 	char	cwd[4096];
+	char	*old_pwd_copy;
 
 	/* Get current directory before changing */
 	old_pwd = getcwd(cwd, sizeof(cwd));
 	if (!old_pwd)
+	{
+		print_error("cd", strerror(errno));
+		return (ERROR);
+	}
+	
+	/* Make a copy of the old directory to avoid buffer overwrite */
+	old_pwd_copy = ft_strdup(old_pwd);
+	if (!old_pwd_copy)
 	{
 		print_error("cd", strerror(errno));
 		return (ERROR);
@@ -36,6 +45,7 @@ int	ft_cd(char **args, t_shell *shell)
 			print_error("cd", "OLDPWD not set");
 		else
 			print_error("cd", "HOME not set");
+		free(old_pwd_copy);
 		return (ERROR);
 	}
 	
@@ -44,6 +54,7 @@ int	ft_cd(char **args, t_shell *shell)
 	{
 		print_error("cd", strerror(errno));
 		free(path);
+		free(old_pwd_copy);
 		return (ERROR);
 	}
 	free(path);
@@ -53,12 +64,16 @@ int	ft_cd(char **args, t_shell *shell)
 	if (!new_pwd)
 	{
 		print_error("cd", strerror(errno));
+		free(old_pwd_copy);
 		return (ERROR);
 	}
 	
 	/* Set environment variables */
-	set_env_value(shell, "OLDPWD", old_pwd);
+	set_env_value(shell, "OLDPWD", old_pwd_copy);
 	set_env_value(shell, "PWD", new_pwd);
+	
+	/* Clean up */
+	free(old_pwd_copy);
 	
 	return (SUCCESS);
 } 

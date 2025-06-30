@@ -29,12 +29,17 @@ void	init_shell(t_shell *shell, char **env)
 	shell->exit_status = 0;
 	shell->running = 1;
 	
-	/* Initialize PWD and OLDPWD with the current directory */
+	/* Set PWD to current directory */
 	current_dir = getcwd(cwd, sizeof(cwd));
 	if (current_dir)
 	{
+		/* Always ensure PWD is set correctly */
 		set_env_value(shell, "PWD", current_dir);
-		set_env_value(shell, "OLDPWD", current_dir);
+		
+		/* OLDPWD initialization: */
+		/* In bash, OLDPWD is not inherited from parent environment */
+		/* It's a shell-specific variable that starts unset */
+		/* Only create OLDPWD when first cd command is used */
 	}
 }
 
