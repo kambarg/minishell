@@ -1,6 +1,4 @@
 #include "../includes/minishell.h"
-#include <readline/readline.h>
-#include <readline/history.h>
 
 void	init_shell(t_shell *shell, char **env)
 {
@@ -96,7 +94,7 @@ void	cleanup_shell(t_shell *shell)
 		free_array(shell->env);
 	if (shell->commands)
 		free_commands(shell->commands);
-	rl_clear_history();
+	clear_history(); // rl_clear_history();
 }
 
 int	main(int argc, char **argv, char **env)
