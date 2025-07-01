@@ -23,8 +23,14 @@ minishell$
 
 ===ok===
 ===Have a working history:
+In minishell 'history' command won't work if you don't implement
+a function as it is built-in command. But readline/history.h 
+library has add_history, clear_history functions that you can use 
+to implement history working history functionality (using arrow keys).
+
+===out of scope of subject (history is not in built-in list)=== 
 minishell$ history
-returns the list of commands entered in terminal
+minishell: history: command not found
 
 
 ===fail?===
@@ -74,7 +80,7 @@ $ echo "$HOME"
 $ echo '*.txt'
 *.txt
 
-=== out of scope of subject (unclosed quotes) ====
+===out of scope of subject (unclosed quotes)===
 $ echo 'can't'
 > '
 cant
@@ -139,33 +145,41 @@ $ unset TEMPVAR
 $ echo $TEMPVAR
 
 $ export USER=goha
-$ echo "Hi, '$USER', welcome!"
-Hi, 'goha', welcome!
+$ echo "Hi, '$USER', welcome"
+Hi, 'goha', welcome
+
+
+===???error===
+=== quotes inside quotes=============
+minishell$ echo $HOME
+/Users/gkambarb
+minishell$ echo "$HOME"
+/Users/gkambarb
+minishell$ 
+minishell$ echo " '$HOME' " 
+ '/Users/gkambarb'           # has to be  "$HOME"
+minishell$ 
+minishell$ echo  '$HOME' 
+$HOME
+minishell$ echo  ' "$HOME" ' 
+ "$HOME"                     # has to be  '/Users/gkambarb'
 
 
 
 ===Redirections==========================
 ==ok==
 $ cat test.txt | grep "hello" < test2.txt
-zsh: no such file or directory: test2.txt
+minishell: test2.txt: No such file or directory
 cat: test.txt: No such file or directory
 
-== error message doubled =================
+===ok===
 grep "t" < test.txt
-zsh: no such file or directory: test.txt
-
-minishell$ grep "t" < test.txt
-test.txt:No such file or directory
 minishell: test.txt: No such file or directory
 
-== error message doubled====================
-ls | cat < test2.txt
-hahaha
 
-minishell$ ls | cat < test2.txt
-test2.txt:No such file or directory
+===ok===
+$ ls | cat < test2.txt
 minishell: test2.txt: No such file or directory
-
 
 ==ok==
 cat <<END >test.txt
