@@ -176,102 +176,73 @@ cat: test.txt: No such file or directory
 grep "t" < test.txt
 minishell: test.txt: No such file or directory
 
-
 ===ok===
 $ ls | cat < test2.txt
 minishell: test2.txt: No such file or directory
 
-==ok==
+==ok===
 cat <<END >test.txt
 heredoc> line 1
 heredoc> line 2
 heredoc> END
 
-==ok==
-$ < test2.txt | ls
+==ok===
+$ < test.txt | ls
 test.txt        test2.txt
 
-== error message duplicated ===================
+===ok===
 $ cat > t.txt -e < f.txt | < t.txt
 bash: f.txt: No such file or directory
 t.txt is created
 
-minishell$ cat > t.txt -e < f.txt | < t.txt
-f.txt:No such file or directory
-minishell: f.txt: No such file or directory
-
 
 ===Edge cases=========================
-==ok==
+===ok===
 $        echo      hello     world    
 hello world
 
-==ok==
+===ok===
 $ echo ""
 
-
-== 
-
-==ok==
-$ > test2.txt < test.txt
-zsh: no such file or directory: test.txt
-== we need write printf to print_error
-
-
-gkambarb@lab1r3s6 tmp % ls -l
-total 0
--rw-r--r--  1 gkambarb  2024_abu-dhabi  0 Mar 24 18:21 test2.txt
-== No message "no such file.."
-== test2.txt was not created
-== if test2.txt exists and has text, text.txt doesn't exist, input line has to overwringt test2.txt content and make it empty
-
-
-==ok ==
-< jfkdg > file.txt
-bash: djghkjs: No such file or directory
-== No message "No such file..."
-
-
-==ok ===
->file.txt < dsghfkfjs
-bash: dsghfkfjs: No such file or directory
-== No message "No such file.."
-== file.txt was not created
-
-
-==ok==
-$ < file2.txt | ls
-bash: file2.txt: No such file or directory
-file.txt	test-cases.txt	test.txt	test2.tx
-==No message "No such file.."
-
-==ok==
+===ok===
 $ |
 bash: syntax error near unexpected token `|'
 $ echo $?
 258
-or 
-2
-== !!! We have to check which code is correct
-== Not correct exit code
 
+===ok===
+$ ls -l
+total 0
+$ > test2.txt < test.txt
+minishell: test.txt: No such file or directory
+$ cat test2.txt
 
-== ok ==
+If test2.txt does not exist, it should be created and be empty.
+If test2.txt exists and has text, text.txt doesn't exist, input line has to overwringt test2.txt content and make it empty.
+
+===ok===
+< jfkdg > file.txt
+minishell: jfkdg: No such file or directory
+
+===ok===
+>file.txt < dsghfkfjs
+minishell: dsghfkfjs: No such file or directory
+
+file.txt was created and empty.
+
+===ok===
+$ < file2.txt | ls
+bash: file2.txt: No such file or directory
+file.txt	test-cases.txt	test.txt	test2.tx
+
+===ok===
 $ echo "hahaha" > test2.txt
 $ ls | cat < test2.txt
 hahaha
 
-== If user deletes ls executable file ==
-After deleting ls executable file (ie /usr/bin/ls)
-the command
-$ ls
-hash: ls: command not found
-
-In minishell the program will 
-fail because executable is being executed with execve or similar function.  
 
 
-==Heredoc=================
+===Heredoc=================
 ===ok===
 
 $ cat << TEXT
@@ -286,6 +257,8 @@ $ cat << TEXT > out.txt
 > Two
 > Three
 TEXT
+
+result:
 $ cat out.txt
 > One
 > Two
@@ -293,7 +266,7 @@ $ cat out.txt
 # There should be file out.txt. with heredoc text written in it
 
 
-=== ok ===
+===ok===
 command:
 $ cat <<EOF1 > out.txt | cat <<EOF2
 > 1
@@ -315,14 +288,17 @@ in the out.txt. file it is
 2
 3
 
-== ok ==
+===ok===
 $ cat << eof | grep b | wc -l
 > a
 > b 
 > c 
 > eof
 
-== ok ==
+result: 
+ 1 is printed to the output
+
+===ok===
 $ cat << eof > out.txt | cat << text
 > a 
 > b 
@@ -331,3 +307,12 @@ $ cat << eof > out.txt | cat << text
 > hello 
 > bye 
 > text
+
+result:
+in the standard output 
+hello
+bye
+$ cat out.txt 
+a
+b
+c
