@@ -71,7 +71,7 @@ int	execute_commands(t_shell *shell)
 	pid_t		last_pid;
 
 	/* Pre-process all heredocs in parent process before forking */
-	if (preprocess_heredocs(shell->commands) == ERROR)
+	if (preprocess_heredocs(shell->commands, shell) == ERROR)
 		return (ERROR);
 
 	/* Backup original stdin and stdout */

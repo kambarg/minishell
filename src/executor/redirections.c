@@ -1,25 +1,26 @@
 #include "../../includes/minishell.h"
 
-static int	create_heredoc_temp_file(char *delimiter, char **temp_path)
+static int	create_heredoc_temp_file(char *delimiter, char **temp_path, t_shell *shell)
 {
 	char	*line;
-	char	temp_template[] = "/tmp/minishell_heredoc_XXXXXX";
 	int		temp_fd;
 
-	/* Create unique temporary file */
-	temp_fd = mkstemp(temp_template);
-	if (temp_fd == -1)
+	/* Create unique temporary file using only allowed functions */
+	*temp_path = create_unique_temp_path(shell);
+	if (!*temp_path)
 	{
-		print_error("heredoc", strerror(errno));
+		print_error("heredoc", "failed to create temp file");
 		return (ERROR);
 	}
 	
-	/* Store the temp file path for later use */
-	*temp_path = ft_strdup(temp_template);
-	if (!*temp_path)
+	/* Add temp file to shell's tracking list for cleanup */
+	add_temp_file(shell, *temp_path);
+	
+	/* Open the temp file for writing */
+	temp_fd = open(*temp_path, O_WRONLY);
+	if (temp_fd == -1)
 	{
-		close(temp_fd);
-		unlink(temp_template);
+		print_error("heredoc", strerror(errno));
 		return (ERROR);
 	}
 	
@@ -50,7 +51,7 @@ static int	create_heredoc_temp_file(char *delimiter, char **temp_path)
 }
 
 /* Pre-process all heredocs in parent process before forking */
-int	preprocess_heredocs(t_command *commands)
+int	preprocess_heredocs(t_command *commands, t_shell *shell)
 {
 	t_command	*cmd;
 	t_redirect	*redir;
@@ -65,7 +66,7 @@ int	preprocess_heredocs(t_command *commands)
 			if (redir->type == REDIR_HEREDOC)
 			{
 				/* Create temp file and process heredoc in parent */
-				if (create_heredoc_temp_file(redir->file, &temp_path) == ERROR)
+				if (create_heredoc_temp_file(redir->file, &temp_path, shell) == ERROR)
 					return (ERROR);
 				
 				/* Replace delimiter with temp file path */

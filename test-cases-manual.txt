@@ -244,7 +244,6 @@ hahaha
 
 ===Heredoc=================
 ===ok===
-
 $ cat << TEXT
 > One
 > Two
@@ -257,7 +256,6 @@ $ cat << TEXT > out.txt
 > Two
 > Three
 TEXT
-
 result:
 $ cat out.txt
 > One
@@ -277,7 +275,6 @@ $ cat <<EOF1 > out.txt | cat <<EOF2
 > BB
 > CC
 > EOF2
-
 result:
 In the output it is
 AA
@@ -294,9 +291,9 @@ $ cat << eof | grep b | wc -l
 > b 
 > c 
 > eof
-
 result: 
  1 is printed to the output
+
 
 ===ok===
 $ cat << eof > out.txt | cat << text
@@ -307,7 +304,6 @@ $ cat << eof > out.txt | cat << text
 > hello 
 > bye 
 > text
-
 result:
 in the standard output 
 hello

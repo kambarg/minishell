@@ -38,6 +38,13 @@
 # define REDIR_HEREDOC 3
 # define REDIR_APPEND 4
 
+/* Temp file list node structure */
+typedef struct s_temp_file
+{
+	char				*path;
+	struct s_temp_file	*next;
+}	t_temp_file;
+
 typedef struct s_token
 {
 	char			*value;
@@ -75,6 +82,8 @@ typedef struct s_shell
 	t_command	*commands;
 	int			exit_status;
 	int			running;
+	t_temp_file	*temp_files;  /* List of temporary files to clean up */
+	int			temp_file_counter;  /* Counter for unique temp file names */
 }	t_shell;
 
 /* Global variables */
@@ -102,7 +111,7 @@ int			is_whitespace(char c);
 /* Executor functions */
 int		execute_commands(t_shell *shell);
 int		handle_redirections(t_redirect *redirects);
-int		preprocess_heredocs(t_command *commands);
+int		preprocess_heredocs(t_command *commands, t_shell *shell);
 void	setup_pipes(t_command *cmd);
 char	*find_command_path(char *cmd, char **env);
 int		execute_builtin(t_command *cmd, t_shell *shell);
@@ -136,5 +145,10 @@ void	free_array(char **array);
 /* Debugging */
 void	print_tokens(t_token *tokens);
 void	print_heredoc_temp_files(char *temp_path);
+
+/* Temp file management */
+void	add_temp_file(t_shell *shell, char *path);
+void	cleanup_temp_files(t_shell *shell);
+char	*create_unique_temp_path(t_shell *shell);
 
 #endif
