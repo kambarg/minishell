@@ -1,26 +1,14 @@
 #include "../../includes/minishell.h"
 
-static int	create_heredoc_temp_file(char *delimiter, char **temp_path, t_shell *shell)
+static int	create_heredoc_temp_file(char *delimiter, int *temp_fd, t_shell *shell)
 {
 	char	*line;
-	int		temp_fd;
 
-	/* Create unique temporary file using only allowed functions */
-	*temp_path = create_unique_temp_path(shell);
-	if (!*temp_path)
+	/* Create secure temporary file using unlink-after-open */
+	*temp_fd = create_secure_temp_fd(shell);
+	if (*temp_fd == -1)
 	{
 		print_error("heredoc", "failed to create temp file");
-		return (ERROR);
-	}
-	
-	/* Add temp file to shell's tracking list for cleanup */
-	add_temp_file(shell, *temp_path);
-	
-	/* Open the temp file for writing */
-	temp_fd = open(*temp_path, O_WRONLY);
-	if (temp_fd == -1)
-	{
-		print_error("heredoc", strerror(errno));
 		return (ERROR);
 	}
 	
@@ -35,17 +23,17 @@ static int	create_heredoc_temp_file(char *delimiter, char **temp_path, t_shell *
 			free(line);
 			break ;
 		}
-		ft_putendl_fd(line, temp_fd);
+		ft_putendl_fd(line, *temp_fd);
 		free(line);
 	}
 	
 	setup_signals_interactive();
 	
-	/* Close write end of temp file */
-	close(temp_fd);
+	/* Rewind file to beginning for reading */
+	lseek(*temp_fd, 0, SEEK_SET);
 	
-	/* DEBUG: Show temp file after writing content */
-	print_heredoc_temp_files(*temp_path);
+	/* DEBUG: Show temp file info */
+	ft_putstr_fd("Secure heredoc temp file created (invisible in filesystem)\n", 2);
 	
 	return (SUCCESS);
 }
@@ -55,7 +43,7 @@ int	preprocess_heredocs(t_command *commands, t_shell *shell)
 {
 	t_command	*cmd;
 	t_redirect	*redir;
-	char		*temp_path;
+	int			temp_fd;
 
 	cmd = commands;
 	while (cmd)
@@ -65,15 +53,15 @@ int	preprocess_heredocs(t_command *commands, t_shell *shell)
 		{
 			if (redir->type == REDIR_HEREDOC)
 			{
-				/* Create temp file and process heredoc in parent */
-				if (create_heredoc_temp_file(redir->file, &temp_path, shell) == ERROR)
+				/* Create secure temp file and process heredoc in parent */
+				if (create_heredoc_temp_file(redir->file, &temp_fd, shell) == ERROR)
 					return (ERROR);
 				
-				/* Replace delimiter with temp file path */
-				free(redir->file);
-				redir->file = temp_path;
+				/* Store file descriptor in redirect structure */
+				redir->fd = temp_fd;
 				
-				/* Convert heredoc to regular file input redirect */
+				/* Keep delimiter in file field for reference but mark as processed */
+				/* Convert heredoc to special heredoc input redirect */
 				redir->type = REDIR_IN;
 			}
 			redir = redir->next;
@@ -82,11 +70,25 @@ int	preprocess_heredocs(t_command *commands, t_shell *shell)
 	}
 	return (SUCCESS);
 }
+}
 
-static int	handle_input_redirect(char *file)
+static int	handle_input_redirect(char *file, int temp_fd)
 {
 	int	fd;
 
+	/* If temp_fd is provided (heredoc temp file), use it directly */
+	if (temp_fd != -1)
+	{
+		if (dup2(temp_fd, STDIN_FILENO) == -1)
+		{
+			print_error("heredoc", strerror(errno));
+			return (ERROR);
+		}
+		/* Note: Don't close temp_fd here, it will be closed when command structure is freed */
+		return (SUCCESS);
+	}
+	
+	/* Regular file input redirect */
 	fd = open(file, O_RDONLY);
 	if (fd == -1)
 	{
@@ -135,7 +137,7 @@ int	handle_redirections(t_redirect *redirects)
 	{
 		if (redirects->type == REDIR_IN)
 		{
-			if (handle_input_redirect(redirects->file) == ERROR)
+			if (handle_input_redirect(redirects->file, redirects->fd) == ERROR)
 				return (ERROR);
 		}
 		else if (redirects->type == REDIR_OUT)

@@ -9,6 +9,7 @@ static t_redirect	*create_redirect(int type, char *file)
 		return (NULL);
 	redir->type = type;
 	redir->file = ft_strdup(file);
+	redir->fd = -1;  /* Initialize fd to -1 (not used by default) */
 	redir->next = NULL;
 	return (redir);
 }

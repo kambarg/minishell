@@ -24,6 +24,9 @@ void	free_redirects(t_redirect *redirects)
 		redirects = redirects->next;
 		if (temp->file)
 			free(temp->file);
+		/* Close heredoc temp file descriptor if open */
+		if (temp->fd != -1)
+			close(temp->fd);
 		free(temp);
 	}
 }
