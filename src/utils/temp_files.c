@@ -14,8 +14,8 @@ char	*create_unique_temp_path(t_shell *shell)
 	if (!shell)
 		return (NULL);
 
-	/* Get process ID and convert to string */
-	pid_str = ft_itoa(getpid());
+	/* Get unique identifier using shell address (truncated to int) */
+	pid_str = ft_itoa((int)((unsigned long)&shell % 100000));
 	if (!pid_str)
 		return (NULL);
 	
@@ -106,65 +106,4 @@ void	cleanup_temp_files(t_shell *shell)
 	}
 	
 	shell->temp_files = NULL;
-}
-
-/* Create a secure temporary file descriptor using unlink-after-open */
-int	create_secure_temp_fd(t_shell *shell)
-{
-	char	*temp_path;
-	char	*pid_str;
-	char	*counter_str;
-	char	*temp1;
-	char	*temp2;
-	int		fd;
-
-	if (!shell)
-		return (-1);
-
-	/* Get process ID and convert to string */
-	pid_str = ft_itoa(getpid());
-	if (!pid_str)
-		return (-1);
-	
-	/* Try to create unique file */
-	while (1)
-	{
-		/* Convert counter to string */
-		counter_str = ft_itoa(shell->temp_file_counter++);
-		if (!counter_str)
-		{
-			free(pid_str);
-			return (-1);
-		}
-		
-		/* Build temp file path: /tmp/minishell_heredoc_<pid>_<counter> */
-		temp1 = ft_strjoin("/tmp/minishell_heredoc_", pid_str);
-		temp2 = ft_strjoin(temp1, "_");
-		free(temp1);
-		temp_path = ft_strjoin(temp2, counter_str);
-		free(temp2);
-		free(counter_str);
-		
-		if (!temp_path)
-		{
-			free(pid_str);
-			return (-1);
-		}
-		
-		/* Try to create file with O_EXCL to ensure uniqueness */
-		fd = open(temp_path, O_CREAT | O_EXCL | O_RDWR, 0600);
-		if (fd != -1)
-		{
-			/* Immediately unlink the file to make it invisible in filesystem */
-			unlink(temp_path);
-			
-			/* File now exists only in memory, protected from external interference */
-			free(temp_path);
-			free(pid_str);
-			return (fd);
-		}
-		
-		/* File exists, try next counter value */
-		free(temp_path);
-	}
 } 

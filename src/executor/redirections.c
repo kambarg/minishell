@@ -3,12 +3,24 @@
 static int	create_heredoc_temp_file(char *delimiter, int *temp_fd, t_shell *shell)
 {
 	char	*line;
+	char	*temp_path;
+	int		write_fd;
+	int		read_fd;
 
-	/* Create secure temporary file using unlink-after-open */
-	*temp_fd = create_secure_temp_fd(shell);
-	if (*temp_fd == -1)
+	/* Create temporary file path and write descriptor */
+	temp_path = create_unique_temp_path(shell);
+	if (!temp_path)
 	{
 		print_error("heredoc", "failed to create temp file");
+		return (ERROR);
+	}
+	
+	/* Open for writing */
+	write_fd = open(temp_path, O_WRONLY);
+	if (write_fd == -1)
+	{
+		print_error("heredoc", strerror(errno));
+		free(temp_path);
 		return (ERROR);
 	}
 	
@@ -23,14 +35,31 @@ static int	create_heredoc_temp_file(char *delimiter, int *temp_fd, t_shell *shel
 			free(line);
 			break ;
 		}
-		ft_putendl_fd(line, *temp_fd);
+		ft_putendl_fd(line, write_fd);
 		free(line);
 	}
 	
 	setup_signals_interactive();
 	
-	/* Rewind file to beginning for reading */
-	lseek(*temp_fd, 0, SEEK_SET);
+	/* Close write descriptor */
+	close(write_fd);
+	
+	/* Open for reading before unlinking */
+	read_fd = open(temp_path, O_RDONLY);
+	if (read_fd == -1)
+	{
+		print_error("heredoc", strerror(errno));
+		unlink(temp_path);
+		free(temp_path);
+		return (ERROR);
+	}
+	
+	/* Now unlink to make file invisible and secure */
+	unlink(temp_path);
+	free(temp_path);
+	
+	/* Return read file descriptor */
+	*temp_fd = read_fd;
 	
 	/* DEBUG: Show temp file info */
 	ft_putstr_fd("Secure heredoc temp file created (invisible in filesystem)\n", 2);
@@ -69,7 +98,6 @@ int	preprocess_heredocs(t_command *commands, t_shell *shell)
 		cmd = cmd->next;
 	}
 	return (SUCCESS);
-}
 }
 
 static int	handle_input_redirect(char *file, int temp_fd)

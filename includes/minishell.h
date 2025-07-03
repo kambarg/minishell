@@ -151,6 +151,5 @@ void	print_heredoc_temp_files(char *temp_path);
 void	add_temp_file(t_shell *shell, char *path);
 void	cleanup_temp_files(t_shell *shell);
 char	*create_unique_temp_path(t_shell *shell);
-int		create_secure_temp_fd(t_shell *shell);
 
 #endif
