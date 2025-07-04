@@ -25,8 +25,7 @@ SRCS = 	src/main.c \
 		src/utils/environment.c \
 		src/utils/error.c \
 		src/utils/memory.c \
-		src/utils/temp_files.c \
-		src/debug/debug_tools.c 
+		src/utils/temp_files.c 
 		
 
 OBJS = $(SRCS:.c=.o)

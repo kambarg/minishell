@@ -143,10 +143,6 @@ void	free_tokens(t_token *tokens);
 void	free_commands(t_command *commands);
 void	free_array(char **array);
 
-/* Debugging */
-void	print_tokens(t_token *tokens);
-void	print_heredoc_temp_files(char *temp_path);
-
 /* Temp file management */
 void	add_temp_file(t_shell *shell, char *path);
 void	cleanup_temp_files(t_shell *shell);

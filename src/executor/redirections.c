@@ -61,9 +61,6 @@ static int	create_heredoc_temp_file(char *delimiter, int *temp_fd, t_shell *shel
 	/* Return read file descriptor */
 	*temp_fd = read_fd;
 	
-	/* DEBUG: Show temp file info */
-	ft_putstr_fd("Secure heredoc temp file created (invisible in filesystem)\n", 2);
-	
 	return (SUCCESS);
 }
 
