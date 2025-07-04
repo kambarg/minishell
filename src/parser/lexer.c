@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   lexer.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/04 10:15:12 by gkambarb          #+#    #+#             */
+/*   Updated: 2025/07/05 03:40:44 by gkambarb         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
 int	is_whitespace(char c)
@@ -94,82 +106,67 @@ void	add_token(t_token **head, t_token *new_token)
 	current->next = new_token;
 }
 
-static int	handle_operator(char *input, int *i, t_token **tokens)
-{
-	char	*value;
-	int		type;
-
-	type = 0;
-	if (input[*i] == '|')
-		type = T_PIPE;
-	else if (input[*i] == '<')
-	{
-		if (input[*i + 1] == '<')
-		{
-			(*i)++;
-			type = T_HEREDOC;
-		}
-		else
-			type = T_REDIR_IN;
-	}
-	else if (input[*i] == '>')
-	{
-		if (input[*i + 1] == '>')
-		{
-			(*i)++;
-			type = T_APPEND;
-		}
-		else
-			type = T_REDIR_OUT;
-	}
-	if (type == T_HEREDOC || type == T_APPEND)
-		value = ft_substr(input, *i - 1, 2);
-	else
-		value = ft_substr(input, *i , 1);
-	add_token(tokens, create_token(value, type));
-	return (1);
-}
-
+// Print "syntax error near unexpected token" if
+// pipe followed by nothing or another pipe
+// redirection without target
 int	validate_tokens(t_token *tokens)
 {
-	t_token *current;
-	t_token *next;
+	t_token	*current;
+	t_token	*next;
 
 	if (!tokens)
 		return (1);
-	
 	current = tokens;
 	while (current)
 	{
 		next = current->next;
-		
-		/* Check for empty pipe (pipe followed by nothing or another pipe) */
 		if (current->type == T_PIPE && (!next || next->type == T_PIPE))
 		{
 			print_error(NULL, "syntax error near unexpected token `|'");
 			return (0);
 		}
-		
-		/* Check for redirection without target */
 		if ((current->type >= T_REDIR_IN && current->type <= T_APPEND) && 
 		    (!next || next->type != T_WORD))
 		{
 			print_error(NULL, "syntax error near unexpected token");
 			return (0);
 		}
-		
 		current = current->next;
 	}
-	
+	return (1);
+}
+
+static int	handle_regular_word(char *input, int *i, t_token **tokens)
+{
+	char	*word;
+
+	word = get_word(input, i);
+	if (!word)
+		return (0);
+	add_token(tokens, create_token(word, T_WORD));
+	return (1);
+}
+
+static int	handle_quoted_string(char *input, int *i, t_token **tokens)
+{
+	char	*word;
+	int		quote_type;
+
+	if (input[*i] == '\'')
+		quote_type = QUOTE_SINGLE;
+	else
+		quote_type = QUOTE_DOUBLE;
+	word = get_quoted_str(input, i, input[*i]);
+	if (!word)
+		return (0);
+	add_token(tokens, create_token_with_quote(word, T_WORD, quote_type));
 	return (1);
 }
 
 t_token	*lexer(char *input)
 {
 	int		i;
-	char	*word;
 	t_token	*tokens;
-	int		quote_type;
 
 	i = 0;
 	tokens = NULL;
@@ -185,19 +182,53 @@ t_token	*lexer(char *input)
 		}
 		else if (input[i] == '\'' || input[i] == '\"')
 		{
-			quote_type = (input[i] == '\'') ? QUOTE_SINGLE : QUOTE_DOUBLE;
-			word = get_quoted_str(input, &i, input[i]);
-			if (!word)
+			if (!handle_quoted_string(input, &i, &tokens))
 				return (NULL);
-			add_token(&tokens, create_token_with_quote(word, T_WORD, quote_type));
 		}
-		else
-		{
-			word = get_word(input, &i);
-			if (!word)
-				return (NULL);
-			add_token(&tokens, create_token(word, T_WORD));
-		}
+		else if (!handle_regular_word(input, &i, &tokens))
+			return (NULL);
 	}
 	return (tokens);
-} 
+}
+
+
+// t_token	*lexer(char *input)
+// {
+// 	int		i;
+// 	char	*word;
+// 	t_token	*tokens;
+// 	int		quote_type;
+
+// 	i = 0;
+// 	tokens = NULL;
+// 	while (input[i])
+// 	{
+// 		if (is_whitespace(input[i]))
+// 			i++;
+// 		else if (is_operator_char(input[i]))
+// 		{
+// 			if (!handle_operator(input, &i, &tokens))
+// 				return (NULL);
+// 			i++;
+// 		}
+// 		else if (input[i] == '\'' || input[i] == '\"')
+// 		{
+// 			if (input[i] == '\'')
+// 				quote_type = QUOTE_SINGLE;
+// 			else
+// 				quote_type = QUOTE_DOUBLE;
+// 			word = get_quoted_str(input, &i, input[i]);
+// 			if (!word)
+// 				return (NULL);
+// 			add_token(&tokens, create_token_with_quote(word, T_WORD, quote_type));
+// 		}
+// 		else
+// 		{
+// 			word = get_word(input, &i);
+// 			if (!word)
+// 				return (NULL);
+// 			add_token(&tokens, create_token(word, T_WORD));
+// 		}
+// 	}
+// 	return (tokens);
+// } 
