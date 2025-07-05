@@ -6,13 +6,13 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 11:17:46 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/05 14:58:02 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/05 23:52:55 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-char	*get_word(char *input, int *i)
+static char	*get_word(char *input, int *i)
 {
 	int		start;
 	int		len;

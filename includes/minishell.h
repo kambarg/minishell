@@ -25,7 +25,7 @@
 # define T_REDIR_OUT 4
 # define T_HEREDOC 5
 # define T_APPEND 6
-# define T_EOF 7
+// # define T_EOF 7
 
 /* Quote types */
 # define QUOTE_NONE 0
@@ -100,17 +100,15 @@ t_token		*lexer(char *input);
 int			handle_operator(char *input, int *i, t_token **tokens);
 int			handle_quoted_string(char *input, int *i, t_token **tokens);
 int			handle_word(char *input, int *i, t_token **tokens);
-t_command	*parser(t_token *tokens);
-void		expand_variables(t_command *cmd, t_shell *shell);
-char		*expand_string_with_quote_type(char *str, t_shell *shell, int quote_type);
 t_token		*create_token(char *value, int type, int quote_type);
-// t_token		*create_token_with_quote(char *value, int type, int quote_type);
 void		add_token(t_token **head, t_token *new_token);
-char		*get_word(char *input, int *i);
-char		*get_quoted_str(char *input, int *i, char quote);
 int			is_whitespace(char c);
 int			is_operator_char(char c);
 int			is_quotes(char c);
+
+t_command	*parser(t_token *tokens);
+void		expand_variables(t_command *cmd, t_shell *shell);
+char		*expand_string_with_quote_type(char *str, t_shell *shell, int quote_type);
 
 /* Executor functions */
 int		execute_commands(t_shell *shell);
