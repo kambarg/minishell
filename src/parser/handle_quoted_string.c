@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 11:10:05 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/05 11:13:21 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/05 14:43:59 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,19 +35,19 @@ char	*get_quoted_str(char *input, int *i, char quote)
 	(*i)++;
 	return (str);
 }
-t_token	*create_token_with_quote(char *value, int type, int quote_type)
-{
-	t_token	*token;
+// t_token	*create_token_with_quote(char *value, int type, int quote_type)
+// {
+// 	t_token	*token;
 
-	token = (t_token *)malloc(sizeof(t_token));
-	if (!token)
-		return (NULL);
-	token->value = value;
-	token->type = type;
-	token->quote_type = quote_type;
-	token->next = NULL;
-	return (token);
-}
+// 	token = (t_token *)malloc(sizeof(t_token));
+// 	if (!token)
+// 		return (NULL);
+// 	token->value = value;
+// 	token->type = type;
+// 	token->quote_type = quote_type;
+// 	token->next = NULL;
+// 	return (token);
+// }
 
 int	handle_quoted_string(char *input, int *i, t_token **tokens)
 {
@@ -61,6 +61,6 @@ int	handle_quoted_string(char *input, int *i, t_token **tokens)
 	word = get_quoted_str(input, i, input[*i]);
 	if (!word)
 		return (0);
-	add_token(tokens, create_token_with_quote(word, T_WORD, quote_type));
+	add_token(tokens, create_token(word, T_WORD, quote_type));
 	return (1);
 }

@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 02:29:08 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/05 02:41:02 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/05 14:20:05 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ int	handle_operator(char *input, int *i, t_token **tokens)
 		value = ft_substr(input, *i - 1, 2);
 	else
 		value = ft_substr(input, *i, 1);
-	add_token(tokens, create_token(value, type));
+	add_token(tokens, create_token(value, type, QUOTE_NONE));
 	return (1);
 }
 

@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 10:15:12 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/05 11:19:48 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/05 14:14:41 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,20 @@ int	is_operator_char(char c)
 int	is_quotes(char c)
 {
 	return (c == '\'' || c == '\"');
+}
+
+t_token	*create_token(char *value, int type, int quote_type)
+{
+	t_token	*token;
+
+	token = (t_token *)malloc(sizeof(t_token));
+	if (!token)
+		return (NULL);
+	token->value = value;
+	token->type = type;
+	token->quote_type = quote_type;
+	token->next = NULL;
+	return (token);
 }
 
 void	add_token(t_token **head, t_token *new_token)
