@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 02:29:08 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/05 14:20:05 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/05 15:14:33 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,4 +56,3 @@ int	handle_operator(char *input, int *i, t_token **tokens)
 	add_token(tokens, create_token(value, type, QUOTE_NONE));
 	return (1);
 }
-
