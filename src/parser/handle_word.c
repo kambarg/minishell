@@ -19,7 +19,8 @@ char	*get_word(char *input, int *i)
 	char	*str;
 
 	start = *i;
-	while (input[*i] && !is_whitespace(input[*i]) && !is_operator_char(input[*i]) && !is_quotes(input[*i]))
+	while (input[*i] && !is_whitespace(input[*i])
+		&& !is_operator_char(input[*i]) && !is_quotes(input[*i]))
 		(*i)++;
 	len = *i - start;
 	str = (char *)malloc(sizeof(char) * (len + 1));
