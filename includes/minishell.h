@@ -98,8 +98,8 @@ void	cleanup_shell(t_shell *shell);
 /* Parser functions */
 t_token		*lexer(char *input);
 int			handle_operator(char *input, int *i, t_token **tokens);
-int			handle_operator(char *input, int *i, t_token **tokens);
-int			validate_tokens(t_token *tokens);
+int			handle_quoted_string(char *input, int *i, t_token **tokens);
+int			handle_word(char *input, int *i, t_token **tokens);
 t_command	*parser(t_token *tokens);
 void		expand_variables(t_command *cmd, t_shell *shell);
 char		*expand_string_with_quote_type(char *str, t_shell *shell, int quote_type);
