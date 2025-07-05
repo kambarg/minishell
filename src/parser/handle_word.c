@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 11:17:46 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/05 14:14:26 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/05 14:58:02 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ char	*get_word(char *input, int *i)
 	char	*str;
 
 	start = *i;
-	while (input[*i] && !is_whitespace(input[*i]) && !is_operator_char(input[*i]) && input[*i] != '\'' && input[*i] != '\"')
+	while (input[*i] && !is_whitespace(input[*i]) && !is_operator_char(input[*i]) && !is_quotes(input[*i]))
 		(*i)++;
 	len = *i - start;
 	str = (char *)malloc(sizeof(char) * (len + 1));

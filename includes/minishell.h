@@ -108,8 +108,9 @@ t_token		*create_token(char *value, int type, int quote_type);
 void		add_token(t_token **head, t_token *new_token);
 char		*get_word(char *input, int *i);
 char		*get_quoted_str(char *input, int *i, char quote);
-int			is_operator_char(char c);
 int			is_whitespace(char c);
+int			is_operator_char(char c);
+int			is_quotes(char c);
 
 /* Executor functions */
 int		execute_commands(t_shell *shell);
