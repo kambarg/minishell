@@ -44,13 +44,30 @@ void	free_redirects(t_redirect *redirects)
 void	free_commands(t_command *commands)
 {
 	t_command	*temp;
+	int			i;
 
 	while (commands)
 	{
 		temp = commands;
 		commands = commands->next;
-		free_array(temp->args);
-		free_redirects(temp->redirects);
+		if (temp->args)
+		{
+			i = 0;
+			while (i < temp->arg_count)
+			{
+				if (temp->args[i].value)
+					free(temp->args[i].value);
+				i++;
+			}
+			free(temp->args);
+		}
+		if (temp->redirects)
+			free_redirects(temp->redirects);
+		/* Close any open pipe file descriptors */
+		if (temp->pipe_fd[0] != -1)
+			close(temp->pipe_fd[0]);
+		if (temp->pipe_fd[1] != -1)
+			close(temp->pipe_fd[1]);
 		free(temp);
 	}
-} 
+}

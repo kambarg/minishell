@@ -32,14 +32,14 @@ static void	remove_env_var(t_shell *shell, const char *name)
 	shell->env = new_env;
 }
 
-int	ft_unset(char **args, t_shell *shell)
+int	ft_unset(t_arg_info *args, int arg_count, t_shell *shell)
 {
 	int	i;
 
 	i = 1;
-	while (args[i])
+	while (i < arg_count)
 	{
-		remove_env_var(shell, args[i]);
+		remove_env_var(shell, args[i].value);
 		i++;
 	}
 	return (SUCCESS);

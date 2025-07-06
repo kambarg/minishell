@@ -1,6 +1,6 @@
 #include "../../includes/minishell.h"
 
-int	ft_cd(char **args, t_shell *shell)
+int	ft_cd(t_arg_info *args, int arg_count, t_shell *shell)
 {
 	char	*path;
 	char	*old_pwd;
@@ -25,10 +25,10 @@ int	ft_cd(char **args, t_shell *shell)
 	}
 	
 	/* Handle cd with no arguments (go to HOME) */
-	if (!args[1])
+	if (arg_count < 2)
 		path = get_env_value(shell->env, "HOME");
 	/* Handle cd - (go to previous directory) */
-	else if (ft_strncmp(args[1], "-", 2) == 0)
+	else if (ft_strncmp(args[1].value, "-", 2) == 0)
 	{
 		path = get_env_value(shell->env, "OLDPWD");
 		if (path)
@@ -36,12 +36,12 @@ int	ft_cd(char **args, t_shell *shell)
 	}
 	/* Handle cd with a specific path */
 	else
-		path = ft_strdup(args[1]);
+		path = ft_strdup(args[1].value);
 	
 	/* Check if we have a valid path */
 	if (!path)
 	{
-		if (args[1] && ft_strncmp(args[1], "-", 2) == 0)
+		if (arg_count > 1 && ft_strncmp(args[1].value, "-", 2) == 0)
 			print_error("cd", "OLDPWD not set");
 		else
 			print_error("cd", "HOME not set");

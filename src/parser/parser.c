@@ -37,12 +37,11 @@ static t_command	*create_command(void)
 	if (!cmd)
 		return (NULL);
 	cmd->args = NULL;
+	cmd->arg_count = 0;
 	cmd->redirects = NULL;
 	cmd->next = NULL;
 	cmd->pipe_fd[0] = -1;
 	cmd->pipe_fd[1] = -1;
-	cmd->arg_infos = NULL;
-	cmd->arg_count = 0;
 	return (cmd);
 }
 
@@ -61,29 +60,50 @@ static void	add_command(t_command **head, t_command *new_cmd)
 	current->next = new_cmd;
 }
 
-static int	add_argument(t_command *cmd, char *arg)
+static t_arg_info	*create_argument(char *value, int quote_type)
 {
-	int		i;
-	int		size;
-	char	**new_args;
+	t_arg_info	*arg;
 
-	size = 0;
-	if (cmd->args)
-		while (cmd->args[size])
-			size++;
-	new_args = (char **)malloc(sizeof(char *) * (size + 2));
-	if (!new_args)
+	arg = (t_arg_info *)malloc(sizeof(t_arg_info));
+	if (!arg)
+		return (NULL);
+	arg->value = ft_strdup(value);
+	if (!arg->value)
+	{
+		free(arg);
+		return (NULL);
+	}
+	arg->quote_type = quote_type;
+	return (arg);
+}
+
+static int	add_argument(t_command *cmd, char *value, int quote_type)
+{
+	t_arg_info	*new_args;
+	t_arg_info	*new_arg;
+	int			i;
+
+	new_arg = create_argument(value, quote_type);
+	if (!new_arg)
 		return (0);
+	new_args = (t_arg_info *)malloc(sizeof(t_arg_info) * (cmd->arg_count + 1));
+	if (!new_args)
+	{
+		free(new_arg->value);
+		free(new_arg);
+		return (0);
+	}
 	i = 0;
-	while (i < size)
+	while (i < cmd->arg_count)
 	{
 		new_args[i] = cmd->args[i];
 		i++;
 	}
-	new_args[i] = ft_strdup(arg);
-	new_args[i + 1] = NULL;
+	new_args[i] = *new_arg;
+	free(new_arg);
 	free(cmd->args);
 	cmd->args = new_args;
+	cmd->arg_count++;
 	return (1);
 }
 
@@ -115,40 +135,20 @@ t_command	*parser(t_token *tokens)
 {
 	t_command	*commands;
 	t_command	*current;
-	t_arg_info	arg_infos[1024];
-	int			arg_count;
 
 	commands = NULL;
 	current = create_command();
-	arg_count = 0;
 	while (tokens)
 	{
 		if (tokens->type == T_WORD)
 		{
-			if (!add_argument(current, tokens->value))
+			if (!add_argument(current, tokens->value, tokens->quote_type))
 				return (NULL);
-			/* Store quote type information */
-			arg_infos[arg_count].value = ft_strdup(tokens->value);
-			arg_infos[arg_count].quote_type = tokens->quote_type;
-			arg_count++;
 		}
 		else if (tokens->type == T_PIPE)
 		{
-			/* Store arg info for later expansion */
-			current->arg_infos = malloc(sizeof(t_arg_info) * (arg_count + 1));
-			if (current->arg_infos)
-			{
-				int i = 0;
-				while (i < arg_count)
-				{
-					current->arg_infos[i] = arg_infos[i];
-					i++;
-				}
-				current->arg_count = arg_count;
-			}
 			add_command(&commands, current);
 			current = create_command();
-			arg_count = 0;
 		}
 		else if (tokens->type >= T_REDIR_IN && tokens->type <= T_APPEND)
 		{
@@ -156,18 +156,6 @@ t_command	*parser(t_token *tokens)
 				return (NULL);
 		}
 		tokens = tokens->next;
-	}
-	/* Store arg info for the last command */
-	current->arg_infos = malloc(sizeof(t_arg_info) * (arg_count + 1));
-	if (current->arg_infos)
-	{
-		int i = 0;
-		while (i < arg_count)
-		{
-			current->arg_infos[i] = arg_infos[i];
-			i++;
-		}
-		current->arg_count = arg_count;
 	}
 	add_command(&commands, current);
 	return (commands);

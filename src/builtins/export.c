@@ -72,13 +72,13 @@ static void	handle_export_arg(char *arg, t_shell *shell)
 	free(value);
 }
 
-int	ft_export(char **args, t_shell *shell)
+int	ft_export(t_arg_info *args, int arg_count, t_shell *shell)
 {
 	int		i;
 	char	**env_copy;
 	int		env_size;
 
-	if (!args[1])
+	if (arg_count < 2)
 	{
 		env_size = 0;
 		while (shell->env[env_size])
@@ -96,9 +96,9 @@ int	ft_export(char **args, t_shell *shell)
 		return (SUCCESS);
 	}
 	i = 1;
-	while (args[i])
+	while (i < arg_count)
 	{
-		handle_export_arg(args[i], shell);
+		handle_export_arg(args[i].value, shell);
 		i++;
 	}
 	return (SUCCESS);

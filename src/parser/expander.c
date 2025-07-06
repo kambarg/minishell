@@ -113,20 +113,11 @@ void	expand_variables(t_command *cmd, t_shell *shell)
 	while (cmd)
 	{
 		i = 0;
-		while (cmd->args && cmd->args[i])
+		while (i < cmd->arg_count)
 		{
-			/* Use quote type information if available */
-			if (cmd->arg_infos && i < cmd->arg_count)
-			{
-				expanded = expand_string_with_quote_type(cmd->arg_infos[i].value, shell, cmd->arg_infos[i].quote_type);
-			}
-			else
-			{
-				/* Fallback: expand with QUOTE_NONE (allow all expansions) */
-				expanded = expand_string_with_quote_type(cmd->args[i], shell, QUOTE_NONE);
-			}
-			free(cmd->args[i]);
-			cmd->args[i] = expanded;
+			expanded = expand_string_with_quote_type(cmd->args[i].value, shell, cmd->args[i].quote_type);
+			free(cmd->args[i].value);
+			cmd->args[i].value = expanded;
 			i++;
 		}
 		redir = cmd->redirects;

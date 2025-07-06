@@ -69,12 +69,11 @@ typedef struct s_arg_info
 
 typedef struct s_command
 {
-	char				**args;
+	t_arg_info			*args;
+	int					arg_count;
 	t_redirect			*redirects;
 	struct s_command	*next;
 	int					pipe_fd[2];
-	t_arg_info			*arg_infos;
-	int					arg_count;
 }	t_command;
 
 typedef struct s_shell
@@ -118,15 +117,16 @@ void	setup_pipes(t_command *cmd);
 char	*find_command_path(char *cmd, char **env);
 int		execute_builtin(t_command *cmd, t_shell *shell);
 int		is_builtin(char *cmd);
+char	**create_argv(t_command *cmd);
 
 /* Builtin functions */
-int		ft_echo(char **args);
-int		ft_cd(char **args, t_shell *shell);
+int		ft_echo(t_arg_info *args, int arg_count);
+int		ft_cd(t_arg_info *args, int arg_count, t_shell *shell);
 int		ft_pwd(void);
-int		ft_export(char **args, t_shell *shell);
-int		ft_unset(char **args, t_shell *shell);
+int		ft_export(t_arg_info *args, int arg_count, t_shell *shell);
+int		ft_unset(t_arg_info *args, int arg_count, t_shell *shell);
 int		ft_env(t_shell *shell);
-int		ft_exit(char **args, t_shell *shell);
+int		ft_exit(t_arg_info *args, int arg_count, t_shell *shell);
 
 /* Utils functions */
 void	handle_signals(int signum);
