@@ -1,0 +1,150 @@
+~ => home directoriey  => case :  echo ~/123
+
+-nnnnnnnnnnn flag with echo => case :
+    bash:
+        echo -nnnnnnnnn "-n '-n'" bonjour 
+            output:     -n '-n' bonjourbash-3.2$
+        echo -n -n
+            output:
+        export hi="a"
+            hi="a"
+        export
+            declare -x __CF_USER_TEXT_ENCODING="0x19360:0x0:0x0"
+        bash-3.2$ | test
+            output:   bash: syntax error near unexpected token `|'
+        bash-3.2$ echo "$USER""$USER""$USER"
+            gkambarbgkambarbgkambarb
+        bash-3.2$ echo """"""""$USER""""""""
+            gkambarb
+        bash-3.2$ ""
+            bash: : command not found
+
+         ---  cd  ----
+        minishell$ cd ~
+            minishell: cd: No such file or directory
+
+        gkambarb@lab1r5s10 myminishell % bash
+            bash-3.2$ cd -
+            bash: cd: OLDPWD not set
+
+         ---  export  ----
+
+    my minishell:
+        echo -nnnnnnnnn "-n '-n'" bonjour 
+            output: -nnnnnnnnn -n '-n' bonjour
+        echo -n -n
+            output: -n
+        minishell$ | test
+            output : 
+        minishell$ echo "$USER""$USER""$USER"
+            output: gkambarb gkambarb gkambarb => dont add spaces
+        minishell$ echo """"""""$USER""""""""
+                gkambarb -> spaces
+        minishell$ ""
+            minishell: : Permission denied
+        
+
+        ---  cd  ----
+            minishell$ cd ~
+                minishell: cd: No such file or directory
+
+            gkambarb@lab1r5s10 myminishell % ./minishell       
+            minishell$ cd -
+                /Users/gkambarb/myminishell
+
+         ---  export  ----
+        minishell$ export | grep "OLDPWD"
+            declare -x OLDPWD=/Users/gkambarb/myminishell => it should not have it from the bgening
+        minishell$ export $k
+            minishell: export: not a valid identifier => $ is not a problem
+        minishell$ export $? 
+            minishell: export: not a valid identifier => is not expnding 
+        minishell$ export hi="4"
+            minishell: export: not a valid identifier
+        export HIII -------------------> export should desplay ether way , env will display only if there is a value
+        export HIII=
+        declare -x __CF_USER_TEXT_ENCODING=0x19360:0x0:0x0 ===> the "" for the value
+        export hi="a"
+
+        minishell$ export ""=""
+        minishell: export: not a valid identifier
+        minishell: export: not a valid identifier
+        minishell: export: not a valid identifier
+
+        minishell$ export TES=T=""
+        minishell: export: not a valid identifier
+
+        minishell$ export =============123
+        minishell: export: not a valid identifier =>>>>>>> show what is not a valid identifier
+
+        unset $PWD => start with $ is not a valid identifier
+
+        minishell$ unset 5PWD => same parcing for export what it is not valed there it is not here
+
+        minishell$ unset PATH
+        minishell(53638,0x10e630dc0) malloc: *** error for object 0x3000000000000000: pointer being freed was not allocated
+        minishell(53638,0x10e630dc0) malloc: *** set a breakpoint in malloc_error_break to debug
+        zsh: abort      ./minishell
+
+        ------- pipe -------
+        minishell$ ps -pa | wc -l | grep '' | "" | ll | '' | echo '' | echo ''
+            minishell: : Permission denied
+
+            minishell: : Permission denied
+            ps: Invalid process id: a
+            minishell: ll: command not found
+        minishell$ ""
+            minishell: : Permission denied
+        minishell$ ..
+            minishell: ..: Permission denied
+
+        --------expantion -------
+        minishell$ echo "${GREEN}This message is green.${RESET}"
+            ${GREEN}This message is green.${RESET}
+
+        ------here doc-----
+        bash-3.2$ cat << "$hi"
+            > $hsfd
+            > $hi
+            $hsfd ======> if we have " or ' as first char f the delemeter we dont expand at all
+
+
+
+
+minishell(64640,0x11ae37dc0) malloc: *** error for object 0x1000000000000000: pointer being freed was not allocated
+minishell(64640,0x11ae37dc0) malloc: *** set a breakpoint in malloc_error_break to debug
+zsh: abort      ./minishell
+        
+        
+
+    bash :
+        bash-3.2$ echo > <
+            bash: syntax error near unexpected token `<'
+        bash-3.2$ >>echo>>
+            bash: syntax error near unexpected token `newline'
+        bash-3.2$ echo $USER $9999USER $8888USER $7777USER
+            gkambarb 999USER 888USER 777USER
+        bash-3.2$ echo $USER $9999USER $A888USER $7777USER
+            gkambarb 999USER 777USER
+
+    my minishell :
+        minishell$ echo > <
+            minishell: syntax error near unexpected token
+        minishell$ >>echo>>
+            minishell: syntax error near unexpected token
+        minishell$ echo $USER $9999USER $8888USER $7777USER
+            gkambarb   
+        minishell$ echo $USER $9999USER $A888USER $7777USER
+            gkambarb   
+
+
+
+
+try to removw the env with : env -i ./minishell or unset PATH :
+    the env that by defalt:
+        OLDPWD => strt with no value
+        PWD
+        SHLVL => start with 1 , every time you will run minishell it will add one
+            => explaore there is moooore
+
+
