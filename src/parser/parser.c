@@ -1,33 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/06 14:35:34 by gkambarb          #+#    #+#             */
+/*   Updated: 2025/07/06 14:35:34 by gkambarb         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
-
-static t_redirect	*create_redirect(int type, char *file)
-{
-	t_redirect	*redir;
-
-	redir = (t_redirect *)malloc(sizeof(t_redirect));
-	if (!redir)
-		return (NULL);
-	redir->type = type;
-	redir->file = ft_strdup(file);
-	redir->fd = -1;  /* Initialize fd to -1 (not used by default) */
-	redir->next = NULL;
-	return (redir);
-}
-
-static void	add_redirect(t_command *cmd, t_redirect *new_redir)
-{
-	t_redirect	*current;
-
-	if (!cmd->redirects)
-	{
-		cmd->redirects = new_redir;
-		return ;
-	}
-	current = cmd->redirects;
-	while (current->next)
-		current = current->next;
-	current->next = new_redir;
-}
 
 static t_command	*create_command(void)
 {
@@ -107,30 +90,6 @@ static int	add_argument(t_command *cmd, char *value, int quote_type)
 	return (1);
 }
 
-static int	handle_redirect(t_token **token, t_command *cmd)
-{
-	int		type;
-	char	*file;
-
-	if ((*token)->type == T_REDIR_IN)
-		type = REDIR_IN;
-	else if ((*token)->type == T_REDIR_OUT)
-		type = REDIR_OUT;
-	else if ((*token)->type == T_HEREDOC)
-		type = REDIR_HEREDOC;
-	else
-		type = REDIR_APPEND;
-	*token = (*token)->next;
-	if (!*token || (*token)->type != T_WORD)
-	{
-		print_error(NULL, "syntax error near unexpected token");
-		return (0);
-	}
-	file = (*token)->value;
-	add_redirect(cmd, create_redirect(type, file));
-	return (1);
-}
-
 t_command	*parser(t_token *tokens)
 {
 	t_command	*commands;
@@ -159,4 +118,4 @@ t_command	*parser(t_token *tokens)
 	}
 	add_command(&commands, current);
 	return (commands);
-} 
+}

@@ -15,12 +15,13 @@ SRCS = 	src/main.c \
 		src/builtins/unset.c \
 		src/builtins/env.c \
 		src/builtins/exit.c \
-		src/parser/parser.c \
 		src/lexer/lexer.c \
 		src/lexer/token.c \
 		src/lexer/handle_operator.c \
 		src/lexer/handle_quoted_string.c \
 		src/lexer/handle_word.c \
+		src/parser/parser.c \
+		src/parser/handle_redirect.c \
 		src/parser/expander.c \
 		src/executor/executor.c \
 		src/executor/redirections.c \
