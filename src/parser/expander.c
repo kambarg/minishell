@@ -68,7 +68,7 @@ static char	*expand_var(char *str, t_shell *shell, int *i)
 	free(var_value);
 	return (result);
 }
-
+// Note: single quotes no expansion at all
 char	*expand_string_with_quote_type(char *str, t_shell *shell, int quote_type)
 {
 	int		i;
@@ -76,15 +76,13 @@ char	*expand_string_with_quote_type(char *str, t_shell *shell, int quote_type)
 	char	*temp;
 	char	*var;
 
-	/* Single quotes: no expansion at all */
 	if (quote_type == QUOTE_SINGLE)
 		return (ft_strdup(str));
-
 	i = 0;
 	result = ft_strdup("");
 	while (str[i])
 	{
-		/* Variable expansion for double quotes and unquoted */
+		
 		if (str[i] == '$' && (quote_type == QUOTE_DOUBLE || quote_type == QUOTE_NONE))
 		{
 			var = expand_var(str, shell, &i);
