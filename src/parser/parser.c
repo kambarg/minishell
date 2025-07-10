@@ -42,6 +42,48 @@ static void	add_command(t_command **head, t_command *new_cmd)
 		current = current->next;
 	current->next = new_cmd;
 }
+// static int parse_tokens(t_token *tokens, t_command *current, t_command **commands)
+// {
+// 	while (tokens)
+// 	{
+// 		if (tokens->type == T_WORD)
+// 		{
+// 			if (!add_argument(current, tokens->value, tokens->quote_type))
+// 				return (0);
+// 		}
+// 		else if (tokens->type == T_PIPE)
+// 		{
+// 			add_command(commands, current);
+// 			current = create_command();
+// 		}
+// 		else if (tokens->type >= T_REDIR_IN && tokens->type <= T_APPEND)
+// 		{
+// 			if (!handle_redirect(&tokens, current))
+// 				return (0);
+// 		}
+// 		tokens = tokens->next;
+// 	}
+// 	return(1);
+// }
+// t_command	*parser(t_token *tokens)
+// {
+// 	t_command	*commands;
+// 	t_command	*current;
+
+// 	commands = NULL;
+// 	current = create_command();
+// 	if (!parse_tokens(tokens, current, &commands))
+// 	{
+// 		free(current->args);
+// 		free(current->redirects);
+// 		free(current);
+// 		if (commands)
+// 			free_commands(commands); // Assuming free_commands is defined to free the list
+// 		return (NULL);
+// 	}
+// 	add_command(&commands, current);
+// 	return (commands);
+// }
 
 t_command	*parser(t_token *tokens)
 {

@@ -312,3 +312,8 @@ $ cat out.txt
 a
 b
 c
+
+
+
+===Random=========
+cat testing/out.txt | grep "$USER" | wc -l
