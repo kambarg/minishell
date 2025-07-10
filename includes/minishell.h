@@ -107,9 +107,9 @@ int			is_quotes(char c);
 
 /* Parser functions */
 t_command	*parser(t_token *tokens);
+int			add_argument(t_command *cmd, char *value, int quote_type);
 int			handle_redirect(t_token **token, t_command *cmd);
 void		expand_variables(t_command *cmd, t_shell *shell);
-char		*expand_string_with_quote_type(char *str, t_shell *shell, int quote_type);
 
 /* Executor functions */
 int		execute_commands(t_shell *shell);

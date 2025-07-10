@@ -21,6 +21,7 @@ SRCS = 	src/main.c \
 		src/lexer/handle_quoted_string.c \
 		src/lexer/handle_word.c \
 		src/parser/parser.c \
+		src/parser/args.c \
 		src/parser/handle_redirect.c \
 		src/parser/expander.c \
 		src/executor/executor.c \

@@ -69,7 +69,7 @@ static char	*expand_var(char *str, t_shell *shell, int *i)
 	return (result);
 }
 // Note: single quotes no expansion at all
-char	*expand_string_with_quote_type(char *str, t_shell *shell, int quote_type)
+static char	*expand_string_with_quote_type(char *str, t_shell *shell, int quote_type)
 {
 	int		i;
 	char	*result;
