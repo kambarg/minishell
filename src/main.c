@@ -105,7 +105,7 @@ void	run_shell(t_shell *shell)
 					shell->commands = parser(tokens);
 					if (shell->commands)
 					{
-						expand_variables(shell->commands, shell);
+						expander(shell->commands, shell);
 						setup_signals_executing();
 						shell->exit_status = execute_commands(shell);
 						setup_signals_interactive();

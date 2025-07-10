@@ -109,7 +109,7 @@ int			is_quotes(char c);
 t_command	*parser(t_token *tokens);
 int			add_argument(t_command *cmd, char *value, int quote_type);
 int			handle_redirect(t_token **token, t_command *cmd);
-void		expand_variables(t_command *cmd, t_shell *shell);
+void		expander(t_command *cmd, t_shell *shell);
 
 /* Executor functions */
 int		execute_commands(t_shell *shell);

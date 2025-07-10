@@ -69,7 +69,7 @@ static char	*expand_var(char *str, t_shell *shell, int *i)
 	return (result);
 }
 // Note: single quotes no expansion at all
-static char	*expand_string_with_quote_type(char *str, t_shell *shell, int quote_type)
+static char	*expand_quoted_string(char *str, t_shell *shell, int quote_type)
 {
 	int		i;
 	char	*result;
@@ -102,7 +102,8 @@ static char	*expand_string_with_quote_type(char *str, t_shell *shell, int quote_
 	return (result);
 }
 
-void	expand_variables(t_command *cmd, t_shell *shell)
+// Redirections are always expanded
+void	expander(t_command *cmd, t_shell *shell)
 {
 	int			i;
 	char		*expanded;
@@ -113,7 +114,7 @@ void	expand_variables(t_command *cmd, t_shell *shell)
 		i = 0;
 		while (i < cmd->arg_count)
 		{
-			expanded = expand_string_with_quote_type(cmd->args[i].value, shell, cmd->args[i].quote_type);
+			expanded = expand_quoted_string(cmd->args[i].value, shell, cmd->args[i].quote_type);
 			free(cmd->args[i].value);
 			cmd->args[i].value = expanded;
 			i++;
@@ -123,8 +124,7 @@ void	expand_variables(t_command *cmd, t_shell *shell)
 		{
 			if (redir->type != REDIR_HEREDOC)
 			{
-				/* Redirections are always expanded */
-				expanded = expand_string_with_quote_type(redir->file, shell, QUOTE_NONE);
+				expanded = expand_quoted_string(redir->file, shell, QUOTE_NONE);
 				free(redir->file);
 				redir->file = expanded;
 			}
