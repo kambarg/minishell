@@ -151,20 +151,32 @@ Hi, 'goha', welcome
 
 ===???error===
 === quotes inside quotes=============
-minishell$ echo $HOME
-/Users/gkambarb
-minishell$ echo "$HOME"
-/Users/gkambarb
-minishell$ 
-minishell$ echo " '$HOME' " 
- '/Users/gkambarb'           # has to be  "$HOME"
-minishell$ 
-minishell$ echo  '$HOME' 
-$HOME
-minishell$ echo  ' "$HOME" ' 
- "$HOME"                     # has to be  '/Users/gkambarb'
-
-
+$ echo $USER
+goha
+$ echo "$USER"
+goha
+$ echo '$USER'
+$USER
+$ echo ' "$USER" '
+ "$USER"
+$ echo ' ' "$USER" ' ' 
+  goha
+$ echo ' '   ' "$USER" ' ' '
+   "$USER"
+$ echo ' '  "  ' $USER ' " ' '
+    ' goha '
+$ echo " " '$USER' " "
+  $USER
+$  echo " " " '$USER' " " "
+   'goha'
+$ echo ' '$HOME' '
+  /home/goha
+$ echo ' ' '$HOME' ' '
+  $HOME
+$ echo " "$HOME" "
+  /home/goha
+$ echo " " "$HOME" " "
+  /home/goha
 
 ===Redirections==========================
 ==ok==
@@ -312,8 +324,3 @@ $ cat out.txt
 a
 b
 c
-
-
-
-===Random=========
-cat testing/out.txt | grep "$USER" | wc -l
