@@ -77,8 +77,23 @@ int	ft_export(t_arg_info *args, int arg_count, t_shell *shell)
 	int		i;
 	char	**env_copy;
 	int		env_size;
+	int		has_valid_args;
 
-	if (arg_count < 2)
+	/* Check if we have any non-empty arguments */
+	has_valid_args = 0;
+	i = 1;
+	while (i < arg_count)
+	{
+		if (args[i].value && *args[i].value)
+		{
+			has_valid_args = 1;
+			break;
+		}
+		i++;
+	}
+
+	/* If no arguments or all arguments are empty strings, list variables */
+	if (arg_count < 2 || !has_valid_args)
 	{
 		env_size = 0;
 		while (shell->env[env_size])
@@ -95,10 +110,16 @@ int	ft_export(t_arg_info *args, int arg_count, t_shell *shell)
 		free_array(env_copy);
 		return (SUCCESS);
 	}
+
+	/* Process non-empty arguments */
 	i = 1;
 	while (i < arg_count)
 	{
-		handle_export_arg(args[i].value, shell);
+		if (args[i].value && *args[i].value)
+		{
+			handle_export_arg(args[i].value, shell);
+		}
+		/* Skip empty arguments silently */
 		i++;
 	}
 	return (SUCCESS);

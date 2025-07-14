@@ -148,6 +148,22 @@ $ export USER=goha
 $ echo "Hi, '$USER', welcome"
 Hi, 'goha', welcome
 
+$ export $?
+minishell: export: not a valid identifier 
+bash: export: `0': not a valid identifier
+
+Note: The error message differs but the logic is the same. 
+$? expands to the return value that is number and export 
+throughs error of not valid identifier 
+(vars can start with letters and _, no nums. no special chars)
+
+$ export $k 
+#lists env vars
+Note: if k is unset that $k="" empty string => 
+export $k <=> export
+
+$ export $0
+# name of the shell or script you're in (./minishell or bash)
 
 ===???error===
 === quotes inside quotes=============
