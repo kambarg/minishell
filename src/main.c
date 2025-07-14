@@ -1,6 +1,6 @@
 #include "../includes/minishell.h"
 
-void	init_shell(t_shell *shell, char **env)
+void	init_shell(t_shell *shell, char **env, char *program_name)
 {
 	int	i;
 	int	env_size;
@@ -28,6 +28,7 @@ void	init_shell(t_shell *shell, char **env)
 	shell->commands = NULL;
 	shell->exit_status = 0;
 	shell->running = 1;
+	shell->program_name = ft_strdup(program_name);
 	shell->temp_files = NULL;
 	shell->temp_file_counter = 0;
 	
@@ -134,6 +135,8 @@ void	cleanup_shell(t_shell *shell)
 		free_array(shell->env);
 	if (shell->commands)
 		free_commands(shell->commands);
+	if (shell->program_name)
+		free(shell->program_name);
 	clear_history(); // rl_clear_history();
 }
 
@@ -142,9 +145,8 @@ int	main(int argc, char **argv, char **env)
 	t_shell	shell;
 
 	(void)argc;
-	(void)argv;
 	setup_signals_interactive();
-	init_shell(&shell, env);
+	init_shell(&shell, env, argv[0]);
 	run_shell(&shell);
 	cleanup_shell(&shell);
 	return (shell.exit_status);

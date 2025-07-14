@@ -82,6 +82,7 @@ typedef struct s_shell
 	t_command	*commands;
 	int			exit_status;
 	int			running;
+	char		*program_name;  /* argv[0] - name of the program */
 	t_temp_file	*temp_files;  /* List of temporary files to clean up */
 	int			temp_file_counter;  /* Counter for unique temp file names */
 }	t_shell;
@@ -90,7 +91,7 @@ typedef struct s_shell
 extern int	g_exec_status; /* 0: interactive, 1: executing command, 2: heredoc, 3: if SIGINT was received */
 
 /* Main functions */
-void	init_shell(t_shell *shell, char **env);
+void	init_shell(t_shell *shell, char **env, char *program_name);
 void	run_shell(t_shell *shell);
 void	cleanup_shell(t_shell *shell);
 

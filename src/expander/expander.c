@@ -7,7 +7,6 @@ static char	*get_var_name(char *str, int *i)
 	char	*name;
 
 	if (!str || !i)
-	if (!str || !i)
 		return (NULL);
 	start = *i;
 	(*i)++;
@@ -15,6 +14,11 @@ static char	*get_var_name(char *str, int *i)
 	{
 		(*i)++;
 		return (ft_strdup("?"));
+	}
+	if (str[*i] == '0')
+	{
+		(*i)++;
+		return (ft_strdup("0"));
 	}
 	while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
 		(*i)++;
@@ -66,7 +70,22 @@ static char	*expand_var(char *str, t_shell *shell, int *i)
 	{
 		free(var_name);
 		result = ft_itoa(shell->exit_status);
-		return (result ? result : ft_strdup(""));
+		if (result)
+			return (result);
+		else
+			return (ft_strdup(""));
+	}
+	if (ft_strlen(var_name) == 1 && ft_strncmp(var_name, "0", 1) == 0)
+	{
+		free(var_name);
+		if (shell->program_name)
+			result = ft_strdup(shell->program_name);
+		else
+			result = ft_strdup("minishell");
+		if (result)
+			return (result);
+		else
+			return (ft_strdup(""));
 	}
 	var_value = get_env_value(shell->env, var_name);
 	free(var_name);
@@ -74,7 +93,10 @@ static char	*expand_var(char *str, t_shell *shell, int *i)
 		return (ft_strdup(""));
 	result = ft_strdup(var_value);
 	free(var_value);
-	return (result ? result : ft_strdup(""));
+	if (result)
+		return (result);
+	else
+		return (ft_strdup(""));
 }
 
 
@@ -144,10 +166,19 @@ static char	*safe_expand_string(char *str, t_shell *shell, int quote_type)
 	/* If expansion failed but we need to expand (not single quotes) */
 	if (quote_type != QUOTE_SINGLE)
 	{
-		/* Try to at least handle the most common case: $? */
+		/* Try to at least handle the most common cases: $? and $0 */
 		if (str && ft_strlen(str) == 2 && ft_strncmp(str, "$?", 2) == 0)
 		{
 			result = ft_itoa(shell->exit_status);
+			if (result)
+				return (result);
+		}
+		if (str && ft_strlen(str) == 2 && ft_strncmp(str, "$0", 2) == 0)
+		{
+			if (shell->program_name)
+				result = ft_strdup(shell->program_name);
+			else
+				result = ft_strdup("minishell");
 			if (result)
 				return (result);
 		}
