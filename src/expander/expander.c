@@ -204,21 +204,14 @@ void	expander(t_command *cmd, t_shell *shell)
 		i = 0;
 		while (i < cmd->arg_count)
 		{
-			printf("DEBUG: Before expansion: arg[%d] = '%s', quote_type = %d\n", 
-				i, cmd->args[i].value, cmd->args[i].quote_type);
 			expanded = safe_expand_string(cmd->args[i].value, shell, cmd->args[i].quote_type);
-			printf("DEBUG: After expansion: expanded = '%s'\n", expanded ? expanded : "NULL");
 			if (expanded)
 			{
 				free(cmd->args[i].value);
 				cmd->args[i].value = expanded;
-				printf("DEBUG: Final value: arg[%d] = '%s'\n", i, cmd->args[i].value);
 			}
 			else
-			{
-				printf("DEBUG: Complete expansion failure, keeping original: '%s'\n", cmd->args[i].value);
 				print_error("expander", "critical memory allocation failed");
-			}
 			i++;
 		}
 		redir = cmd->redirects;

@@ -4,8 +4,11 @@
 echo $
 echo $? # returnt value of the last command
 echo $0 # name of the shell or script you're in (./minishell or bash)
-echo $x
-echo $USER
+echo $x # unset var - expands to empty string
+echo $USER # expands to the user name
+# echo $$ # pid of the current shell (not implemented in minishell)
+# echo $! # pid of the last background process (not implemented in minishell)
+# echo $1, $2, ... # positional parameters (not implemented in minishell)
 
 # test environment variables expanded
 export # lists env vars
