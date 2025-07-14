@@ -52,7 +52,6 @@ static char	*ft_strjoin_char(char *s, char c)
 static char	*expand_var(char *str, t_shell *shell, int *i)
 {
 	char	*var_name;
-	char	*var_value;
 	char	*result;
 
 	if (!str || !shell || !i)
@@ -60,40 +59,23 @@ static char	*expand_var(char *str, t_shell *shell, int *i)
 	var_name = get_var_name(str, i);
 	if (!var_name)
 		return (ft_strdup("$"));
-	if (ft_strncmp(var_name, "?", 2) == 0)
-	{
-		free(var_name);
+	if (ft_strlen(var_name) == 1 && ft_strncmp(var_name, "?", 1) == 0)
 		result = ft_itoa(shell->exit_status);
-		if (result)
-			return (result);
-		else
-			return (ft_strdup(""));
-	}
-	if (ft_strlen(var_name) == 1 && ft_strncmp(var_name, "0", 1) == 0)
+	else if (ft_strlen(var_name) == 1 && ft_strncmp(var_name, "0", 1) == 0)
 	{
-		free(var_name);
 		if (shell->program_name)
 			result = ft_strdup(shell->program_name);
 		else
 			result = ft_strdup("minishell");
-		if (result)
-			return (result);
-		else
-			return (ft_strdup(""));
 	}
-	var_value = get_env_value(shell->env, var_name);
+	else
+		result = get_env_value(shell->env, var_name);
 	free(var_name);
-	if (!var_value)
-		return (ft_strdup(""));
-	result = ft_strdup(var_value);
-	free(var_value);
 	if (result)
 		return (result);
 	else
 		return (ft_strdup(""));
 }
-
-
 
 // Note: single quotes no expansion at all
 static char	*expand_quoted_string(char *str, t_shell *shell, int quote_type)
