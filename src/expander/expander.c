@@ -11,15 +11,9 @@ static char	*get_var_name(char *str, int *i)
 	start = *i;
 	(*i)++;
 	if (str[*i] == '?')
-	{
-		(*i)++;
-		return (ft_strdup("?"));
-	}
+		return ((*i)++, ft_strdup("?"));
 	if (str[*i] == '0')
-	{
-		(*i)++;
-		return (ft_strdup("0"));
-	}
+		return ((*i)++, ft_strdup("0"));
 	while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
 		(*i)++;
 	len = *i - start - 1;
