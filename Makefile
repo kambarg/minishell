@@ -2,8 +2,8 @@ NAME = minishell
 
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror
-LDFLAGS = -L$(HOME)/.local/lib -lreadline
-INCLUDES = -I./includes -I$(LIBFT_DIR) -I$(HOME)/.local/include 
+LDFLAGS = -L/opt/vagrant/embedded/lib -lreadline -lhistory
+INCLUDES = -I./includes -I$(LIBFT_DIR) -I/opt/vagrant/embedded/include/readline/readline.h 
 # -I/usr/local/include 
 RM = rm -f
 
@@ -12,14 +12,22 @@ SRCS = 	src/main.c \
 		src/builtins/cd.c \
 		src/builtins/pwd.c \
 		src/builtins/export.c \
-		src/builtins/export_utils.c\
-		src/builtins/export_helper.c\
+		src/builtins/export_helper.c \
+		src/builtins/export_utils.c \
 		src/builtins/unset.c \
 		src/builtins/env.c \
 		src/builtins/exit.c \
+		src/lexer/lexer.c \
+		src/lexer/token.c \
+		src/lexer/handle_operator.c \
+		src/lexer/handle_quoted_string.c \
+		src/lexer/handle_word.c \
 		src/parser/parser.c \
-		src/parser/lexer.c \
-		src/parser/expander.c \
+		src/parser/args.c \
+		src/parser/handle_redirect.c \
+		src/expander/expander.c \
+		src/expander/expand_var.c \
+		src/expander/expand_string.c \
 		src/executor/executor.c \
 		src/executor/redirections.c \
 		src/executor/pipes.c \
@@ -27,7 +35,7 @@ SRCS = 	src/main.c \
 		src/utils/environment.c \
 		src/utils/error.c \
 		src/utils/memory.c \
-		src/debug/debug_tools.c 
+		src/utils/temp_files.c 
 		
 
 OBJS = $(SRCS:.c=.o)

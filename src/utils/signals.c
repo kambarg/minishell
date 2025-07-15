@@ -1,6 +1,5 @@
 #include "../../includes/minishell.h"
-#include <readline/readline.h>
-#include <unistd.h>
+
 /* Global variables to track execution state and signals */
 int	g_exec_status = 0;
 

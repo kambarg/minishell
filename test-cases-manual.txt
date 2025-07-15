@@ -7,51 +7,66 @@ $ bash
 $ which bash
 This usually returns /bin/bash or /usr/bin/bash.
 
-=== subject requirements=================
-===ok==
+Note:
+If you execute bash (/usr/bin/bash) in minishell it 
+forks a child process. This child process takes 
+over the terminal, ie terminal is bash instead of 
+minishell. If exit or ctrl+D, bash exits and terminal 
+returns to minishell.  
+
+
+===subject requirements=================
+===ok===
 ===Display a prompt when waiting for a new command:
 ~$ ./minishell 
 minishell$
 
-===fail==
+===ok===
 ===Have a working history:
+In minishell 'history' command won't work if you don't implement
+a function as it is built-in command. But readline/history.h 
+library has add_history, clear_history functions that you can use 
+to implement history working history functionality (using arrow keys).
+
+===out of scope of subject (history is not in built-in list)=== 
 minishell$ history
 minishell: history: command not found
 
 
-==Cannot check on Mac (no sudo rights to change /usr/bin/ls)==
+===fail?===
+===!Cannot check on Mac (no sudo rights to change /usr/bin/ls)
 ===Search and launch the right executable 
 (based on the PATH variable or using a
 relative or an absolute path)
-$ # type ls
-ls is /usr/bin/ls
+$ which ls
+/usr/bin/ls
 $ ls
 # files and directories listed
 $ /usr/bin/ls
 # files and directories listed
 
-$ mv /usr/bin/ls /usr/bin/ls_backup
-$ ls
-Command 'ls' not found, but can be installed with:
-apt install coreutils
-
 $ ./my_program
 ./my_program: No such file or directory
+
 $ nonexistent
-command not found: nonexistent
+nonexistent: command not found
 
-$ <command>
-minishell: <command>: command not found
+===fail===
+$ sudo mv /usr/bin/ls /usr/bin/ls_backup
+$ ls
+bash: /usr/bin/ls: No such file or directory
+minishell$ ls
+minishell: ls: command not found
+Error message in minishell differs from the bash error message.
 
-
-===?==
+===?===
 ===Signal handler =========================
 = Avoid using more than one global variable to indicate 
 a received signal.
 = signal handler will not access your
 main data structures
 
-===fail==
+===ok===
 ===Single quote==============================
 Handle ’ (single quote) which should prevent the shell 
 from interpreting the metacharacters in the quoted sequence.
@@ -65,27 +80,20 @@ $ echo "$HOME"
 $ echo '*.txt'
 *.txt
 
-=== out of scope of subject (unclosed quotes) ====
+===out of scope of subject (unclosed quotes)===
 $ echo 'can't'
 > '
 cant
-
 minishell$ echo 'can't'
 minishell: syntax error: unclosed quotes
 
 $ echo 'can'\''t'
 can't
-
 minishell$ echo 'can'\''t'
 minishell: syntax error: unclosed quote
 
-=== error ==========================================
-minishell$ echo '$HOME'
-/home/goha
 
-
-
-===ok==
+===ok===
 ===double quotes=================================
 Handle " (double quote) which should prevent the shell 
 from interpreting the metacharacters in the quoted 
@@ -96,7 +104,7 @@ $ echo $HOME
 $ echo "$HOME"
 /home/<user_name>
 
-===fail==
+===ok===
 ===environment variables=======================
 Handle environment variables ($ followed by a sequence 
 of characters) which should expand to their values.
@@ -106,13 +114,18 @@ HOME=/home/goha
 USER=goha
 PATH=/usr/local/bin:/usr/bin:/bin
 ...
+$ env | grep -E 'PWD|OLDPWD|USER|HOME'
+<will print main env variables values>
 
-In minishell PATH has extra dir
-In minishell OLDPWD has wrong dir
-env output is not the same on bash and minishell. Is it an error
+Test OLDPWD:
+echo $PWD      # Should show current directory
+echo $OLDPWD   # Should show parent shell's OLDPWD
+cd /tmp
+echo $OLDPWD   # Should show previous directory
+echo $PWD      # Should show /tmp
+cd -           # Should go back to previous directory
+echo $PWD      # Should show original directory
 
-$ echo $HOME
-/home/goha
 $ echo $NOTSET
 
 $ export EMPTY=
@@ -131,130 +144,134 @@ $ export TEMPVAR=hello
 $ unset TEMPVAR
 $ echo $TEMPVAR
 
-
-=== what should be on bash ??? =========
 $ export USER=goha
-$ echo "Hi, '$USER', welcome!"
-Hi, 'goha', welcome!
+$ echo "Hi, '$USER', welcome"
+Hi, 'goha', welcome
 
+$ export $?
+minishell: export: not a valid identifier 
+bash: export: `0': not a valid identifier
 
+Note: The error message differs but the logic is the same. 
+$? expands to the return value that is number and export 
+throughs error of not valid identifier 
+(vars can start with letters and _, no nums. no special chars)
+
+$ export $k 
+#lists env vars
+Note: if k is unset that $k="" empty string => 
+export $k <=> export
+
+$ export $0
+# name of the shell or script you're in (./minishell or bash)
+
+===???error===
+=== quotes inside quotes=============
+$ echo $USER
+goha
+$ echo "$USER"
+goha
+$ echo '$USER'
+$USER
+$ echo ' "$USER" '
+ "$USER"
+$ echo ' ' "$USER" ' ' 
+  goha
+$ echo ' '   ' "$USER" ' ' '
+   "$USER"
+$ echo ' '  "  ' $USER ' " ' '
+    ' goha '
+$ echo " " '$USER' " "
+  $USER
+$  echo " " " '$USER' " " "
+   'goha'
+$ echo ' '$HOME' '
+  /home/goha
+$ echo ' ' '$HOME' ' '
+  $HOME
+$ echo " "$HOME" "
+  /home/goha
+$ echo " " "$HOME" " "
+  /home/goha
 
 ===Redirections==========================
 ==ok==
 $ cat test.txt | grep "hello" < test2.txt
-zsh: no such file or directory: test2.txt
+minishell: test2.txt: No such file or directory
 cat: test.txt: No such file or directory
 
-== error message doubled =================
+===ok===
 grep "t" < test.txt
-zsh: no such file or directory: test.txt
-
-minishell$ grep "t" < test.txt
-test.txt:No such file or directory
 minishell: test.txt: No such file or directory
 
-== error message doubled====================
-ls | cat < test2.txt
-hahaha
-
-minishell$ ls | cat < test2.txt
-test2.txt:No such file or directory
+===ok===
+$ ls | cat < test2.txt
 minishell: test2.txt: No such file or directory
 
-
-==ok==
+==ok===
 cat <<END >test.txt
 heredoc> line 1
 heredoc> line 2
 heredoc> END
 
-==ok==
-$ < test2.txt | ls
+==ok===
+$ < test.txt | ls
 test.txt        test2.txt
 
-== error message duplicated ===================
+===ok===
 $ cat > t.txt -e < f.txt | < t.txt
 bash: f.txt: No such file or directory
 t.txt is created
 
-minishell$ cat > t.txt -e < f.txt | < t.txt
-f.txt:No such file or directory
-minishell: f.txt: No such file or directory
-
 
 ===Edge cases=========================
-==ok==
+===ok===
 $        echo      hello     world    
 hello world
 
-==ok==
+===ok===
 $ echo ""
 
-
-== 
-
-==ok==
-$ > test2.txt < test.txt
-zsh: no such file or directory: test.txt
-== we need write printf to print_error
-
-
-gkambarb@lab1r3s6 tmp % ls -l
-total 0
--rw-r--r--  1 gkambarb  2024_abu-dhabi  0 Mar 24 18:21 test2.txt
-== No message "no such file.."
-== test2.txt was not created
-== if test2.txt exists and has text, text.txt doesn't exist, input line has to overwringt test2.txt content and make it empty
-
-
-==ok ==
-< jfkdg > file.txt
-bash: djghkjs: No such file or directory
-== No message "No such file..."
-
-
-==ok ===
->file.txt < dsghfkfjs
-bash: dsghfkfjs: No such file or directory
-== No message "No such file.."
-== file.txt was not created
-
-
-==ok==
-$ < file2.txt | ls
-bash: file2.txt: No such file or directory
-file.txt	test-cases.txt	test.txt	test2.tx
-==No message "No such file.."
-
-==ok==
+===ok===
 $ |
 bash: syntax error near unexpected token `|'
 $ echo $?
 258
-or 
-2
-== !!! We have to check which code is correct
-== Not correct exit code
 
+===ok===
+$ ls -l
+total 0
+$ > test2.txt < test.txt
+minishell: test.txt: No such file or directory
+$ cat test2.txt
 
-== ok ==
+If test2.txt does not exist, it should be created and be empty.
+If test2.txt exists and has text, text.txt doesn't exist, input line has to overwringt test2.txt content and make it empty.
+
+===ok===
+< jfkdg > file.txt
+minishell: jfkdg: No such file or directory
+
+===ok===
+>file.txt < dsghfkfjs
+minishell: dsghfkfjs: No such file or directory
+
+file.txt was created and empty.
+
+===ok===
+$ < file2.txt | ls
+bash: file2.txt: No such file or directory
+file.txt	test-cases.txt	test.txt	test2.tx
+
+===ok===
 $ echo "hahaha" > test2.txt
 $ ls | cat < test2.txt
 hahaha
 
-== If user deletes ls executable file ==
-After deleting ls executable file (ie /usr/bin/ls)
-the command
-$ ls
-hash: ls: command not found
-
-In minishell the program will 
-fail because executable is being executed with execve or similar function.  
 
 
-==Heredoc=================
+===Heredoc=================
 ===ok===
-
 $ cat << TEXT
 > One
 > Two
@@ -267,6 +284,7 @@ $ cat << TEXT > out.txt
 > Two
 > Three
 TEXT
+result:
 $ cat out.txt
 > One
 > Two
@@ -274,7 +292,7 @@ $ cat out.txt
 # There should be file out.txt. with heredoc text written in it
 
 
-=== ok ===
+===ok===
 command:
 $ cat <<EOF1 > out.txt | cat <<EOF2
 > 1
@@ -285,7 +303,6 @@ $ cat <<EOF1 > out.txt | cat <<EOF2
 > BB
 > CC
 > EOF2
-
 result:
 In the output it is
 AA
@@ -296,14 +313,17 @@ in the out.txt. file it is
 2
 3
 
-== ok ==
+===ok===
 $ cat << eof | grep b | wc -l
 > a
 > b 
 > c 
 > eof
+result: 
+ 1 is printed to the output
 
-== ok ==
+
+===ok===
 $ cat << eof > out.txt | cat << text
 > a 
 > b 
@@ -312,3 +332,11 @@ $ cat << eof > out.txt | cat << text
 > hello 
 > bye 
 > text
+result:
+in the standard output 
+hello
+bye
+$ cat out.txt 
+a
+b
+c

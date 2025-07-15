@@ -43,7 +43,11 @@ void	set_env_value(t_shell *shell, const char *name, const char *value)
 	char	*new_var;
 	char	**new_env;
 
-	if (!name || !value)
+	if (!name || !value || !shell || !shell->env)
+		return;
+	
+	/* Validate environment variable name (basic validation) */
+	if (!*name || ft_strchr(name, '='))
 		return;
 		
 	i = get_env_index(shell->env, name);
@@ -51,6 +55,8 @@ void	set_env_value(t_shell *shell, const char *name, const char *value)
 	{
 		free(shell->env[i]);
 		new_var = ft_strjoin(name, "=");
+		if (!new_var)
+			return;
 		shell->env[i] = ft_strjoin(new_var, value);
 		free(new_var);
 	}
@@ -66,9 +72,19 @@ void	set_env_value(t_shell *shell, const char *name, const char *value)
 		while (++i < env_size)
 			new_env[i] = shell->env[i];
 		new_var = ft_strjoin(name, "=");
+		if (!new_var)
+		{
+			free(new_env);
+			return;
+		}
 		new_env[i] = ft_strjoin(new_var, value);
 		new_env[i + 1] = NULL;
 		free(new_var);
+		if (!new_env[i])
+		{
+			free(new_env);
+			return;
+		}
 		free(shell->env);
 		shell->env = new_env;
 	}

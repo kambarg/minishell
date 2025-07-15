@@ -25,7 +25,12 @@
 # define T_REDIR_OUT 4
 # define T_HEREDOC 5
 # define T_APPEND 6
-# define T_EOF 7
+// # define T_EOF 7
+
+/* Quote types */
+# define QUOTE_NONE 0
+# define QUOTE_SINGLE 1
+# define QUOTE_DOUBLE 2
 
 /* Redirection types */
 # define REDIR_IN 1
@@ -33,10 +38,18 @@
 # define REDIR_HEREDOC 3
 # define REDIR_APPEND 4
 
+/* Temp file list node structure */
+typedef struct s_temp_file
+{
+	char				*path;
+	struct s_temp_file	*next;
+}	t_temp_file;
+
 typedef struct s_token
 {
 	char			*value;
 	int				type;
+	int				quote_type;
 	struct s_token	*next;
 }	t_token;
 
@@ -44,12 +57,20 @@ typedef struct s_redirect
 {
 	int					type;
 	char				*file;
+	int					fd;  /* File descriptor for heredoc temp files */
 	struct s_redirect	*next;
 }	t_redirect;
 
+typedef struct s_arg_info
+{
+	char	*value;
+	int		quote_type;
+}	t_arg_info;
+
 typedef struct s_command
 {
-	char				**args;
+	t_arg_info			*args;
+	int					arg_count;
 	t_redirect			*redirects;
 	struct s_command	*next;
 	int					pipe_fd[2];
@@ -61,36 +82,49 @@ typedef struct s_shell
 	t_command	*commands;
 	int			exit_status;
 	int			running;
+	char		*program_name;  /* argv[0] - name of the program */
+	t_temp_file	*temp_files;  /* List of temporary files to clean up */
+	int			temp_file_counter;  /* Counter for unique temp file names */
 }	t_shell;
 
 /* Global variables */
 extern int	g_exec_status; /* 0: interactive, 1: executing command, 2: heredoc, 3: if SIGINT was received */
 
 /* Main functions */
-void	init_shell(t_shell *shell, char **env);
+void	init_shell(t_shell *shell, char **env, char *program_name);
 void	run_shell(t_shell *shell);
 void	cleanup_shell(t_shell *shell);
 
-/* Parser functions */
+/* Lexer functions */
 t_token		*lexer(char *input);
-int			validate_tokens(t_token *tokens);
-t_command	*parser(t_token *tokens);
-void		expand_variables(t_command *cmd, t_shell *shell);
-t_token		*create_token(char *value, int type);
+int			handle_operator(char *input, int *i, t_token **tokens);
+int			handle_quoted_string(char *input, int *i, t_token **tokens);
+int			handle_word(char *input, int *i, t_token **tokens);
+t_token		*create_token(char *value, int type, int quote_type);
 void		add_token(t_token **head, t_token *new_token);
-char		*get_word(char *input, int *i);
-char		*get_quoted_str(char *input, int *i, char quote);
-int			is_operator_char(char c);
 int			is_whitespace(char c);
+int			is_operator_char(char c);
+int			is_quotes(char c);
+
+/* Parser functions */
+t_command	*parser(t_token *tokens);
+int			add_argument(t_command *cmd, char *value, int quote_type);
+int			handle_redirect(t_token **token, t_command *cmd);
+
+/* Expander functions */
+void		expander(t_command *cmd, t_shell *shell);
+char		*expand_var(char *str, t_shell *shell, int *i);
+char		*expand_quoted_string(char *str, t_shell *shell, int quote_type);
 
 /* Executor functions */
 int		execute_commands(t_shell *shell);
 int		handle_redirections(t_redirect *redirects);
-int		preprocess_heredocs(t_command *commands);
+int		preprocess_heredocs(t_command *commands, t_shell *shell);
 void	setup_pipes(t_command *cmd);
 char	*find_command_path(char *cmd, char **env);
 int		execute_builtin(t_command *cmd, t_shell *shell);
 int		is_builtin(char *cmd);
+char	**create_argv(t_command *cmd);
 
 /* Builtin functions */
 int		ft_echo(t_arg_info *args, int arg_count);
@@ -100,14 +134,19 @@ int		ft_export(t_arg_info *args, int arg_count, t_shell *shell);
 int		ft_unset(t_arg_info *args, int arg_count, t_shell *shell);
 int		ft_env(t_shell *shell);
 int		ft_exit(t_arg_info *args, int arg_count, t_shell *shell);
-void	print_sorted_env(char **env);
-void	print_env_lines(char **env);
-void	bubble_sort_env(char **env, int size);
-int		get_env_size(char **env);
-void	bubble_sort_env(char **env, int size);
-void	print_env_lines(char **env);
-void	print_sorted_env(char **env);
+
+// static int	has_valid_export_arg(t_arg_info *args, int arg_count);
+// static int	export_print_env(t_shell *shell);
+// static void	export_update_env(t_arg_info *args, int arg_count, t_shell *shell);
 void	handle_export_arg(char *arg, t_shell *shell);
+int	is_valid_identifier(char *str);
+int	get_env_size(char **env);
+void	bubble_sort_env(char **env, int size);
+void	print_env_lines(char **env);
+void	print_sorted_env(char **env);
+
+
+
 
 /* Utils functions */
 void	handle_signals(int signum);
@@ -118,14 +157,16 @@ void	reset_signals_default(void);
 char	*get_env_value(char **env, const char *name);
 void	set_env_value(t_shell *shell, const char *name, const char *value);
 void	print_error(const char *cmd, const char *msg);
+int		is_whitespace_only(const char *str);
 
 /* Memory management */
 void	free_tokens(t_token *tokens);
 void	free_commands(t_command *commands);
 void	free_array(char **array);
 
-/* Debugging */
-void	print_tokens(t_token *tokens);
-void	print_heredoc_temp_files(char *temp_path);
+/* Temp file management */
+void	add_temp_file(t_shell *shell, char *path);
+void	cleanup_temp_files(t_shell *shell);
+char	*create_unique_temp_path(t_shell *shell);
 
-#endif 
+#endif

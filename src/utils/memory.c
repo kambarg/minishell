@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   memory.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/08 23:07:29 by gkambarb          #+#    #+#             */
+/*   Updated: 2025/07/08 23:07:31 by gkambarb         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
 void	free_array(char **array)
@@ -23,12 +35,14 @@ void	free_tokens(t_token *tokens)
 	{
 		temp = tokens;
 		tokens = tokens->next;
-		free(temp->value);
+		if (temp->value)
+			free(temp->value);
 		free(temp);
 	}
 }
 
-void	free_redirects(t_redirect *redirects)
+// Close heredoc temp file descriptor if open
+static void	free_redirects(t_redirect *redirects)
 {
 	t_redirect	*temp;
 
@@ -36,11 +50,29 @@ void	free_redirects(t_redirect *redirects)
 	{
 		temp = redirects;
 		redirects = redirects->next;
-		free(temp->file);
+		if (temp->file)
+			free(temp->file);
+		if (temp->fd != -1)
+			close(temp->fd);
 		free(temp);
 	}
 }
 
+static void	free_args(t_arg_info *args, int arg_count)
+{
+	int	i;
+
+	i = 0;
+	while (i < arg_count)
+	{
+		if (args[i].value)
+			free(args[i].value);
+		i++;
+	}
+	free(args);
+}
+
+// Close any open pipe file descriptors
 void	free_commands(t_command *commands)
 {
 	t_command	*temp;
@@ -49,8 +81,14 @@ void	free_commands(t_command *commands)
 	{
 		temp = commands;
 		commands = commands->next;
-		free_array(temp->args);
-		free_redirects(temp->redirects);
+		if (temp->args)
+			free_args(temp->args, temp->arg_count);
+		if (temp->redirects)
+			free_redirects(temp->redirects);
+		if (temp->pipe_fd[0] != -1)
+			close(temp->pipe_fd[0]);
+		if (temp->pipe_fd[1] != -1)
+			close(temp->pipe_fd[1]);
 		free(temp);
 	}
-} 
+}
