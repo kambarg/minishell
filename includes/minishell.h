@@ -110,7 +110,11 @@ int			is_quotes(char c);
 t_command	*parser(t_token *tokens);
 int			add_argument(t_command *cmd, char *value, int quote_type);
 int			handle_redirect(t_token **token, t_command *cmd);
+
+/* Expander functions */
 void		expander(t_command *cmd, t_shell *shell);
+char		*expand_var(char *str, t_shell *shell, int *i);
+char		*expand_quoted_string(char *str, t_shell *shell, int quote_type);
 
 /* Executor functions */
 int		execute_commands(t_shell *shell);

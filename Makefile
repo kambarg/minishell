@@ -24,6 +24,8 @@ SRCS = 	src/main.c \
 		src/parser/args.c \
 		src/parser/handle_redirect.c \
 		src/expander/expander.c \
+		src/expander/expand_var.c \
+		src/expander/expand_string.c \
 		src/executor/executor.c \
 		src/executor/redirections.c \
 		src/executor/pipes.c \
