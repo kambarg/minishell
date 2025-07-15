@@ -1,55 +1,72 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exit.c                                             :+:      :+:    :+:   */
+/*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/14 13:19:50 by wuabdull          #+#    #+#             */
-/*   Updated: 2025/07/14 13:19:50 by wuabdull         ###   ########.fr       */
+/*   Created: 2025/07/14 13:20:14 by wuabdull          #+#    #+#             */
+/*   Updated: 2025/07/14 13:20:14 by wuabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-static int	is_numeric(char *str)
+static int	has_valid_export_arg(t_arg_info *args, int arg_count)
 {
 	int	i;
 
-	i = 0;
-	if (str[i] == '-' || str[i] == '+')
-		i++;
-	while (str[i])
+	i = 1;
+	while (i < arg_count)
 	{
-		if (!ft_isdigit(str[i]))
-			return (0);
+		if (args[i].value && *args[i].value)
+			return (1);
 		i++;
 	}
-	return (1);
+	return (0);
 }
 
-int	ft_exit(t_arg_info *args, int arg_count, t_shell *shell)
+static int	export_print_env(t_shell *shell)
 {
-	int	exit_code;
+	char	**env_copy;
+	int		env_size;
+	int		i;
 
-	ft_putendl_fd("exit", STDERR_FILENO);
-	if (arg_count < 2)
-	{
-		shell->running = 0;
-		return (shell->exit_status);
-	}
-	if (!is_numeric(args[1].value))
-	{
-		print_error("exit", "numeric argument required");
-		shell->running = 0;
-		return (255);
-	}
-	if (arg_count > 2)
-	{
-		print_error("exit", "too many arguments");
+	env_size = 0;
+	while (shell->env[env_size])
+		env_size++;
+	env_copy = (char **)malloc(sizeof(char *) * (env_size + 1));
+	if (!env_copy)
 		return (ERROR);
+	i = 0;
+	while (i < env_size)
+	{
+		env_copy[i] = ft_strdup(shell->env[i]);
+		i++;
 	}
-	exit_code = ft_atoi(args[1].value) & 255;
-	shell->running = 0;
-	return (exit_code);
+	env_copy[i] = NULL;
+	print_sorted_env(env_copy);
+	free_array(env_copy);
+	return (SUCCESS);
+}
+
+static void	export_update_env(t_arg_info *args, int arg_count, t_shell *shell)
+{
+	int	i;
+
+	i = 1;
+	while (i < arg_count)
+	{
+		if (args[i].value && *args[i].value)
+			handle_export_arg(args[i].value, shell);
+		i++;
+	}
+}
+
+int	ft_export(t_arg_info *args, int arg_count, t_shell *shell)
+{
+	if (arg_count < 2 || !has_valid_export_arg(args, arg_count))
+		return (export_print_env(shell));
+	export_update_env(args, arg_count, shell);
+	return (SUCCESS);
 }
