@@ -93,13 +93,21 @@ int		execute_builtin(t_command *cmd, t_shell *shell);
 int		is_builtin(char *cmd);
 
 /* Builtin functions */
-int		ft_echo(char **args);
-int		ft_cd(char **args, t_shell *shell);
+int		ft_echo(t_arg_info *args, int arg_count);
+int		ft_cd(t_arg_info *args, int arg_count, t_shell *shell);
 int		ft_pwd(void);
-int		ft_export(char **args, t_shell *shell);
-int		ft_unset(char **args, t_shell *shell);
+int		ft_export(t_arg_info *args, int arg_count, t_shell *shell);
+int		ft_unset(t_arg_info *args, int arg_count, t_shell *shell);
 int		ft_env(t_shell *shell);
-int		ft_exit(char **args, t_shell *shell);
+int		ft_exit(t_arg_info *args, int arg_count, t_shell *shell);
+void	print_sorted_env(char **env);
+void	print_env_lines(char **env);
+void	bubble_sort_env(char **env, int size);
+int		get_env_size(char **env);
+void	bubble_sort_env(char **env, int size);
+void	print_env_lines(char **env);
+void	print_sorted_env(char **env);
+void	handle_export_arg(char *arg, t_shell *shell);
 
 /* Utils functions */
 void	handle_signals(int signum);
