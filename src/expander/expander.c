@@ -15,7 +15,6 @@
 static void	expand_args(t_command *cmd, t_shell *shell)
 {
 	int			i;
-	int			i;
 	char		*expanded;
 	t_arg_info	*arg;
 
