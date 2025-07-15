@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 14:16:40 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/15 14:17:36 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/15 14:37:34 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,11 @@ static char	*handle_regular_char(char *result, char c)
 }
 
 // Note: single quotes no expansion at all
+static int	is_expandable(int quote_type)
+{
+	return (quote_type == QUOTE_DOUBLE || quote_type == QUOTE_NONE);
+}
+
 char	*expand_quoted_string(char *str, t_shell *shell, int quote_type)
 {
 	int		i;
@@ -78,7 +83,7 @@ char	*expand_quoted_string(char *str, t_shell *shell, int quote_type)
 		return (NULL);
 	while (str[i])
 	{
-		if (str[i] == '$' && (quote_type == QUOTE_DOUBLE || quote_type == QUOTE_NONE))
+		if (str[i] == '$' && is_expandable(quote_type))
 			result = handle_dollar_char(str, shell, &i, result);
 		else
 			result = handle_regular_char(result, str[i++]);

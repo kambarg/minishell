@@ -14,17 +14,20 @@
 
 static void	expand_args(t_command *cmd, t_shell *shell)
 {
-	int		i;
-	char	*expanded;
+	int			i;
+	int			i;
+	char		*expanded;
+	t_arg_info	*arg;
 
 	i = 0;
 	while (i < cmd->arg_count)
 	{
-		expanded = expand_quoted_string(cmd->args[i].value, shell, cmd->args[i].quote_type);
+		arg = &cmd->args[i];
+		expanded = expand_quoted_string(arg->value, shell, arg->quote_type);
 		if (expanded)
 		{
-			free(cmd->args[i].value);
-			cmd->args[i].value = expanded;
+			free(arg->value);
+			arg->value = expanded;
 		}
 		else
 			print_error("expander", "critical memory allocation failed");
