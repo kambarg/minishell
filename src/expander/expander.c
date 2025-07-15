@@ -123,55 +123,65 @@ static char	*expand_quoted_string(char *str, t_shell *shell, int quote_type)
 		if (str[i] == '$' && (quote_type == QUOTE_DOUBLE || quote_type == QUOTE_NONE))
 			result = handle_dollar_char(str, shell, &i, result);
 		else
-			result = handle_regularchar(result, str[i++]);
+			result = handle_regular_char(result, str[i++]);
 		if (!result)
 			return (NULL);
 	}
 	return (result);
 }
 
+static void	expand_args(t_command *cmd, t_shell *shell)
+{
+	int		i;
+	char	*expanded;
+
+	i = 0;
+	while (i < cmd->arg_count)
+	{
+		expanded = expand_quoted_string(cmd->args[i].value, shell, cmd->args[i].quote_type);
+		if (expanded)
+		{
+			free(cmd->args[i].value);
+			cmd->args[i].value = expanded;
+		}
+		else
+			print_error("expander", "critical memory allocation failed");
+		i++;
+	}
+}
+
 // Note: redirections are always expanded
+static void	expand_redirects(t_command *cmd, t_shell *shell)
+{
+	t_redirect	*redir;
+	char		*expanded;
+
+	redir = cmd->redirects;
+	while (redir)
+	{
+		if (redir->type != REDIR_HEREDOC)
+		{
+			expanded = expand_quoted_string(redir->file, shell, QUOTE_NONE);
+			if (expanded)
+			{
+				free(redir->file);
+				redir->file = expanded;
+			}
+			else
+				print_error("expander", "critical memory allocation failed");
+		}
+		redir = redir->next;
+	}
+}
+
 void	expander(t_command *cmd, t_shell *shell)
 {
-	int			i;
-	char		*expanded;
-	t_redirect	*redir;
-
 	if (!cmd || !shell)
 		return ;
 	while (cmd)
 	{
-		i = 0;
-		while (i < cmd->arg_count)
-		{
-			expanded = expand_quoted_string(cmd->args[i].value, shell, cmd->args[i].quote_type);
-			if (expanded)
-			{
-				free(cmd->args[i].value);
-				cmd->args[i].value = expanded;
-			}
-			else
-				print_error("expander", "critical memory allocation failed");
-			i++;
-		}
-		redir = cmd->redirects;
-		while (redir)
-		{
-			if (redir->type != REDIR_HEREDOC)
-			{
-				expanded = expand_quoted_string(redir->file, shell, QUOTE_NONE);
-				if (expanded)
-				{
-					free(redir->file);
-					redir->file = expanded;
-				}
-				else
-				{
-					print_error("expander", "critical memory allocation failed");
-				}
-			}
-			redir = redir->next;
-		}
+		expand_args(cmd, shell);
+		expand_redirects(cmd, shell);
 		cmd = cmd->next;
 	}
-} 
+}
