@@ -35,7 +35,13 @@ SRCS = 	src/main.c \
 		src/utils/environment.c \
 		src/utils/error.c \
 		src/utils/memory.c \
-		src/utils/temp_files.c 
+		src/utils/temp_files.c\
+		src/executor/executor_args.c \
+		src/executor/executor_builtin.c \
+		src/executor/executor_path.c \
+		src/executor/executor_pipes.c \
+		src/executor/executor_external.c \
+		src/executor/executor_loop.c
 		
 
 OBJS = $(SRCS:.c=.o)
