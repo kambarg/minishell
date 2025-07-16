@@ -27,6 +27,7 @@ int	execute_commands(t_shell *shell)
 {
 	int		stdin_backup;
 	int		stdout_backup;
+	pid_t	last_pid;
 	int		last_status;
 
 	if (preprocess_heredocs(shell->commands, shell) == ERROR)
