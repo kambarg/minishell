@@ -1,3 +1,43 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   expand_var.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/15 14:10:06 by gkambarb          #+#    #+#             */
+/*   Updated: 2025/07/15 14:11:19 by gkambarb         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../../includes/minishell.h"
+
+static char	*get_var_name(char *str, int *i)
+{
+	int		start;
+	int		len;
+	char	*name;
+
+	if (!str || !i)
+		return (NULL);
+	start = *i;
+	(*i)++;
+	if (str[*i] == '?')
+		return ((*i)++, ft_strdup("?"));
+	if (str[*i] == '0')
+		return ((*i)++, ft_strdup("0"));
+	while (str[*i] && (ft_isalnum(str[*i]) || str[*i] == '_'))
+		(*i)++;
+	len = *i - start - 1;
+	if (len == 0)
+		return (NULL);
+	name = (char *)malloc(sizeof(char) * (len + 1));
+	if (!name)
+		return (NULL);
+	ft_strlcpy(name, str + start + 1, len + 1);
+	return (name);
+}
+
 char	*expand_var(char *str, t_shell *shell, int *i)
 {
 	char	*var_name;
