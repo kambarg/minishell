@@ -1,5 +1,4 @@
 #include "../../includes/minishell.h"
-#include "../../includes/minishell.h"
 
 /* Create a unique temporary file path using pid and shell counter */
 char	*create_unique_temp_path(t_shell *shell)
