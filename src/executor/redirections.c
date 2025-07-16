@@ -64,7 +64,11 @@ static int	create_heredoc_temp_file(char *delimiter, int *temp_fd, t_shell *shel
 	return (SUCCESS);
 }
 
-/* Pre-process all heredocs in parent process before forking */
+// Pre-process all heredocs in parent process before forking:
+// 1) Create secure temp file and process heredoc in parent
+// 2) Store file descriptor in redirect structure
+// 3) Keep delimiter in file field for reference but mark as processed 
+// 4) Convert heredoc to special heredoc input redirect
 int	preprocess_heredocs(t_command *commands, t_shell *shell)
 {
 	t_command	*cmd;
@@ -79,15 +83,9 @@ int	preprocess_heredocs(t_command *commands, t_shell *shell)
 		{
 			if (redir->type == REDIR_HEREDOC)
 			{
-				/* Create secure temp file and process heredoc in parent */
 				if (create_heredoc_temp_file(redir->file, &temp_fd, shell) == ERROR)
 					return (ERROR);
-				
-				/* Store file descriptor in redirect structure */
 				redir->fd = temp_fd;
-				
-				/* Keep delimiter in file field for reference but mark as processed */
-				/* Convert heredoc to special heredoc input redirect */
 				redir->type = REDIR_IN;
 			}
 			redir = redir->next;
@@ -97,11 +95,13 @@ int	preprocess_heredocs(t_command *commands, t_shell *shell)
 	return (SUCCESS);
 }
 
+// If temp_fd is provided (heredoc temp file), use it directly
+// Don't close temp_fd, will be closed when command structure is freed
+// Else regular file input redirect
 static int	handle_input_redirect(char *file, int temp_fd)
 {
 	int	fd;
 
-	/* If temp_fd is provided (heredoc temp file), use it directly */
 	if (temp_fd != -1)
 	{
 		if (dup2(temp_fd, STDIN_FILENO) == -1)
@@ -109,11 +109,8 @@ static int	handle_input_redirect(char *file, int temp_fd)
 			print_error("heredoc", strerror(errno));
 			return (ERROR);
 		}
-		/* Note: Don't close temp_fd here, it will be closed when command structure is freed */
 		return (SUCCESS);
 	}
-	
-	/* Regular file input redirect */
 	fd = open(file, O_RDONLY);
 	if (fd == -1)
 	{
@@ -155,7 +152,7 @@ static int	handle_output_redirect(char *file, int append)
 	close(fd);
 	return (SUCCESS);
 }
-
+// REDIR_HEREDOC should not happen anymore after preprocessing
 int	handle_redirections(t_redirect *redirects)
 {
 	while (redirects)
@@ -172,7 +169,6 @@ int	handle_redirections(t_redirect *redirects)
 		}
 		else if (redirects->type == REDIR_HEREDOC)
 		{
-			/* This should not happen anymore after preprocessing */
 			print_error("heredoc", "unexpected heredoc in child process");
 			return (ERROR);
 		}

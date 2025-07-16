@@ -38,12 +38,7 @@
 # define REDIR_HEREDOC 3
 # define REDIR_APPEND 4
 
-/* Temp file list node structure */
-typedef struct s_temp_file
-{
-	char				*path;
-	struct s_temp_file	*next;
-}	t_temp_file;
+
 
 typedef struct s_token
 {
@@ -83,7 +78,6 @@ typedef struct s_shell
 	int			exit_status;
 	int			running;
 	char		*program_name;  /* argv[0] - name of the program */
-	t_temp_file	*temp_files;  /* List of temporary files to clean up */
 	int			temp_file_counter;  /* Counter for unique temp file names */
 }	t_shell;
 
@@ -185,8 +179,6 @@ void	free_commands(t_command *commands);
 void	free_array(char **array);
 
 /* Temp file management */
-void	add_temp_file(t_shell *shell, char *path);
-void	cleanup_temp_files(t_shell *shell);
 char	*create_unique_temp_path(t_shell *shell);
 
 #endif

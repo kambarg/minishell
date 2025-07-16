@@ -29,7 +29,7 @@ void	init_shell(t_shell *shell, char **env, char *program_name)
 	shell->exit_status = 0;
 	shell->running = 1;
 	shell->program_name = ft_strdup(program_name);
-	shell->temp_files = NULL;
+	shell->temp_file_counter = 0;
 	shell->temp_file_counter = 0;
 	
 	/* Set PWD to current directory */
@@ -110,8 +110,7 @@ void	run_shell(t_shell *shell)
 						setup_signals_executing();
 						shell->exit_status = execute_commands(shell);
 						setup_signals_interactive();
-						/* Clean up temp files after command execution */
-						cleanup_temp_files(shell);
+
 						free_commands(shell->commands);
 						shell->commands = NULL;
 					}
@@ -129,8 +128,6 @@ void	run_shell(t_shell *shell)
 
 void	cleanup_shell(t_shell *shell)
 {
-	/* Clean up any remaining temp files */
-	cleanup_temp_files(shell);
 	if (shell->env)
 		free_array(shell->env);
 	if (shell->commands)
