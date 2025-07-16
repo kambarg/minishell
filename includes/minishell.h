@@ -179,6 +179,7 @@ void	free_commands(t_command *commands);
 void	free_array(char **array);
 
 /* Temp file management */
-char	*create_unique_temp_path(t_shell *shell);
+char	*create_temp_path(t_shell *shell);
+int		create_temp_file(char *delimiter, int *temp_fd, t_shell *shell);
 
 #endif

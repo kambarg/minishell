@@ -30,7 +30,6 @@ void	init_shell(t_shell *shell, char **env, char *program_name)
 	shell->running = 1;
 	shell->program_name = ft_strdup(program_name);
 	shell->temp_file_counter = 0;
-	shell->temp_file_counter = 0;
 	
 	/* Set PWD to current directory */
 	current_dir = getcwd(cwd, sizeof(cwd));

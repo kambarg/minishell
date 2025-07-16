@@ -1,60 +1,92 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   temp_files.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/16 15:17:36 by gkambarb          #+#    #+#             */
+/*   Updated: 2025/07/16 15:17:38 by gkambarb         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
-/* Create a unique temporary file path using pid and shell counter */
-char	*create_unique_temp_path(t_shell *shell)
+static int	open_write_fd(char *temp_path)
 {
-	char	*temp_path;
-	char	*pid_str;
-	char	*counter_str;
-	char	*temp1;
-	char	*temp2;
-	int		fd;
+	int	fd;
 
-	if (!shell)
-		return (NULL);
+	fd = open(temp_path, O_WRONLY);
+	if (fd == -1)
+		print_error("heredoc", strerror(errno));
+	return (fd);
+}
 
-	/* Get unique identifier using shell address (truncated to int) */
-	pid_str = ft_itoa((int)((unsigned long)&shell % 100000));
-	if (!pid_str)
-		return (NULL);
-	
-	/* Try to create unique file */
+static int	open_read_fd(char *temp_path)
+{
+	int	fd;
+
+	fd = open(temp_path, O_RDONLY);
+	if (fd == -1)
+		print_error("heredoc", strerror(errno));
+	return (fd);
+}
+
+static void	write_heredoc_loop(int write_fd, char *delimiter)
+{
+	char	*line;
+	int		del_len;
+
+	del_len = ft_strlen(delimiter);
 	while (1)
 	{
-		/* Convert counter to string */
-		counter_str = ft_itoa(shell->temp_file_counter++);
-		if (!counter_str)
+		line = readline("> ");
+		if (!line || ft_strncmp(line, delimiter, del_len + 1) == 0)
 		{
-			free(pid_str);
-			return (NULL);
+			free(line);
+			break ;
 		}
-		
-		/* Build temp file path: /tmp/minishell_heredoc_<pid>_<counter> */
-		temp1 = ft_strjoin("/tmp/minishell_heredoc_", pid_str);
-		temp2 = ft_strjoin(temp1, "_");
-		free(temp1);
-		temp_path = ft_strjoin(temp2, counter_str);
-		free(temp2);
-		free(counter_str);
-		
-		if (!temp_path)
-		{
-			free(pid_str);
-			return (NULL);
-		}
-		
-		/* Try to create file with O_EXCL to ensure uniqueness */
-		fd = open(temp_path, O_CREAT | O_EXCL | O_RDWR, 0600);
-		if (fd != -1)
-		{
-			close(fd);
-			free(pid_str);
-			return (temp_path);
-		}
-		
-		/* File exists, try next counter value */
-		free(temp_path);
+		ft_putendl_fd(line, write_fd);
+		free(line);
 	}
 }
 
+static int	handle_heredoc_file(char *temp_path, int *temp_fd)
+{
+	int	read_fd;
 
+	read_fd = open_read_fd(temp_path);
+	if (read_fd == -1)
+	{
+		unlink(temp_path);
+		free(temp_path);
+		return (ERROR);
+	}
+	unlink(temp_path);
+	free(temp_path);
+	*temp_fd = read_fd;
+	return (SUCCESS);
+}
+
+int	create_temp_file(char *delimiter, int *temp_fd, t_shell *shell)
+{
+	char	*temp_path;
+	int		write_fd;
+	int		status;
+
+	temp_path = create_temp_path(shell);
+	if (!temp_path)
+	{
+		print_error("heredoc", "failed to create temp file");
+		return (ERROR);
+	}
+	write_fd = open_write_fd(temp_path);
+	if (write_fd == -1)
+		return (free(temp_path), ERROR);
+	setup_signals_heredoc();
+	write_heredoc_loop(write_fd, delimiter);
+	setup_signals_interactive();
+	close(write_fd);
+	status = handle_heredoc_file(temp_path, temp_fd);
+	return (status);
+}
