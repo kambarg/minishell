@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand_string.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 14:16:40 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/15 14:17:36 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/16 15:08:35 by wuabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,8 @@ static char	*handle_regular_char(char *result, char c)
 }
 
 // Note: single quotes no expansion at all
-char	*expand_quoted_string(char *str, t_shell *shell, int quote_type)
+char	*expand_quoted_string(char *str, t_shell *shell,
+	int quote_type)
 {
 	int		i;
 	char	*result;
@@ -78,7 +79,8 @@ char	*expand_quoted_string(char *str, t_shell *shell, int quote_type)
 		return (NULL);
 	while (str[i])
 	{
-		if (str[i] == '$' && (quote_type == QUOTE_DOUBLE || quote_type == QUOTE_NONE))
+		if (str[i] == '$' && (quote_type == QUOTE_DOUBLE
+				|| quote_type == QUOTE_NONE))
 			result = handle_dollar_char(str, shell, &i, result);
 		else
 			result = handle_regular_char(result, str[i++]);
