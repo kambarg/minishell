@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   echo.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/14 13:19:12 by wuabdull          #+#    #+#             */
+/*   Updated: 2025/07/14 13:19:12 by wuabdull         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
 int	ft_echo(t_arg_info *args, int arg_count)
@@ -22,4 +34,4 @@ int	ft_echo(t_arg_info *args, int arg_count)
 	if (!n_flag)
 		ft_putchar_fd('\n', STDOUT_FILENO);
 	return (SUCCESS);
-} 
+}

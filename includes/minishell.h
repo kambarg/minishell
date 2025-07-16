@@ -126,6 +126,30 @@ int		execute_builtin(t_command *cmd, t_shell *shell);
 int		is_builtin(char *cmd);
 char	**create_argv(t_command *cmd);
 
+// executor_args.c
+char	**create_argv(t_command *cmd);
+
+// executor_builtin.c
+int		execute_builtin(t_command *cmd, t_shell *shell);
+int		handle_builtin_cmd(t_command *cmd, t_shell *shell, int stdin_backup, int stdout_backup);
+
+// executor_path.c
+char	*find_command_path(char *cmd, char **env);
+
+// executor_pipes.c
+void	init_pipe_fds_loop(t_command *cmd);
+void	setup_pipes_loop(t_command *cmd);
+void	close_all_pipes(t_command *cmd);
+
+// executor_external.c
+void	run_external_child(t_command *cmd, t_shell *shell);
+int		handle_external_cmd(t_command *cmd, t_shell *shell, int *last_pid);
+
+// executor_loop.c
+int		run_command_loop(t_shell *shell, int stdin_backup, int stdout_backup, pid_t *last_pid);
+int		wait_and_return_status(pid_t last_pid, int stdin_backup, int stdout_backup);
+
+
 /* Builtin functions */
 int		ft_echo(t_arg_info *args, int arg_count);
 int		ft_cd(t_arg_info *args, int arg_count, t_shell *shell);
@@ -134,6 +158,15 @@ int		ft_export(t_arg_info *args, int arg_count, t_shell *shell);
 int		ft_unset(t_arg_info *args, int arg_count, t_shell *shell);
 int		ft_env(t_shell *shell);
 int		ft_exit(t_arg_info *args, int arg_count, t_shell *shell);
+void	handle_export_arg(char *arg, t_shell *shell);
+int	is_valid_identifier(char *str);
+int	get_env_size(char **env);
+void	bubble_sort_env(char **env, int size);
+void	print_env_lines(char **env);
+void	print_sorted_env(char **env);
+
+
+
 
 /* Utils functions */
 void	handle_signals(int signum);

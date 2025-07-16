@@ -1,126 +1,72 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   export.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/14 13:20:14 by wuabdull          #+#    #+#             */
+/*   Updated: 2025/07/14 13:20:14 by wuabdull         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
-static void	print_sorted_env(char **env)
-{
-	int		i;
-	int		j;
-	int		size;
-	char	*tmp;
-
-	size = 0;
-	while (env[size])
-		size++;
-	i = 0;
-	while (i < size - 1)
-	{
-		j = 0;
-		while (j < size - i - 1)
-		{
-			if (ft_strncmp(env[j], env[j + 1], ft_strlen(env[j]) + 1) > 0)
-			{
-				tmp = env[j];
-				env[j] = env[j + 1];
-				env[j + 1] = tmp;
-			}
-			j++;
-		}
-		i++;
-	}
-	i = 0;
-	while (env[i])
-	{
-		ft_putstr_fd("declare -x ", STDOUT_FILENO);
-		ft_putendl_fd(env[i], STDOUT_FILENO);
-		i++;
-	}
-}
-
-static int	is_valid_identifier(char *str)
+static int	has_valid_export_arg(t_arg_info *args, int arg_count)
 {
 	int	i;
 
-	if (!str || !*str || (!ft_isalpha(*str) && *str != '_'))
-		return (0);
 	i = 1;
-	while (str[i] && str[i] != '=')
+	while (i < arg_count)
 	{
-		if (!ft_isalnum(str[i]) && str[i] != '_')
-			return (0);
+		if (args[i].value && *args[i].value)
+			return (1);
 		i++;
 	}
-	return (1);
+	return (0);
 }
 
-static void	handle_export_arg(char *arg, t_shell *shell)
+static int	export_print_env(t_shell *shell)
 {
-	char	*name;
-	char	*value;
-	char	*equals;
+	char	**env_copy;
+	int		env_size;
+	int		i;
 
-	if (!is_valid_identifier(arg))
+	env_size = 0;
+	while (shell->env[env_size])
+		env_size++;
+	env_copy = (char **)malloc(sizeof(char *) * (env_size + 1));
+	if (!env_copy)
+		return (ERROR);
+	i = 0;
+	while (i < env_size)
 	{
-		print_error("export", "not a valid identifier");
-		return ;
+		env_copy[i] = ft_strdup(shell->env[i]);
+		i++;
 	}
-	equals = ft_strchr(arg, '=');
-	if (!equals)
-		return ;
-	name = ft_substr(arg, 0, equals - arg);
-	value = ft_strdup(equals + 1);
-	set_env_value(shell, name, value);
-	free(name);
-	free(value);
+	env_copy[i] = NULL;
+	print_sorted_env(env_copy);
+	free_array(env_copy);
+	return (SUCCESS);
+}
+
+static void	export_update_env(t_arg_info *args, int arg_count, t_shell *shell)
+{
+	int	i;
+
+	i = 1;
+	while (i < arg_count)
+	{
+		if (args[i].value && *args[i].value)
+			handle_export_arg(args[i].value, shell);
+		i++;
+	}
 }
 
 int	ft_export(t_arg_info *args, int arg_count, t_shell *shell)
 {
-	int		i;
-	char	**env_copy;
-	int		env_size;
-	int		has_valid_args;
-
-	/* Check if we have any non-empty arguments */
-	has_valid_args = 0;
-	i = 1;
-	while (i < arg_count)
-	{
-		if (args[i].value && *args[i].value)
-		{
-			has_valid_args = 1;
-			break;
-		}
-		i++;
-	}
-
-	/* If no arguments or all arguments are empty strings, list variables */
-	if (arg_count < 2 || !has_valid_args)
-	{
-		env_size = 0;
-		while (shell->env[env_size])
-			env_size++;
-		env_copy = (char **)malloc(sizeof(char *) * (env_size + 1));
-		i = 0;
-		while (i < env_size)
-		{
-			env_copy[i] = ft_strdup(shell->env[i]);
-			i++;
-		}
-		env_copy[i] = NULL;
-		print_sorted_env(env_copy);
-		free_array(env_copy);
-		return (SUCCESS);
-	}
-
-	/* Process non-empty arguments */
-	i = 1;
-	while (i < arg_count)
-	{
-		if (args[i].value && *args[i].value)
-		{
-			handle_export_arg(args[i].value, shell);
-		}
-		/* Skip empty arguments silently */
-		i++;
-	}
+	if (arg_count < 2 || !has_valid_export_arg(args, arg_count))
+		return (export_print_env(shell));
+	export_update_env(args, arg_count, shell);
 	return (SUCCESS);
-} 
+}

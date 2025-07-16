@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exit.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/14 13:19:50 by wuabdull          #+#    #+#             */
+/*   Updated: 2025/07/14 13:19:50 by wuabdull         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
 static int	is_numeric(char *str)
@@ -40,4 +52,4 @@ int	ft_exit(t_arg_info *args, int arg_count, t_shell *shell)
 	exit_code = ft_atoi(args[1].value) & 255;
 	shell->running = 0;
 	return (exit_code);
-} 
+}

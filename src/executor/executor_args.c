@@ -1,28 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipes.c                                            :+:      :+:    :+:   */
+/*   executor_args.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/15 15:49:25 by wuabdull          #+#    #+#             */
-/*   Updated: 2025/07/15 15:52:38 by wuabdull         ###   ########.fr       */
+/*   Created: 2025/07/15 16:48:05 by wuabdull          #+#    #+#             */
+/*   Updated: 2025/07/15 16:48:15 by wuabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-void	setup_pipes(t_command *cmd)
+char	**create_argv(t_command *cmd)
 {
-	int	pipefd[2];
+	char	**argv;
+	int		i;
 
-	if (!cmd->next)
-		return ;
-	if (pipe(pipefd) == -1)
+	if (cmd->arg_count == 0)
+		return (NULL);
+	argv = (char **)malloc(sizeof(char *) * (cmd->arg_count + 1));
+	if (!argv)
+		return (NULL);
+	i = 0;
+	while (i < cmd->arg_count)
 	{
-		print_error("pipe", strerror(errno));
-		return ;
+		argv[i] = cmd->args[i].value;
+		i++;
 	}
-	cmd->pipe_fd[1] = pipefd[1];
-	cmd->next->pipe_fd[0] = pipefd[0];
+	argv[i] = NULL;
+	return (argv);
 }
