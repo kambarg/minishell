@@ -6,7 +6,7 @@
 /*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 16:33:49 by wuabdull          #+#    #+#             */
-/*   Updated: 2025/07/15 16:53:19 by wuabdull         ###   ########.fr       */
+/*   Updated: 2025/07/16 15:06:39 by wuabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,4 +38,3 @@ int	execute_commands(t_shell *shell)
 	run_command_loop(shell, stdin_backup, stdout_backup, &last_pid);
 	return (wait_and_return_status(last_pid, stdin_backup, stdout_backup));
 }
-
