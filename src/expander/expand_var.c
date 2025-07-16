@@ -1,70 +1,27 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   expander.c                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/15 14:09:56 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/15 14:09:56 by gkambarb         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "../../includes/minishell.h"
-
-static void	expand_args(t_command *cmd, t_shell *shell)
+char	*expand_var(char *str, t_shell *shell, int *i)
 {
-	int		i;
-	char	*expanded;
+	char	*var_name;
+	char	*result;
 
-	i = 0;
-	while (i < cmd->arg_count)
+	if (!str || !shell || !i)
+		return (ft_strdup("$"));
+	var_name = get_var_name(str, i);
+	if (!var_name)
+		return (ft_strdup("$"));
+	if (ft_strlen(var_name) == 1 && ft_strncmp(var_name, "?", 1) == 0)
+		result = ft_itoa(shell->exit_status);
+	else if (ft_strlen(var_name) == 1 && ft_strncmp(var_name, "0", 1) == 0)
 	{
-		expanded = expand_quoted_string(cmd->args[i].value,
-				shell, cmd->args[i].quote_type);
-		if (expanded)
-		{
-			free(cmd->args[i].value);
-			cmd->args[i].value = expanded;
-		}
+		if (shell->program_name)
+			result = ft_strdup(shell->program_name);
 		else
-			print_error("expander", "critical memory allocation failed");
-		i++;
+			result = ft_strdup("minishell");
 	}
-}
-
-// Note: redirections are always expanded
-static void	expand_redirects(t_command *cmd, t_shell *shell)
-{
-	t_redirect	*redir;
-	char		*expanded;
-
-	redir = cmd->redirects;
-	while (redir)
-	{
-		if (redir->type != REDIR_HEREDOC)
-		{
-			expanded = expand_quoted_string(redir->file, shell, QUOTE_NONE);
-			if (expanded)
-			{
-				free(redir->file);
-				redir->file = expanded;
-			}
-			else
-				print_error("expander", "critical memory allocation failed");
-		}
-		redir = redir->next;
-	}
-}
-
-void	expander(t_command *cmd, t_shell *shell)
-{
-	if (!cmd || !shell)
-		return ;
-	while (cmd)
-	{
-		expand_args(cmd, shell);
-		expand_redirects(cmd, shell);
-		cmd = cmd->next;
-	}
+	else
+		result = get_env_value(shell->env, var_name);
+	free(var_name);
+	if (result)
+		return (result);
+	else
+		return (ft_strdup(""));
 }
