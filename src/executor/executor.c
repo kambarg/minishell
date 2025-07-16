@@ -28,7 +28,6 @@ int	execute_commands(t_shell *shell)
 	int		stdin_backup;
 	int		stdout_backup;
 	pid_t	last_pid;
-	int		last_status;
 
 	if (preprocess_heredocs(shell->commands, shell) == ERROR)
 		return (ERROR);
@@ -36,7 +35,7 @@ int	execute_commands(t_shell *shell)
 	stdout_backup = dup(STDOUT_FILENO);
 	init_pipe_fds_loop(shell->commands);
 	setup_pipes_loop(shell->commands);
-	last_status = run_command_loop(shell, stdin_backup,
-			stdout_backup, &last_pid);
+	run_command_loop(shell, stdin_backup, stdout_backup, &last_pid);
 	return (wait_and_return_status(last_pid, stdin_backup, stdout_backup));
 }
+
