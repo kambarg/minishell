@@ -1,40 +1,46 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signals.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/16 14:05:46 by wuabdull          #+#    #+#             */
+/*   Updated: 2025/07/16 14:05:46 by wuabdull         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
-/* Global variables to track execution state and signals */
 int	g_exec_status = 0;
 
-/* Signal handler for interactive mode (waiting for input) */
 void	handle_signals(int signum)
 {
 	if (signum == SIGINT)
 	{
-		if (g_exec_status == 0) /* Interactive mode */
+		if (g_exec_status == 0)
 		{
 			write(STDOUT_FILENO, "\n", 1);
 			rl_on_new_line();
-			// rl_replace_line("", 0);
-			write(1,"\33[2K\r]", 5);
+			write(1, "\33[2K\r]", 5);
 			rl_on_new_line();
 			rl_redisplay();
-			// rl_delete_text(0,rl_end);
-			write(1,"\33[2K\r]", 5);
+			write(1, "\33[2K\r]", 5);
 			rl_on_new_line();
 			rl_redisplay();
-			rl_point =0;
+			rl_point = 0;
 			rl_redisplay();
 		}
-		else if (g_exec_status == 2) /* Heredoc mode */
+		else if (g_exec_status == 2)
 		{
 			write(STDOUT_FILENO, "\n", 1);
-			close(STDIN_FILENO); /* Force heredoc to exit */
+			close(STDIN_FILENO);
 			g_exec_status = 0;
 		}
-		g_exec_status = 3; /* Signal received */
-		/* In execution mode 1, do nothing - let the child process handle it */
+		g_exec_status = 3;
 	}
 }
 
-/* Setup signals for interactive mode */
 void	setup_signals_interactive(void)
 {
 	g_exec_status = 0;
@@ -42,7 +48,6 @@ void	setup_signals_interactive(void)
 	signal(SIGQUIT, SIG_IGN);
 }
 
-/* Setup signals for command execution */
 void	setup_signals_executing(void)
 {
 	g_exec_status = 1;
@@ -50,7 +55,6 @@ void	setup_signals_executing(void)
 	signal(SIGQUIT, SIG_IGN);
 }
 
-/* Setup signals for heredoc reading */
 void	setup_signals_heredoc(void)
 {
 	g_exec_status = 2;
@@ -58,9 +62,8 @@ void	setup_signals_heredoc(void)
 	signal(SIGQUIT, SIG_IGN);
 }
 
-/* Reset signals to default behavior (for child processes) */
 void	reset_signals_default(void)
 {
 	signal(SIGINT, SIG_DFL);
 	signal(SIGQUIT, SIG_DFL);
-} 
+}
