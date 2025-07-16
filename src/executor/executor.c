@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 16:33:49 by wuabdull          #+#    #+#             */
-/*   Updated: 2025/07/15 16:53:19 by wuabdull         ###   ########.fr       */
+/*   Updated: 2025/07/16 13:11:06 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,5 +38,11 @@ int	execute_commands(t_shell *shell)
 	setup_pipes_loop(shell->commands);
 	last_status = run_command_loop(shell, stdin_backup,
 			stdout_backup, &last_pid);
-	return (wait_and_return_status(last_pid, stdin_backup, stdout_backup));
+	/* If there was an external command, wait for it and use its status */
+	if (last_pid != -1)
+		return (wait_and_return_status(last_pid, stdin_backup, stdout_backup));
+	/* Otherwise, use the builtin command status */
+	close(stdin_backup);
+	close(stdout_backup);
+	return (last_status);
 }
