@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   error.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/16 12:05:47 by wuabdull          #+#    #+#             */
+/*   Updated: 2025/07/16 12:05:47 by wuabdull         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
 void	print_error(const char *cmd, const char *msg)
@@ -22,4 +34,4 @@ int	is_whitespace_only(const char *str)
 		str++;
 	}
 	return (1);
-} 
+}
