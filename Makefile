@@ -32,7 +32,8 @@ SRCS = 	src/main.c \
 		src/executor/redirections.c \
 		src/executor/pipes.c \
 		src/utils/signals.c \
-		src/utils/environment.c \
+		src/utils/get_env_value.c \
+		src/utils/set_env_value.c \
 		src/utils/error.c \
 		src/utils/memory.c \
 		src/utils/temp_files.c\
