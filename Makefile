@@ -8,6 +8,8 @@ INCLUDES = -I./includes -I$(LIBFT_DIR) -I/opt/vagrant/embedded/include/readline/
 RM = rm -f
 
 SRCS = 	src/main.c \
+		src/init_shell.c \
+		src/run_shell.c \
 		src/builtins/echo.c \
 		src/builtins/cd.c \
 		src/builtins/pwd.c \
