@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 10:50:26 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/17 11:19:56 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/17 11:36:35 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,6 @@ extern int				g_exec_status;
 void					init_shell(t_shell *shell, char **env,
 							char *program_name);
 void					run_shell(t_shell *shell);
-void					cleanup_shell(t_shell *shell);
 
 // Lexer functions
 t_token					*lexer(char *input);

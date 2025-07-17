@@ -1,11 +1,23 @@
 #include "../includes/minishell.h"
 
-void	init_shell(t_shell *shell, char **env, char *program_name)
+// OLDPWD initialization:
+// In bash, OLDPWD is not inherited from parent environment
+// It's a shell-specific variable that starts unset
+// Only create OLDPWD when first cd command is used
+static void	set_initial_pwd(t_shell *shell)
+{
+	char	cwd[4096];
+	char	*current_dir;
+
+	current_dir = getcwd(cwd, sizeof(cwd));
+	if (current_dir)
+		set_env_value(shell, "PWD", current_dir);
+}
+
+static void	copy_env(t_shell *shell, char **env)
 {
 	int	i;
 	int	env_size;
-	char	cwd[4096];
-	char	*current_dir;
 
 	env_size = 0;
 	while (env[env_size])
@@ -25,24 +37,17 @@ void	init_shell(t_shell *shell, char **env, char *program_name)
 		i++;
 	}
 	shell->env[i] = NULL;
+}
+
+void	init_shell(t_shell *shell, char **env, char *program_name)
+{
+	copy_env(shell, env);
 	shell->commands = NULL;
 	shell->exit_status = 0;
 	shell->running = 1;
 	shell->program_name = ft_strdup(program_name);
 	shell->temp_file_counter = 0;
-	
-	/* Set PWD to current directory */
-	current_dir = getcwd(cwd, sizeof(cwd));
-	if (current_dir)
-	{
-		/* Always ensure PWD is set correctly */
-		set_env_value(shell, "PWD", current_dir);
-		
-		/* OLDPWD initialization: */
-		/* In bash, OLDPWD is not inherited from parent environment */
-		/* It's a shell-specific variable that starts unset */
-		/* Only create OLDPWD when first cd command is used */
-	}
+	set_initial_pwd(shell);
 }
 
 // Print "syntax error near unexpected token" if
@@ -125,7 +130,7 @@ void	run_shell(t_shell *shell)
 	}
 }
 
-void	cleanup_shell(t_shell *shell)
+static void	cleanup_shell(t_shell *shell)
 {
 	if (shell->env)
 		free_array(shell->env);
@@ -146,4 +151,4 @@ int	main(int argc, char **argv, char **env)
 	run_shell(&shell);
 	cleanup_shell(&shell);
 	return (shell.exit_status);
-} 
+}
