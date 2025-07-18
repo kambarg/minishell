@@ -165,6 +165,15 @@ export $k <=> export
 $ export $0
 # name of the shell or script you're in (./minishell or bash)
 
+===ok===
+$ export mhi="a"
+$ echo $mhi
+a
+$ env | grep hi
+a
+
+
+
 ===???error===
 === quotes inside quotes=============
 $ echo $USER

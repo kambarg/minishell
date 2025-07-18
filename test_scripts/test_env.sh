@@ -20,3 +20,9 @@ export $0 # output depends on $0 expansion
 export nothing # nonexistent env - nothing to export
 export $x # expands to empty string <=> export
 export $USER # expands to the user name
+export hi="a"
+echo $hi
+env | grep hi
+unset hi
+echo $hi
+env | grep hi

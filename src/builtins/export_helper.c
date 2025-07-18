@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export_helper.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 13:27:08 by wuabdull          #+#    #+#             */
-/*   Updated: 2025/07/15 14:37:15 by wuabdull         ###   ########.fr       */
+/*   Updated: 2025/07/18 10:53:57 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,32 @@ int	is_valid_identifier(char *str)
 	return (1);
 }
 
+static char	*strip_quotes(char *str)
+{
+	int		len;
+	char	*result;
+
+	if (!str)
+		return (NULL);
+	len = ft_strlen(str);
+	if (len >= 2
+		&& ((str[0] == '"' && str[len - 1] == '"')
+		|| (str[0] == '\'' && str[len - 1] == '\'')))
+	{
+		result = ft_substr(str, 1, len - 2);
+	}
+	else
+	{
+		result = ft_strdup(str);
+	}
+	return (result);
+}
+
 void	handle_export_arg(char *arg, t_shell *shell)
 {
 	char	*name;
 	char	*value;
+	char	*raw_value;
 	char	*equals;
 
 	if (!is_valid_identifier(arg))
@@ -43,7 +65,9 @@ void	handle_export_arg(char *arg, t_shell *shell)
 	if (!equals)
 		return ;
 	name = ft_substr(arg, 0, equals - arg);
-	value = ft_strdup(equals + 1);
+	raw_value = ft_strdup(equals + 1);
+	value = strip_quotes(raw_value);
+	free(raw_value);
 	set_env_value(shell, name, value);
 	free(name);
 	free(value);

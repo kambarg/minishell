@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 10:35:55 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/17 10:44:46 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/18 10:17:09 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,12 +86,21 @@ static int	append_new_env(t_shell *shell, const char *name, const char *value)
 void	set_env_value(t_shell *shell, const char *name, const char *value)
 {
 	int	i;
+	int	result;
 
 	if (is_invalid(shell, name, value))
 		return ;
 	i = get_env_index(shell->env, name);
 	if (i >= 0)
-		update_env(shell, name, value, i);
+	{
+		result = update_env(shell, name, value, i);
+		if (!result)
+			print_error("export", "memory allocation failed");
+	}
 	else
-		append_new_env(shell, name, value);
+	{
+		result = append_new_env(shell, name, value);
+		if (!result)
+			print_error("export", "memory allocation failed");
+	}
 }
