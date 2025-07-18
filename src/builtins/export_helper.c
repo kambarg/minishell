@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 13:27:08 by wuabdull          #+#    #+#             */
-/*   Updated: 2025/07/18 10:53:57 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/18 11:05:41 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,8 @@ static char	*strip_quotes(char *str)
 	if (!str)
 		return (NULL);
 	len = ft_strlen(str);
-	if (len >= 2
-		&& ((str[0] == '"' && str[len - 1] == '"')
-		|| (str[0] == '\'' && str[len - 1] == '\'')))
+	if (len >= 2 && ((str[0] == '"' && str[len - 1] == '"') || (str[0] == '\''
+				&& str[len - 1] == '\'')))
 	{
 		result = ft_substr(str, 1, len - 2);
 	}
