@@ -80,6 +80,14 @@ $ echo "$HOME"
 $ echo '*.txt'
 *.txt
 
+
+===??===
+$ echo "${GREEN}This message is green.${RESET}"
+${GREEN}This message is green.${RESET}
+<we didn't support {}>
+<without brace expansion, your shell should only recognize $VAR where VAR consists of [a-zA-Z0-9_]>
+
+
 ===out of scope of subject (unclosed quotes)===
 $ echo 'can't'
 > '
@@ -258,6 +266,14 @@ test.txt        test2.txt
 $ cat > t.txt -e < f.txt | < t.txt
 bash: f.txt: No such file or directory
 t.txt is created
+
+===ok===
+$ cat << "$hi"
+> $hsfd
+> $hi
+$hsfd 
+<if we have " or ' as first char f the delemeter we dont expand at all>
+
 
 
 ===Edge cases=========================
