@@ -119,7 +119,8 @@ $ env | grep -E 'PWD|OLDPWD|USER|HOME'
 
 Test OLDPWD:
 echo $PWD      # Should show current directory
-echo $OLDPWD   # Should show parent shell's OLDPWD
+echo $OLDPWD   # in minishee at the very beginning it doesn't show value. Should show parent shell's OLDPWD
+
 cd /tmp
 echo $OLDPWD   # Should show previous directory
 echo $PWD      # Should show /tmp
@@ -172,9 +173,35 @@ a
 $ env | grep hi
 a
 
+===??===
+export ""=""
+minishell: export: not a valid identifier
+<err message doesn't show = as invalid identifier but this is how we coded it>
+
+===??===
+$ export MTES=T=""
+minishell$ env | grep MTES
+MTES=T=""
+<env var has to get evalue without double quotes>
+<in minishell we remove only quotes aroud the value. inside the value quotes are considered as regular char>
+
+===??===
+$ export | grep "OLDPWD"
+declare -x OLDPWD= <should or shouldn't have value at the minishell start?>
 
 
-===???error===
+
+===================unset==============
+===ok===
+export COPYPATH=$PATH
+env | grep PATH
+unset PATH
+env | grep PATH
+echo $PATH
+export PATH=$COPYPATH
+echo $PATH
+
+===ok===
 === quotes inside quotes=============
 $ echo $USER
 goha
