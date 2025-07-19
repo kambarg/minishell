@@ -6,41 +6,11 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 00:25:25 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/18 00:25:26 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/19 15:51:26 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/minishell.h"
-
-// Print "syntax error near unexpected token" if
-// pipe followed by nothing or another pipe
-// redirection without target
-int	validate_tokens(t_token *tokens)
-{
-	t_token	*current;
-	t_token	*next;
-
-	if (!tokens)
-		return (1);
-	current = tokens;
-	while (current)
-	{
-		next = current->next;
-		if (current->type == T_PIPE && (!next || next->type == T_PIPE))
-		{
-			print_error(NULL, "syntax error near unexpected token `|'");
-			return (0);
-		}
-		if ((current->type >= T_REDIR_IN && current->type <= T_APPEND)
-			&& (!next || next->type != T_WORD))
-		{
-			print_error(NULL, "syntax error near unexpected token `newline'");
-			return (0);
-		}
-		current = current->next;
-	}
-	return (1);
-}
 
 static int	handle_input_exit(t_shell *shell, char *input)
 {

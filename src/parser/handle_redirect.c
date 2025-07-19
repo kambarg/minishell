@@ -6,14 +6,14 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/06 14:37:57 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/08 21:52:25 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/19 17:24:39 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
 // Initialize fd to -1 (not used by default) 
-static t_redirect	*create_redirect(int type, char *file)
+static t_redirect	*create_redirect(int type, char *file, int quote_type)
 {
 	t_redirect	*redir;
 
@@ -23,6 +23,7 @@ static t_redirect	*create_redirect(int type, char *file)
 	redir->type = type;
 	redir->file = ft_strdup(file);
 	redir->fd = -1;
+	redir->quote_type = quote_type;
 	redir->next = NULL;
 	return (redir);
 }
@@ -46,6 +47,7 @@ int	handle_redirect(t_token **token, t_command *cmd)
 {
 	int		type;
 	char	*file;
+	int		quote_type;
 
 	if ((*token)->type == T_REDIR_IN)
 		type = REDIR_IN;
@@ -62,6 +64,7 @@ int	handle_redirect(t_token **token, t_command *cmd)
 		return (0);
 	}
 	file = (*token)->value;
-	add_redirect(cmd, create_redirect(type, file));
+	quote_type = (*token)->quote_type;
+	add_redirect(cmd, create_redirect(type, file, quote_type));
 	return (1);
 }

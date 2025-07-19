@@ -10,6 +10,7 @@ RM = rm -f
 SRCS = 	src/main.c \
 		src/init_shell.c \
 		src/run_shell.c \
+		src/validate_tokens.c \
 		src/builtins/echo.c \
 		src/builtins/cd.c \
 		src/builtins/pwd.c \

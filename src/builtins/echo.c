@@ -19,7 +19,7 @@ int	ft_echo(t_arg_info *args, int arg_count)
 
 	n_flag = 0;
 	i = 1;
-	if (arg_count > 1 && ft_strncmp(args[1].value, "-n", 3) == 0)
+	while (i < arg_count && ft_strncmp(args[i].value, "-n", 3) == 0)
 	{
 		n_flag = 1;
 		i++;

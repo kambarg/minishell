@@ -66,8 +66,12 @@ a received signal.
 = signal handler will not access your
 main data structures
 
-===ok===
+
+
+
+
 ===Single quote==============================
+===ok===
 Handle ’ (single quote) which should prevent the shell 
 from interpreting the metacharacters in the quoted sequence.
 
@@ -80,13 +84,11 @@ $ echo "$HOME"
 $ echo '*.txt'
 *.txt
 
-
 ===??===
 $ echo "${GREEN}This message is green.${RESET}"
 ${GREEN}This message is green.${RESET}
 <we didn't support {}>
 <without brace expansion, your shell should only recognize $VAR where VAR consists of [a-zA-Z0-9_]>
-
 
 ===out of scope of subject (unclosed quotes)===
 $ echo 'can't'
@@ -101,8 +103,9 @@ minishell$ echo 'can'\''t'
 minishell: syntax error: unclosed quote
 
 
-===ok===
+
 ===double quotes=================================
+===ok===
 Handle " (double quote) which should prevent the shell 
 from interpreting the metacharacters in the quoted 
 sequence except for $ (dollar sign).
@@ -112,8 +115,9 @@ $ echo $HOME
 $ echo "$HOME"
 /home/<user_name>
 
-===ok===
+
 ===environment variables=======================
+===ok===
 Handle environment variables ($ followed by a sequence 
 of characters) which should expand to their values.
 $ env
@@ -209,8 +213,9 @@ echo $PATH
 export PATH=$COPYPATH
 echo $PATH
 
+
+=== quotes inside quotes======================
 ===ok===
-=== quotes inside quotes=============
 $ echo $USER
 goha
 $ echo "$USER"
@@ -238,6 +243,8 @@ $ echo " "$HOME" "
 $ echo " " "$HOME" " "
   /home/goha
 
+
+
 ===Redirections==========================
 ==ok==
 $ cat test.txt | grep "hello" < test2.txt
@@ -251,12 +258,6 @@ minishell: test.txt: No such file or directory
 ===ok===
 $ ls | cat < test2.txt
 minishell: test2.txt: No such file or directory
-
-==ok===
-cat <<END >test.txt
-heredoc> line 1
-heredoc> line 2
-heredoc> END
 
 ==ok===
 $ < test.txt | ls
@@ -274,15 +275,63 @@ $ cat << "$hi"
 $hsfd 
 <if we have " or ' as first char f the delemeter we dont expand at all>
 
-
-
-===Edge cases=========================
 ===ok===
-$        echo      hello     world    
-hello world
+$ |
+minishell: syntax error near unexpected token `|'
 
 ===ok===
-$ echo ""
+$ | ls
+minishell: syntax error near unexpected token `|'
+
+===ok===
+$ ls |
+minishell: syntax error near unexpected token `newline'
+<note: we didn't support interactive input mode in minishell, we 
+expect full input line and return error message if input is invalid>
+
+===ok===
+$ > file
+$ ls file
+file
+
+===ok===
+$ >>
+minishell: syntax error near unexpected token `newline'
+
+
+===ok===
+$ echo > | ls
+minishell: syntax error near unexpected token `|'
+
+===ok===
+$ echo >
+minishell: syntax error near unexpected token `newline'
+
+===ok===
+$ cat < < file
+minishell: syntax error near unexpected token `<'
+
+===ok===
+$ cat <<
+minishell: syntax error near unexpected token `newline'
+
+===ok===
+$ echo hello > out >
+minishell: syntax error near unexpected token `newline'
+
+===ok===
+< jfkdg > file.txt
+minishell: jfkdg: No such file or directory
+
+===ok===
+>file.txt < dsghfkfjs
+minishell: dsghfkfjs: No such file or directory
+<file.txt was created and empty>
+
+===ok===
+< file2.txt | ls
+bash: file2.txt: No such file or directory
+file.txt	test-cases.txt	test.txt	test2.tx
 
 ===ok===
 $ |
@@ -296,24 +345,9 @@ total 0
 $ > test2.txt < test.txt
 minishell: test.txt: No such file or directory
 $ cat test2.txt
-
-If test2.txt does not exist, it should be created and be empty.
-If test2.txt exists and has text, text.txt doesn't exist, input line has to overwringt test2.txt content and make it empty.
-
-===ok===
-< jfkdg > file.txt
-minishell: jfkdg: No such file or directory
-
-===ok===
->file.txt < dsghfkfjs
-minishell: dsghfkfjs: No such file or directory
-
-file.txt was created and empty.
-
-===ok===
-$ < file2.txt | ls
-bash: file2.txt: No such file or directory
-file.txt	test-cases.txt	test.txt	test2.tx
+<If test2.txt does not exist, it should be created and be empty.
+If test2.txt exists and has text, text.txt doesn't exist, 
+input line has to overwringt test2.txt content and make it empty.>
 
 ===ok===
 $ echo "hahaha" > test2.txt
@@ -321,8 +355,14 @@ $ ls | cat < test2.txt
 hahaha
 
 
+===Heredoc========================================
+==ok===
+cat <<END >test.txt
+heredoc> line 1
+heredoc> line 2
+heredoc> END
 
-===Heredoc=================
+
 ===ok===
 $ cat << TEXT
 > One
@@ -392,3 +432,41 @@ $ cat out.txt
 a
 b
 c
+
+
+===error===
+minishell$ cat << '$USER'
+> $HOME
+> $fg,jkl
+> goha
+> $USER
+$HOME
+$fg,jkl
+goha
+<if keyword quoted than NO expansion in heredoc text>
+
+===error===
+$ cat << $USER
+> $HOME
+> $dd,j
+> goha
+> $USER
+$HOME
+$dd,j
+goha
+<>
+
+==============builtins========================
+===ok===
+$        echo      hello     world    
+hello world
+
+===ok===
+$ echo ""
+
+
+===============edge cases=========================
+===error===
+$ ""
+minishell: : Permission denied
+bash: command not found

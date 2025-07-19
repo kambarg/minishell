@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 10:15:12 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/05 14:55:50 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/19 17:50:38 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,16 +41,25 @@ t_token	*lexer(char *input)
 		else if (is_operator_char(input[i]))
 		{
 			if (!handle_operator(input, &i, &tokens))
+			{
+				free_tokens(tokens);
 				return (NULL);
+			}
 			i++;
 		}
 		else if (is_quotes(input[i]))
 		{
 			if (!handle_quoted_string(input, &i, &tokens))
+			{
+				free_tokens(tokens);
 				return (NULL);
+			}
 		}
 		else if (!handle_word(input, &i, &tokens))
+		{
+			free_tokens(tokens);
 			return (NULL);
+		}
 	}
 	return (tokens);
 }
