@@ -433,8 +433,7 @@ a
 b
 c
 
-
-===error===
+===ok===
 minishell$ cat << '$USER'
 > $HOME
 > $fg,jkl
@@ -445,7 +444,7 @@ $fg,jkl
 goha
 <if keyword quoted than NO expansion in heredoc text>
 
-===error===
+===ok===
 $ cat << $USER
 > $HOME
 > $dd,j

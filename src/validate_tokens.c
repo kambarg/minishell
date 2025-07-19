@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/19 15:35:59 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/19 16:59:59 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/20 00:36:18 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,13 +30,25 @@ static const char	*token_to_str(int type)
 static void	print_syntax_error(t_token *token)
 {
 	const char	*unexpected;
+	char		*suffix;
+	char		*full_msg;
 
 	if (token)
 		unexpected = token_to_str(token->type);
 	else
 		unexpected = "newline";
-	print_error(NULL, ft_strjoin("syntax error near unexpected token `", \
-ft_strjoin(unexpected, "'")));
+	suffix = ft_strjoin(unexpected, "'");
+	if (!suffix)
+		return ;
+	full_msg = ft_strjoin("syntax error near unexpected token `", suffix);
+	if (!full_msg)
+	{
+		free(suffix);
+		return ;
+	}
+	print_error(NULL, full_msg);
+	free(suffix);
+	free(full_msg);
 }
 
 static int	validate_start(t_token *tokens)
