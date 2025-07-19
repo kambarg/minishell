@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/16 15:17:36 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/19 17:25:03 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/19 22:27:37 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,41 +32,34 @@ static int	open_read_fd(char *temp_path)
 	return (fd);
 }
 
-static void	write_heredoc_loop(int write_fd, char *delimiter, int quote_type, t_shell *shell)
+// Note: expand variables in heredoc text only if delimiter was not quoted
+static void	write_heredoc_loop(int write_fd, t_redirect *redir, t_shell *shell)
 {
 	char	*line;
-	char	*expanded_line;
-	int		del_len;
+	char	*expanded;
 
-	del_len = ft_strlen(delimiter);
 	while (1)
 	{
 		line = readline("> ");
-		if (!line || ft_strncmp(line, delimiter, del_len + 1) == 0)
-		{
-			free(line);
+		if (!line \
+|| ft_strncmp(line, redir->file, ft_strlen(redir->file) + 1) == 0)
 			break ;
-		}
-		// Expand variables only if delimiter was not quoted
-		if (quote_type == QUOTE_NONE)
+		if (redir->quote_type == QUOTE_NONE)
 		{
-			expanded_line = expand_quoted_string(line, shell, QUOTE_NONE);
-			if (expanded_line)
+			expanded = expand_quoted_string(line, shell, QUOTE_NONE);
+			if (expanded)
 			{
-				ft_putendl_fd(expanded_line, write_fd);
-				free(expanded_line);
+				ft_putendl_fd(expanded, write_fd);
+				free(expanded);
 			}
 			else
-			{
 				ft_putendl_fd(line, write_fd);
-			}
 		}
 		else
-		{
 			ft_putendl_fd(line, write_fd);
-		}
 		free(line);
 	}
+	free(line);
 }
 
 static int	handle_heredoc_file(char *temp_path, int *temp_fd)
@@ -86,7 +79,7 @@ static int	handle_heredoc_file(char *temp_path, int *temp_fd)
 	return (SUCCESS);
 }
 
-int	create_temp_file(char *delimiter, int *temp_fd, t_shell *shell, int quote_type)
+int	create_temp_file(t_redirect *redir, int *temp_fd, t_shell *shell)
 {
 	char	*temp_path;
 	int		write_fd;
@@ -102,7 +95,7 @@ int	create_temp_file(char *delimiter, int *temp_fd, t_shell *shell, int quote_ty
 	if (write_fd == -1)
 		return (free(temp_path), ERROR);
 	setup_signals_heredoc();
-	write_heredoc_loop(write_fd, delimiter, quote_type, shell);
+	write_heredoc_loop(write_fd, redir, shell);
 	setup_signals_interactive();
 	close(write_fd);
 	status = handle_heredoc_file(temp_path, temp_fd);

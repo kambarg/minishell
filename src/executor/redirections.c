@@ -31,7 +31,7 @@ int	preprocess_heredocs(t_command *commands, t_shell *shell)
 		{
 			if (redir->type == REDIR_HEREDOC)
 			{
-				if (create_temp_file(redir->file, &temp_fd, shell, redir->quote_type) == ERROR)
+				if (create_temp_file(redir, &temp_fd, shell) == ERROR)
 					return (ERROR);
 				redir->fd = temp_fd;
 				redir->type = REDIR_IN;
