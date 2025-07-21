@@ -43,8 +43,10 @@ static char	*cd_choose_path(t_arg_info *args, int arg_count, t_shell *shell)
 		if (path)
 			ft_putendl_fd(path, STDOUT_FILENO);
 	}
-	else
-		path = ft_strdup(args[1].value);
+	else if (ft_strncmp(args[1].value, "~", 2) == 0)
+        path = get_env_value(shell->env, "HOME");
+    else
+        path = ft_strdup(args[1].value);
 	return (path);
 }
 
