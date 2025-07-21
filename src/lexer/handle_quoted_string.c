@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   handle_quoted_string.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*   By: worodhazem <worodhazem@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 11:10:05 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/05 23:52:43 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/21 00:58:11 by worodhazem       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-static char	*get_quoted_str(char *input, int *i, char quote)
+char	*get_quoted_str(char *input, int *i, char quote)
 {
 	int		start;
 	int		len;
