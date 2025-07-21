@@ -1,109 +1,103 @@
-#include "../../includes/minishell.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   temp_files.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/16 15:17:36 by gkambarb          #+#    #+#             */
+/*   Updated: 2025/07/19 22:27:37 by gkambarb         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../../includes/minishell.h"
 
-/* Create a unique temporary file path using pid and shell counter */
-char	*create_unique_temp_path(t_shell *shell)
+static int	open_write_fd(char *temp_path)
 {
-	char	*temp_path;
-	char	*pid_str;
-	char	*counter_str;
-	char	*temp1;
-	char	*temp2;
-	int		fd;
+	int	fd;
 
-	if (!shell)
-		return (NULL);
+	fd = open(temp_path, O_WRONLY);
+	if (fd == -1)
+		print_error("heredoc", strerror(errno));
+	return (fd);
+}
 
-	/* Get unique identifier using shell address (truncated to int) */
-	pid_str = ft_itoa((int)((unsigned long)&shell % 100000));
-	if (!pid_str)
-		return (NULL);
-	
-	/* Try to create unique file */
+static int	open_read_fd(char *temp_path)
+{
+	int	fd;
+
+	fd = open(temp_path, O_RDONLY);
+	if (fd == -1)
+		print_error("heredoc", strerror(errno));
+	return (fd);
+}
+
+// Note: expand variables in heredoc text only if delimiter was not quoted
+static void	write_heredoc_loop(int write_fd, t_redirect *redir, t_shell *shell)
+{
+	char	*line;
+	char	*expanded;
+
 	while (1)
 	{
-		/* Convert counter to string */
-		counter_str = ft_itoa(shell->temp_file_counter++);
-		if (!counter_str)
+		line = readline("> ");
+		if (!line \
+|| ft_strncmp(line, redir->file, ft_strlen(redir->file) + 1) == 0)
+			break ;
+		if (redir->quote_type == QUOTE_NONE)
 		{
-			free(pid_str);
-			return (NULL);
+			expanded = expand_quoted_string(line, shell, QUOTE_NONE);
+			if (expanded)
+			{
+				ft_putendl_fd(expanded, write_fd);
+				free(expanded);
+			}
+			else
+				ft_putendl_fd(line, write_fd);
 		}
-		
-		/* Build temp file path: /tmp/minishell_heredoc_<pid>_<counter> */
-		temp1 = ft_strjoin("/tmp/minishell_heredoc_", pid_str);
-		temp2 = ft_strjoin(temp1, "_");
-		free(temp1);
-		temp_path = ft_strjoin(temp2, counter_str);
-		free(temp2);
-		free(counter_str);
-		
-		if (!temp_path)
-		{
-			free(pid_str);
-			return (NULL);
-		}
-		
-		/* Try to create file with O_EXCL to ensure uniqueness */
-		fd = open(temp_path, O_CREAT | O_EXCL | O_RDWR, 0600);
-		if (fd != -1)
-		{
-			close(fd);
-			free(pid_str);
-			return (temp_path);
-		}
-		
-		/* File exists, try next counter value */
+		else
+			ft_putendl_fd(line, write_fd);
+		free(line);
+	}
+	free(line);
+}
+
+static int	handle_heredoc_file(char *temp_path, int *temp_fd)
+{
+	int	read_fd;
+
+	read_fd = open_read_fd(temp_path);
+	if (read_fd == -1)
+	{
+		unlink(temp_path);
 		free(temp_path);
+		return (ERROR);
 	}
+	unlink(temp_path);
+	free(temp_path);
+	*temp_fd = read_fd;
+	return (SUCCESS);
 }
 
-/* Add a temp file path to the shell's temp file list */
-void	add_temp_file(t_shell *shell, char *path)
+int	create_temp_file(t_redirect *redir, int *temp_fd, t_shell *shell)
 {
-	t_temp_file	*new_node;
+	char	*temp_path;
+	int		write_fd;
+	int		status;
 
-	if (!shell || !path)
-		return ;
-		
-	new_node = malloc(sizeof(t_temp_file));
-	if (!new_node)
-		return ;
-		
-	new_node->path = ft_strdup(path);
-	if (!new_node->path)
+	temp_path = create_temp_path(shell);
+	if (!temp_path)
 	{
-		free(new_node);
-		return ;
+		print_error("heredoc", "failed to create temp file");
+		return (ERROR);
 	}
-	
-	new_node->next = shell->temp_files;
-	shell->temp_files = new_node;
+	write_fd = open_write_fd(temp_path);
+	if (write_fd == -1)
+		return (free(temp_path), ERROR);
+	setup_signals_heredoc();
+	write_heredoc_loop(write_fd, redir, shell);
+	setup_signals_interactive();
+	close(write_fd);
+	status = handle_heredoc_file(temp_path, temp_fd);
+	return (status);
 }
-
-/* Clean up all temporary files */
-void	cleanup_temp_files(t_shell *shell)
-{
-	t_temp_file	*current;
-	t_temp_file	*next;
-
-	if (!shell)
-		return ;
-		
-	current = shell->temp_files;
-	while (current)
-	{
-		next = current->next;
-		
-		/* Remove the actual file */
-		unlink(current->path);
-		
-		/* Free the memory */
-		free(current->path);
-		free(current);
-		
-		current = next;
-	}
-	
-	shell->temp_files = NULL;
-} 
