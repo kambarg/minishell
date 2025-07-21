@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_operator.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*   By: worodhazem <worodhazem@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 02:29:08 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/05 15:14:33 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/20 22:31:49 by worodhazem       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
