@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*   By: worodhazem <worodhazem@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 14:55:04 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/05 14:55:55 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/21 01:09:36 by worodhazem       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,13 @@ t_token	*create_token(char *value, int type, int quote_type)
 	token = (t_token *)malloc(sizeof(t_token));
 	if (!token)
 		return (NULL);
-	token->value = value;
+	token->value = ft_strdup(value);  // <-- THIS FIXES ALL YOUR PROBLEMS!
 	token->type = type;
 	token->quote_type = quote_type;
 	token->next = NULL;
 	return (token);
 }
+
 
 void	add_token(t_token **head, t_token *new_token)
 {
