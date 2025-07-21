@@ -6,7 +6,7 @@
 /*   By: worodhazem <worodhazem@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 10:50:26 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/21 01:41:05 by worodhazem       ###   ########.fr       */
+/*   Updated: 2025/07/21 00:58:38 by worodhazem       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -207,5 +207,4 @@ int						create_temp_file(t_redirect *redir, int *temp_fd,
 							t_shell *shell);
 
 char *get_quoted_str(char *input, int *i, char quote);
-
 #endif
