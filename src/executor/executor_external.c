@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor_external.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
+/*   By: worodhazem <worodhazem@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 16:49:57 by wuabdull          #+#    #+#             */
-/*   Updated: 2025/07/15 16:50:03 by wuabdull         ###   ########.fr       */
+/*   Updated: 2025/07/20 22:15:15 by worodhazem       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,14 @@ void	run_external_child(t_command *cmd, t_shell *shell)
 
 int	handle_external_cmd(t_command *cmd, t_shell *shell, int *last_pid)
 {
+	    /* Catch empty command (“”): print “: command not found” and return 127 */
+    if (cmd->args
+     && cmd->arg_count > 0
+     && cmd->args[0].value[0] == '\0')
+    {
+        ft_putstr_fd("minishell: : command not found\n", STDERR_FILENO);
+        return (127);
+    }
 	pid_t	pid;
 
 	pid = fork();
