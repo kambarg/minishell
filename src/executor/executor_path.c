@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor_path.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 16:49:07 by wuabdull          #+#    #+#             */
-/*   Updated: 2025/07/15 16:49:10 by wuabdull         ###   ########.fr       */
+/*   Updated: 2025/07/21 11:19:20 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ char	*find_command_path(char *cmd, char **env)
 	char	**paths;
 	char	*result;
 
+	if (!cmd || *cmd == '\0')
+		return (NULL);
 	if (ft_strchr(cmd, '/'))
 		return (ft_strdup(cmd));
 	path = get_env_value(env, "PATH");
