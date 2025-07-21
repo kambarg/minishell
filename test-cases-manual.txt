@@ -1,0 +1,471 @@
+===Subject of the minishell says ========
+==='take bash as a reference'============
+$ echo $SHELL
+/bin/bash
+if the output is not bash than you need to switch
+$ bash
+$ which bash
+This usually returns /bin/bash or /usr/bin/bash.
+
+Note:
+If you execute bash (/usr/bin/bash) in minishell it 
+forks a child process. This child process takes 
+over the terminal, ie terminal is bash instead of 
+minishell. If exit or ctrl+D, bash exits and terminal 
+returns to minishell.  
+
+
+===subject requirements=================
+===ok===
+===Display a prompt when waiting for a new command:
+~$ ./minishell 
+minishell$
+
+===ok===
+===Have a working history:
+In minishell 'history' command won't work if you don't implement
+a function as it is built-in command. But readline/history.h 
+library has add_history, clear_history functions that you can use 
+to implement history working history functionality (using arrow keys).
+
+===out of scope of subject (history is not in built-in list)=== 
+minishell$ history
+minishell: history: command not found
+
+
+===fail?===
+===!Cannot check on Mac (no sudo rights to change /usr/bin/ls)
+===Search and launch the right executable 
+(based on the PATH variable or using a
+relative or an absolute path)
+$ which ls
+/usr/bin/ls
+$ ls
+# files and directories listed
+$ /usr/bin/ls
+# files and directories listed
+
+$ ./my_program
+./my_program: No such file or directory
+
+$ nonexistent
+nonexistent: command not found
+
+===fail===
+$ sudo mv /usr/bin/ls /usr/bin/ls_backup
+$ ls
+bash: /usr/bin/ls: No such file or directory
+minishell$ ls
+minishell: ls: command not found
+Error message in minishell differs from the bash error message.
+
+===?===
+===Signal handler =========================
+= Avoid using more than one global variable to indicate 
+a received signal.
+= signal handler will not access your
+main data structures
+
+
+
+
+
+===Single quote==============================
+===ok===
+Handle ’ (single quote) which should prevent the shell 
+from interpreting the metacharacters in the quoted sequence.
+
+$ echo '$HOME'
+$HOME
+$ echo $HOME
+/home/goha
+$ echo "$HOME"
+/home/goha
+$ echo '*.txt'
+*.txt
+
+===??===
+$ echo "${GREEN}This message is green.${RESET}"
+${GREEN}This message is green.${RESET}
+<we didn't support {}>
+<without brace expansion, your shell should only recognize $VAR where VAR consists of [a-zA-Z0-9_]>
+
+===out of scope of subject (unclosed quotes)===
+$ echo 'can't'
+> '
+cant
+minishell$ echo 'can't'
+minishell: syntax error: unclosed quotes
+
+$ echo 'can'\''t'
+can't
+minishell$ echo 'can'\''t'
+minishell: syntax error: unclosed quote
+
+
+
+===double quotes=================================
+===ok===
+Handle " (double quote) which should prevent the shell 
+from interpreting the metacharacters in the quoted 
+sequence except for $ (dollar sign).
+
+$ echo $HOME
+/home/<user_name>
+$ echo "$HOME"
+/home/<user_name>
+
+
+===environment variables=======================
+===ok===
+Handle environment variables ($ followed by a sequence 
+of characters) which should expand to their values.
+$ env
+<will print all exported environment variables>
+HOME=/home/goha
+USER=goha
+PATH=/usr/local/bin:/usr/bin:/bin
+...
+$ env | grep -E 'PWD|OLDPWD|USER|HOME'
+<will print main env variables values>
+
+Test OLDPWD:
+echo $PWD      # Should show current directory
+echo $OLDPWD   # in minishee at the very beginning it doesn't show value. Should show parent shell's OLDPWD
+
+cd /tmp
+echo $OLDPWD   # Should show previous directory
+echo $PWD      # Should show /tmp
+cd -           # Should go back to previous directory
+echo $PWD      # Should show original directory
+
+$ echo $NOTSET
+
+$ export EMPTY=
+$ echo $EMPTY
+
+$ echo "User is $USER"
+User is goha
+$ echo $
+$
+$ echo test$
+test$
+$  export A=bye B=tester
+$ echo $A $B
+bye tester
+$ export TEMPVAR=hello
+$ unset TEMPVAR
+$ echo $TEMPVAR
+
+$ export USER=goha
+$ echo "Hi, '$USER', welcome"
+Hi, 'goha', welcome
+
+$ export $?
+minishell: export: not a valid identifier 
+bash: export: `0': not a valid identifier
+
+Note: The error message differs but the logic is the same. 
+$? expands to the return value that is number and export 
+throughs error of not valid identifier 
+(vars can start with letters and _, no nums. no special chars)
+
+$ export $k 
+#lists env vars
+Note: if k is unset that $k="" empty string => 
+export $k <=> export
+
+$ export $0
+# name of the shell or script you're in (./minishell or bash)
+
+===ok===
+$ export mhi="a"
+$ echo $mhi
+a
+$ env | grep hi
+a
+
+===??===
+export ""=""
+minishell: export: not a valid identifier
+<err message doesn't show = as invalid identifier but this is how we coded it>
+
+===??===
+$ export MTES=T=""
+minishell$ env | grep MTES
+MTES=T=""
+<env var has to get evalue without double quotes>
+<in minishell we remove only quotes aroud the value. inside the value quotes are considered as regular char>
+
+===??===
+$ export | grep "OLDPWD"
+declare -x OLDPWD= <should or shouldn't have value at the minishell start?>
+
+
+
+===================unset==============
+===ok===
+export COPYPATH=$PATH
+env | grep PATH
+unset PATH
+env | grep PATH
+echo $PATH
+export PATH=$COPYPATH
+echo $PATH
+
+
+=== quotes inside quotes======================
+===ok===
+$ echo $USER
+goha
+$ echo "$USER"
+goha
+$ echo '$USER'
+$USER
+$ echo ' "$USER" '
+ "$USER"
+$ echo ' ' "$USER" ' ' 
+  goha
+$ echo ' '   ' "$USER" ' ' '
+   "$USER"
+$ echo ' '  "  ' $USER ' " ' '
+    ' goha '
+$ echo " " '$USER' " "
+  $USER
+$  echo " " " '$USER' " " "
+   'goha'
+$ echo ' '$HOME' '
+  /home/goha
+$ echo ' ' '$HOME' ' '
+  $HOME
+$ echo " "$HOME" "
+  /home/goha
+$ echo " " "$HOME" " "
+  /home/goha
+
+
+
+===Redirections==========================
+==ok==
+$ cat test.txt | grep "hello" < test2.txt
+minishell: test2.txt: No such file or directory
+cat: test.txt: No such file or directory
+
+===ok===
+grep "t" < test.txt
+minishell: test.txt: No such file or directory
+
+===ok===
+$ ls | cat < test2.txt
+minishell: test2.txt: No such file or directory
+
+==ok===
+$ < test.txt | ls
+test.txt        test2.txt
+
+===ok===
+$ cat > t.txt -e < f.txt | < t.txt
+bash: f.txt: No such file or directory
+t.txt is created
+
+===ok===
+$ cat << "$hi"
+> $hsfd
+> $hi
+$hsfd 
+<if we have " or ' as first char f the delemeter we dont expand at all>
+
+===ok===
+$ |
+minishell: syntax error near unexpected token `|'
+
+===ok===
+$ | ls
+minishell: syntax error near unexpected token `|'
+
+===ok===
+$ ls |
+minishell: syntax error near unexpected token `newline'
+<note: we didn't support interactive input mode in minishell, we 
+expect full input line and return error message if input is invalid>
+
+===ok===
+$ > file
+$ ls file
+file
+
+===ok===
+$ >>
+minishell: syntax error near unexpected token `newline'
+
+
+===ok===
+$ echo > | ls
+minishell: syntax error near unexpected token `|'
+
+===ok===
+$ echo >
+minishell: syntax error near unexpected token `newline'
+
+===ok===
+$ cat < < file
+minishell: syntax error near unexpected token `<'
+
+===ok===
+$ cat <<
+minishell: syntax error near unexpected token `newline'
+
+===ok===
+$ echo hello > out >
+minishell: syntax error near unexpected token `newline'
+
+===ok===
+< jfkdg > file.txt
+minishell: jfkdg: No such file or directory
+
+===ok===
+>file.txt < dsghfkfjs
+minishell: dsghfkfjs: No such file or directory
+<file.txt was created and empty>
+
+===ok===
+< file2.txt | ls
+bash: file2.txt: No such file or directory
+file.txt	test-cases.txt	test.txt	test2.tx
+
+===ok===
+$ |
+bash: syntax error near unexpected token `|'
+$ echo $?
+258
+
+===ok===
+$ ls -l
+total 0
+$ > test2.txt < test.txt
+minishell: test.txt: No such file or directory
+$ cat test2.txt
+<If test2.txt does not exist, it should be created and be empty.
+If test2.txt exists and has text, text.txt doesn't exist, 
+input line has to overwringt test2.txt content and make it empty.>
+
+===ok===
+$ echo "hahaha" > test2.txt
+$ ls | cat < test2.txt
+hahaha
+
+
+===Heredoc========================================
+==ok===
+cat <<END >test.txt
+heredoc> line 1
+heredoc> line 2
+heredoc> END
+
+
+===ok===
+$ cat << TEXT
+> One
+> Two
+> Three
+> TEXT
+
+===ok===
+$ cat << TEXT > out.txt
+> One
+> Two
+> Three
+TEXT
+result:
+$ cat out.txt
+> One
+> Two
+> Three
+# There should be file out.txt. with heredoc text written in it
+
+
+===ok===
+command:
+$ cat <<EOF1 > out.txt | cat <<EOF2
+> 1
+> 2
+> 3
+> EOF1
+> AA
+> BB
+> CC
+> EOF2
+result:
+In the output it is
+AA
+BB
+CC
+in the out.txt. file it is
+1
+2
+3
+
+===ok===
+$ cat << eof | grep b | wc -l
+> a
+> b 
+> c 
+> eof
+result: 
+ 1 is printed to the output
+
+
+===ok===
+$ cat << eof > out.txt | cat << text
+> a 
+> b 
+> c 
+> eof 
+> hello 
+> bye 
+> text
+result:
+in the standard output 
+hello
+bye
+$ cat out.txt 
+a
+b
+c
+
+===ok===
+minishell$ cat << '$USER'
+> $HOME
+> $fg,jkl
+> goha
+> $USER
+$HOME
+$fg,jkl
+goha
+<if keyword quoted than NO expansion in heredoc text>
+
+===ok===
+$ cat << $USER
+> $HOME
+> $dd,j
+> goha
+> $USER
+$HOME
+$dd,j
+goha
+<>
+
+==============builtins========================
+===ok===
+$        echo      hello     world    
+hello world
+
+===ok===
+$ echo ""
+
+
+===============edge cases=========================
+===error===
+$ ""
+minishell: : Permission denied
+bash: command not found

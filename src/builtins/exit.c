@@ -1,0 +1,55 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exit.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/14 13:19:50 by wuabdull          #+#    #+#             */
+/*   Updated: 2025/07/14 13:19:50 by wuabdull         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../../includes/minishell.h"
+
+static int	is_numeric(char *str)
+{
+	int	i;
+
+	i = 0;
+	if (str[i] == '-' || str[i] == '+')
+		i++;
+	while (str[i])
+	{
+		if (!ft_isdigit(str[i]))
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+int	ft_exit(t_arg_info *args, int arg_count, t_shell *shell)
+{
+	int	exit_code;
+
+	ft_putendl_fd("exit", STDERR_FILENO);
+	if (arg_count < 2)
+	{
+		shell->running = 0;
+		return (shell->exit_status);
+	}
+	if (!is_numeric(args[1].value))
+	{
+		print_error("exit", "numeric argument required");
+		shell->running = 0;
+		return (255);
+	}
+	if (arg_count > 2)
+	{
+		print_error("exit", "too many arguments");
+		return (ERROR);
+	}
+	exit_code = ft_atoi(args[1].value) & 255;
+	shell->running = 0;
+	return (exit_code);
+}
