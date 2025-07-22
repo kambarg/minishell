@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor_loop.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 16:50:21 by wuabdull          #+#    #+#             */
-/*   Updated: 2025/07/21 20:29:58 by wuabdull         ###   ########.fr       */
+/*   Updated: 2025/07/22 20:52:39 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,12 +20,14 @@ int	run_command_loop(t_shell *shell, int stdin_backup, int stdout_backup,
 
 	cmd = shell->commands;
 	*last_pid = -1;
+	last_status = 0;
 	while (cmd)
 	{
 		if (cmd->arg_count == 0 || !cmd->args[0].value
 			|| cmd->args[0].value[0] == '\0')
 		{
 			ft_putstr_fd("minishell: : command not found\n", STDERR_FILENO);
+			last_status = 127;
 			cmd = cmd->next;
 			continue ;
 		}
