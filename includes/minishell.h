@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 10:50:26 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/21 20:38:07 by wuabdull         ###   ########.fr       */
+/*   Updated: 2025/07/22 20:43:32 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,8 +115,10 @@ void					add_token(t_token **head, t_token *new_token);
 int						is_whitespace(char c);
 int						is_operator_char(char c);
 int						is_quotes(char c);
-int						whitespace_hun(char **arg_buf, t_token **tokens, int *i);
-int						operator_hun(char **arg_buf, t_token **tokens, char *input, int *i);
+int						whitespace_hun(char **arg_buf, t_token **tokens,
+							int *i);
+int						operator_hun(char **arg_buf, t_token **tokens,
+							char *input, int *i);
 int						quotes_hun(char **arg_buf, char *input, int *i);
 int						word_hun(char **arg_buf, char *input, int *i);
 
@@ -210,5 +212,5 @@ char					*create_temp_path(t_shell *shell);
 int						create_temp_file(t_redirect *redir, int *temp_fd,
 							t_shell *shell);
 
-char *get_quoted_str(char *input, int *i, char quote);
+char					*get_quoted_str(char *input, int *i, char quote);
 #endif
