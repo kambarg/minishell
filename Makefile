@@ -1,22 +1,12 @@
 NAME = minishell
 
 CC = gcc
+CFLAGS = -Wall -Wextra -Werror
+LDFLAGS = -L/opt/vagrant/embedded/lib -lreadline -lhistory
+INCLUDES = -I./includes -I$(LIBFT_DIR) -I/opt/vagrant/embedded/include/readline/readline.h 
+# -I/usr/local/include 
+RM = rm -f
 
-# Compiler flags: enable warnings, define USE_LIBEDIT for libedit compatibility, and include headers
-CFLAGS = -Wall -Wextra -Werror \
-	-DUSE_LIBEDIT \
-	-I./includes \
-	-I$(LIBFT_DIR)
-
-# Linker flags: link against libft and macOS libedit
-LDFLAGS = -L$(LIBFT_DIR) -lft \
-	-ledit
-
-# Libft directory and archive
-LIBFT_DIR = libft
-LIBFT = $(LIBFT_DIR)/libft.a
-
-# Source files
 SRCS =  \
 	src/main.c \
 	src/init_shell.c \
@@ -61,45 +51,36 @@ SRCS =  \
 	src/executor/executor_external.c \
 	src/executor/executor_loop.c
 
-# Object files
 OBJS = $(SRCS:.c=.o)
 
-# Default target: build libft then minishell
+LIBFT_DIR = libft
+LIBFT = $(LIBFT_DIR)/libft.a
+
 all: $(LIBFT) $(NAME)
 
-# Build libft
 $(LIBFT):
 	@make -C $(LIBFT_DIR)
 
-# Link objects into the final binary
 $(NAME): $(OBJS)
-	$(CC) $(CFLAGS) $(OBJS) $(LDFLAGS) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJS) -L$(LIBFT_DIR) -lft $(LDFLAGS) -o $(NAME)
 
-# Compile each source file
 %.o: %.c
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-# Remove object files
 clean:
 	@make -C $(LIBFT_DIR) clean
 	$(RM) $(OBJS)
 
-# Remove all generated files
 fclean: clean
 	@make -C $(LIBFT_DIR) fclean
 	$(RM) $(NAME)
 
-# Rebuild from scratch
 re: fclean all
 
-# Leak checking target
-leaks: debug
-	valgrind --show-leak-kinds=all \
-		--leak-check=full \
-		--suppressions=vg_rlsuppressions.supp ./$(NAME)
+leaks : debug
+		valgrind --show-leak-kinds=all --leak-check=full --suppressions=vg_rlsuppressions.supp ./$(NAME)
 
-# Debug build with symbols
-debug: CFLAGS += -g3
-debug: re
+debug : C_FLAGS += -g3
+debug : re
 
 .PHONY: all clean fclean re leaks debug
