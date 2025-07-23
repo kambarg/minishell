@@ -2,9 +2,12 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+
+	+:+     */
+/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+
+	+#+        */
+/*                                                +#+#+#+#+#+
+	+#+           */
 /*   Created: 2025/07/14 14:29:43 by wuabdull          #+#    #+#             */
 /*   Updated: 2025/07/18 11:40:25 by gkambarb         ###   ########.fr       */
 /*                                                                            */
@@ -29,9 +32,9 @@ static int	var_exists_in_env(t_shell *shell, const char *name, size_t len)
 	i = 0;
 	while (shell->env[i])
 	{
-		if (ft_strncmp(shell->env[i], name, len) == 0 &&
-			(shell->env[i][len] == '=' || 
-			(shell->env[i][len] == '\0' && ft_strlen(shell->env[i]) == len)))
+		if (ft_strncmp(shell->env[i], name, len) == 0
+			&& (shell->env[i][len] == '=' || (shell->env[i][len] == '\0'
+			&& ft_strlen(shell->env[i]) == len)))
 			return (1);
 		i++;
 	}
@@ -48,9 +51,9 @@ static void	copy_env_except_name(t_shell *shell, char **new_env,
 	j = 0;
 	while (shell->env[i])
 	{
-		if (ft_strncmp(shell->env[i], name, len) != 0 ||
-			(shell->env[i][len] != '=' && 
-			!(shell->env[i][len] == '\0' && ft_strlen(shell->env[i]) == len)))
+		if (ft_strncmp(shell->env[i], name, len) != 0
+			|| (shell->env[i][len] != '=' && !(shell->env[i][len] == '\0'
+			&& ft_strlen(shell->env[i]) == len)))
 		{
 			new_env[j] = ft_strdup(shell->env[i]);
 			if (!new_env[j])

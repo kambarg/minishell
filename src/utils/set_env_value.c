@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 10:35:55 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/23 18:29:45 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/23 18:44:12 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,15 +21,17 @@ static int	get_env_index(char **env, const char *name)
 	len = ft_strlen(name);
 	while (env[i])
 	{
-		if ((ft_strncmp(env[i], name, len) == 0 && env[i][len] == '=') ||
-			(ft_strncmp(env[i], name, len) == 0 && env[i][len] == '\0' && ft_strlen(env[i]) == len))
+		if ((ft_strncmp(env[i], name, len) == 0 && env[i][len] == '=')
+			|| (ft_strncmp(env[i], name, len) == 0 && env[i][len] == '\0'
+				&& ft_strlen(env[i]) == len))
 			return (i);
 		i++;
 	}
 	return (-1);
 }
 
-static int	update_env_entry(t_shell *shell, const char *name, const char *value, int i)
+static int	update_env_entry(t_shell *shell, const char *name,
+		const char *value, int i)
 {
 	char	*new_entry;
 	char	*temp;

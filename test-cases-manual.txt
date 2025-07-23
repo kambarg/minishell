@@ -1,11 +1,16 @@
 ===Subject of the minishell says ========
 ==='take bash as a reference'============
-$ echo $SHELL
-/bin/bash
+$ echo $0 
+shows the name of the shell or script you're in 
+(may return bash, sh, zsh, etc.)
+
 if the output is not bash than you need to switch
 $ bash
 $ which bash
 This usually returns /bin/bash or /usr/bin/bash.
+or
+$ env -i bash
+that runs bash with default environment.
 
 Note:
 If you execute bash (/usr/bin/bash) in minishell it 
