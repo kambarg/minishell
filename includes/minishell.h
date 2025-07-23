@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 10:50:26 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/19 19:34:03 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/23 18:25:30 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -192,6 +192,9 @@ void					setup_signals_heredoc(void);
 void					reset_signals_default(void);
 char					*get_env_value(char **env, const char *name);
 void					set_env_value(t_shell *shell, const char *name,
+							const char *value);
+void					set_env_no_value(t_shell *shell, const char *name);
+int						append_env_entry(t_shell *shell, const char *name,
 							const char *value);
 void					print_error(const char *cmd, const char *msg);
 int						is_whitespace_only(const char *str);

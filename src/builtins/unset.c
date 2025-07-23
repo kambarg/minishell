@@ -22,15 +22,16 @@ static int	get_env_size_for_remove(t_shell *shell)
 	return (env_size);
 }
 
-static int	var_exists_in_env(t_shell *shell, const char *name, int len)
+static int	var_exists_in_env(t_shell *shell, const char *name, size_t len)
 {
 	int	i;
 
 	i = 0;
 	while (shell->env[i])
 	{
-		if (ft_strncmp(shell->env[i], name, len) == 0
-			&& shell->env[i][len] == '=')
+		if (ft_strncmp(shell->env[i], name, len) == 0 &&
+			(shell->env[i][len] == '=' || 
+			(shell->env[i][len] == '\0' && ft_strlen(shell->env[i]) == len)))
 			return (1);
 		i++;
 	}
@@ -38,7 +39,7 @@ static int	var_exists_in_env(t_shell *shell, const char *name, int len)
 }
 
 static void	copy_env_except_name(t_shell *shell, char **new_env,
-		const char *name, int len)
+		const char *name, size_t len)
 {
 	int	i;
 	int	j;
@@ -47,8 +48,9 @@ static void	copy_env_except_name(t_shell *shell, char **new_env,
 	j = 0;
 	while (shell->env[i])
 	{
-		if (ft_strncmp(shell->env[i], name, len) != 0
-			|| shell->env[i][len] != '=')
+		if (ft_strncmp(shell->env[i], name, len) != 0 ||
+			(shell->env[i][len] != '=' && 
+			!(shell->env[i][len] == '\0' && ft_strlen(shell->env[i]) == len)))
 		{
 			new_env[j] = ft_strdup(shell->env[i]);
 			if (!new_env[j])
@@ -67,7 +69,7 @@ static void	copy_env_except_name(t_shell *shell, char **new_env,
 
 static void	remove_env_var(t_shell *shell, const char *name)
 {
-	int		len;
+	size_t	len;
 	char	**new_env;
 	int		env_size;
 

@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/14 13:27:08 by wuabdull          #+#    #+#             */
-/*   Updated: 2025/07/18 11:05:41 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/23 18:08:12 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,10 @@ void	handle_export_arg(char *arg, t_shell *shell)
 	}
 	equals = ft_strchr(arg, '=');
 	if (!equals)
+	{
+		set_env_no_value(shell, arg);
 		return ;
+	}
 	name = ft_substr(arg, 0, equals - arg);
 	raw_value = ft_strdup(equals + 1);
 	value = strip_quotes(raw_value);
