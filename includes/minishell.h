@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 10:50:26 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/24 11:24:24 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/24 11:56:07 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,14 +74,14 @@ typedef struct s_arg_info
 	int					quote_type;
 }						t_arg_info;
 
-typedef struct s_concat_ctx 
+typedef struct s_concat_ctx
 {
-	char		*combined_value;
-	int			final_quote_type;
-	int			has_unquoted;
-	int			token_count;
-	t_token		*current_token;
-}	t_concat_ctx;
+	char				*combined_value;
+	int					final_quote_type;
+	int					has_unquoted;
+	int					token_count;
+	t_token				*current_token;
+}						t_concat_ctx;
 
 typedef struct s_command
 {
@@ -116,11 +116,14 @@ void					run_shell(t_shell *shell);
 
 // Lexer functions
 t_token					*lexer(char *input);
-int						handle_operator(char *input, int *i, t_token **tokens, int pre_space);
+int						handle_operator(char *input, int *i, t_token **tokens,
+							int pre_space);
 int						handle_quoted_string(char *input, int *i,
 							t_token **tokens, int pre_space);
-int						handle_word(char *input, int *i, t_token **tokens, int pre_space);
-t_token					*create_token(char *value, int type, int quote_type, int pre_space);
+int						handle_word(char *input, int *i, t_token **tokens,
+							int pre_space);
+t_token					*create_token(char *value, int type, int quote_type,
+							int pre_space);
 void					add_token(t_token **head, t_token *new_token);
 int						is_whitespace(char c);
 int						is_operator_char(char c);
