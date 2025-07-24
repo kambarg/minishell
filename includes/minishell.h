@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 10:50:26 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/25 00:33:23 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/25 01:02:43 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,7 @@ char					*expand_quoted_string(char *str, t_shell *shell,
 // Executor functions
 int						execute_commands(t_shell *shell);
 int						handle_redirections(t_redirect *redirects);
+int						process_heredoc_pipe(t_redirect *redir, t_shell *shell);
 int						preprocess_heredocs(t_command *commands,
 							t_shell *shell);
 void					setup_pipes(t_command *cmd);
