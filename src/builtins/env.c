@@ -19,7 +19,8 @@ int	ft_env(t_shell *shell)
 	i = 0;
 	while (shell->env[i])
 	{
-		ft_putendl_fd(shell->env[i], STDOUT_FILENO);
+		if (ft_strchr(shell->env[i], '='))
+			ft_putendl_fd(shell->env[i], STDOUT_FILENO);
 		i++;
 	}
 	return (SUCCESS);

@@ -40,6 +40,7 @@ SRCS =  \
 	src/utils/signals.c \
 	src/utils/get_env_value.c \
 	src/utils/set_env_value.c \
+	src/utils/set_env_value_helper.c \
 	src/utils/error.c \
 	src/utils/memory.c \
 	src/utils/temp_files.c \
