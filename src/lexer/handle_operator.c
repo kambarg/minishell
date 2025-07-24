@@ -54,5 +54,6 @@ int	handle_operator(char *input, int *i, t_token **tokens)
 	else
 		value = ft_substr(input, *i, 1);
 	add_token(tokens, create_token(value, type, QUOTE_NONE));
+	free(value);
 	return (1);
 }
