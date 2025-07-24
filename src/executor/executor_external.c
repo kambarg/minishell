@@ -27,7 +27,12 @@ static void	exec_external_cmd(t_command *cmd, t_shell *shell)
 	}
 	reset_signals_default();
 	execve(cmd_path, argv, shell->env);
-	print_error(cmd->args[0].value, strerror(errno));
+	if (strcmp(cmd->args[0].value, ".") == 0 || strcmp(cmd->args[0].value, "..") == 0)
+		print_error(cmd->args[0].value, "command not found");
+	else if (cmd->args[0].value[0] == '/')
+		print_error(cmd->args[0].value, "Is a directory");
+	else
+		print_error(cmd->args[0].value, strerror(errno));
 	free(cmd_path);
 	free(argv);
 	exit(126);
