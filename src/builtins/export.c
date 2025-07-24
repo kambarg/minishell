@@ -58,7 +58,17 @@ static void	export_update_env(t_arg_info *args, int arg_count, t_shell *shell)
 	while (i < arg_count)
 	{
 		if (args[i].value && *args[i].value)
-			handle_export_arg(args[i].value, shell);
+		{
+			if (!is_valid_identifier(args[i].value))
+			{
+				ft_putstr_fd(shell->program_name, STDERR_FILENO);
+				ft_putstr_fd(": export: `", STDERR_FILENO);
+				ft_putstr_fd(args[i].value, STDERR_FILENO);
+				ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
+			}
+			else
+				handle_export_arg(args[i].value, shell);
+		}
 		i++;
 	}
 }
