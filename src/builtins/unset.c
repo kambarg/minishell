@@ -100,7 +100,18 @@ int	ft_unset(t_arg_info *args, int arg_count, t_shell *shell)
 	i = 1;
 	while (i < arg_count)
 	{
-		remove_env_var(shell, args[i].value);
+		if (args[i].value && *args[i].value)
+		{
+			if (!is_valid_identifier(args[i].value))
+			{
+				ft_putstr_fd(shell->program_name, STDERR_FILENO);
+				ft_putstr_fd(": unset: `", STDERR_FILENO);
+				ft_putstr_fd(args[i].value, STDERR_FILENO);
+				ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
+			}
+			else
+				remove_env_var(shell, args[i].value);
+		}
 		i++;
 	}
 	return (SUCCESS);
