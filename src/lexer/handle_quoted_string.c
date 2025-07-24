@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 11:10:05 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/05 23:52:43 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/24 11:06:39 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ static char	*get_quoted_str(char *input, int *i, char quote)
 	return (str);
 }
 
-int	handle_quoted_string(char *input, int *i, t_token **tokens)
+int	handle_quoted_string(char *input, int *i, t_token **tokens, int pre_space)
 {
 	char	*word;
 	int		quote_type;
@@ -48,6 +48,6 @@ int	handle_quoted_string(char *input, int *i, t_token **tokens)
 	word = get_quoted_str(input, i, input[*i]);
 	if (!word)
 		return (0);
-	add_token(tokens, create_token(word, T_WORD, quote_type));
+	add_token(tokens, create_token(word, T_WORD, quote_type, pre_space));
 	return (1);
 }

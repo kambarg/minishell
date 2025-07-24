@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 11:17:46 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/18 10:58:30 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/24 11:06:39 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,13 +74,13 @@ static char	*get_word(char *input, int *i)
 	return (str);
 }
 
-int	handle_word(char *input, int *i, t_token **tokens)
+int	handle_word(char *input, int *i, t_token **tokens, int pre_space)
 {
 	char	*word;
 
 	word = get_word(input, i);
 	if (!word)
 		return (0);
-	add_token(tokens, create_token(word, T_WORD, QUOTE_NONE));
+	add_token(tokens, create_token(word, T_WORD, QUOTE_NONE, pre_space));
 	return (1);
 }

@@ -49,7 +49,7 @@ static int	parse_tokens(t_token **tokens, t_command **cmd, t_command **cur)
 	{
 		if ((*tokens)->type == T_WORD)
 		{
-			if (!add_argument(*cur, (*tokens)->value, (*tokens)->quote_type))
+			if (!concat_words(tokens, *cur))
 				return (0);
 		}
 		else if ((*tokens)->type == T_PIPE)
@@ -58,13 +58,15 @@ static int	parse_tokens(t_token **tokens, t_command **cmd, t_command **cur)
 			*cur = create_command();
 			if (!*cur)
 				return (0);
+			*tokens = (*tokens)->next;
 		}
 		else if ((*tokens)->type >= T_REDIR_IN && (*tokens)->type <= T_APPEND)
 		{
 			if (!handle_redirect(tokens, *cur))
 				return (0);
 		}
-		*tokens = (*tokens)->next;
+		else
+			*tokens = (*tokens)->next;
 	}
 	return (1);
 }

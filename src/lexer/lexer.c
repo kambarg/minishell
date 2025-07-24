@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 10:15:12 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/19 22:30:36 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/24 11:38:53 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,27 +30,36 @@ int	is_quotes(char c)
 t_token	*lexer(char *input)
 {
 	int		i;
+	int		pre_space;
 	t_token	*tokens;
 
 	i = 0;
 	tokens = NULL;
+	pre_space = 0;
 	while (input[i])
 	{
 		if (is_whitespace(input[i]))
+		{
+			pre_space = 1;
 			i++;
+		}
 		else if (is_operator_char(input[i]))
 		{
-			if (!handle_operator(input, &i, &tokens))
+			if (!handle_operator(input, &i, &tokens, pre_space))
 				return (free_tokens(tokens), NULL);
+			pre_space = 0;
 			i++;
 		}
 		else if (is_quotes(input[i]))
 		{
-			if (!handle_quoted_string(input, &i, &tokens))
+			if (!handle_quoted_string(input, &i, &tokens, pre_space))
 				return (free_tokens(tokens), NULL);
+			pre_space = 0;
 		}
-		else if (!handle_word(input, &i, &tokens))
+		else if (!handle_word(input, &i, &tokens, pre_space))
 			return (free_tokens(tokens), NULL);
+		else
+			pre_space = 0;
 	}
 	return (tokens);
 }

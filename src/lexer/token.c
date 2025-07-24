@@ -6,13 +6,13 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 14:55:04 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/05 14:55:55 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/24 11:06:39 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-t_token	*create_token(char *value, int type, int quote_type)
+t_token	*create_token(char *value, int type, int quote_type, int pre_space)
 {
 	t_token	*token;
 
@@ -22,6 +22,7 @@ t_token	*create_token(char *value, int type, int quote_type)
 	token->value = value;
 	token->type = type;
 	token->quote_type = quote_type;
+	token->pre_space = pre_space;
 	token->next = NULL;
 	return (token);
 }

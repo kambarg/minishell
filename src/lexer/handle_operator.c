@@ -6,53 +6,31 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/05 02:29:08 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/05 15:14:33 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/24 11:06:39 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-static int	handle_input_redirect(char *input, int *i)
-{
-	if (input[*i + 1] == '<')
-	{
-		(*i)++;
-		return (T_HEREDOC);
-	}
-	return (T_REDIR_IN);
-}
-
-static int	handle_output_redirect(char *input, int *i)
-{
-	if (input[*i + 1] == '>')
-	{
-		(*i)++;
-		return (T_APPEND);
-	}
-	return (T_REDIR_OUT);
-}
-
-static int	get_operator_type(char *input, int *i)
+int	handle_operator(char *input, int *i, t_token **tokens, int pre_space)
 {
 	if (input[*i] == '|')
-		return (T_PIPE);
+		add_token(tokens, create_token(ft_strdup("|"), T_PIPE, QUOTE_NONE, pre_space));
+	else if (input[*i] == '<' && input[*i + 1] == '<')
+	{
+		add_token(tokens, create_token(ft_strdup("<<"), T_HEREDOC, QUOTE_NONE, pre_space));
+		(*i)++;
+	}
+	else if (input[*i] == '>' && input[*i + 1] == '>')
+	{
+		add_token(tokens, create_token(ft_strdup(">>"), T_APPEND, QUOTE_NONE, pre_space));
+		(*i)++;
+	}
 	else if (input[*i] == '<')
-		return (handle_input_redirect(input, i));
+		add_token(tokens, create_token(ft_strdup("<"), T_REDIR_IN, QUOTE_NONE, pre_space));
 	else if (input[*i] == '>')
-		return (handle_output_redirect(input, i));
-	return (0);
-}
-
-int	handle_operator(char *input, int *i, t_token **tokens)
-{
-	char	*value;
-	int		type;
-
-	type = get_operator_type(input, i);
-	if (type == T_HEREDOC || type == T_APPEND)
-		value = ft_substr(input, *i - 1, 2);
+		add_token(tokens, create_token(ft_strdup(">"), T_REDIR_OUT, QUOTE_NONE, pre_space));
 	else
-		value = ft_substr(input, *i, 1);
-	add_token(tokens, create_token(value, type, QUOTE_NONE));
+		return (0);
 	return (1);
 }
