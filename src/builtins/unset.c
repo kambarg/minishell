@@ -2,9 +2,12 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+
+	+:+     */
+/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+
+	+#+        */
+/*                                                +#+#+#+#+#+
+	+#+           */
 /*   Created: 2025/07/14 14:29:43 by wuabdull          #+#    #+#             */
 /*   Updated: 2025/07/18 11:40:25 by gkambarb         ###   ########.fr       */
 /*                                                                            */
@@ -22,7 +25,7 @@ static int	get_env_size_for_remove(t_shell *shell)
 	return (env_size);
 }
 
-static int	var_exists_in_env(t_shell *shell, const char *name, int len)
+static int	var_exists_in_env(t_shell *shell, const char *name, size_t len)
 {
 	int	i;
 
@@ -30,7 +33,8 @@ static int	var_exists_in_env(t_shell *shell, const char *name, int len)
 	while (shell->env[i])
 	{
 		if (ft_strncmp(shell->env[i], name, len) == 0
-			&& shell->env[i][len] == '=')
+			&& (shell->env[i][len] == '=' || (shell->env[i][len] == '\0'
+			&& ft_strlen(shell->env[i]) == len)))
 			return (1);
 		i++;
 	}
@@ -38,7 +42,7 @@ static int	var_exists_in_env(t_shell *shell, const char *name, int len)
 }
 
 static void	copy_env_except_name(t_shell *shell, char **new_env,
-		const char *name, int len)
+		const char *name, size_t len)
 {
 	int	i;
 	int	j;
@@ -48,7 +52,8 @@ static void	copy_env_except_name(t_shell *shell, char **new_env,
 	while (shell->env[i])
 	{
 		if (ft_strncmp(shell->env[i], name, len) != 0
-			|| shell->env[i][len] != '=')
+			|| (shell->env[i][len] != '=' && !(shell->env[i][len] == '\0'
+			&& ft_strlen(shell->env[i]) == len)))
 		{
 			new_env[j] = ft_strdup(shell->env[i]);
 			if (!new_env[j])
@@ -67,7 +72,7 @@ static void	copy_env_except_name(t_shell *shell, char **new_env,
 
 static void	remove_env_var(t_shell *shell, const char *name)
 {
-	int		len;
+	size_t	len;
 	char	**new_env;
 	int		env_size;
 
@@ -95,7 +100,18 @@ int	ft_unset(t_arg_info *args, int arg_count, t_shell *shell)
 	i = 1;
 	while (i < arg_count)
 	{
-		remove_env_var(shell, args[i].value);
+		if (args[i].value && *args[i].value)
+		{
+			if (!is_valid_identifier(args[i].value))
+			{
+				ft_putstr_fd(shell->program_name, STDERR_FILENO);
+				ft_putstr_fd(": unset: `", STDERR_FILENO);
+				ft_putstr_fd(args[i].value, STDERR_FILENO);
+				ft_putendl_fd("': not a valid identifier", STDERR_FILENO);
+			}
+			else
+				remove_env_var(shell, args[i].value);
+		}
 		i++;
 	}
 	return (SUCCESS);
