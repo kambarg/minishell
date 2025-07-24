@@ -12,16 +12,56 @@
 
 #include "../../includes/minishell.h"
 
+// Process heredoc using pipes - more efficient than temp files
+static int	process_heredoc_pipe(t_redirect *redir, t_shell *shell)
+{
+	int		pipefd[2];
+	char	*line;
+	char	*expanded;
+
+	if (pipe(pipefd) == -1)
+	{
+		print_error("heredoc", strerror(errno));
+		return (ERROR);
+	}
+	setup_signals_heredoc();
+	while (1)
+	{
+		line = readline("> ");
+		if (!line || ft_strncmp(line, redir->file, ft_strlen(redir->file) + 1) == 0)
+		{
+			free(line);
+			break ;
+		}
+		if (redir->quote_type == QUOTE_NONE)
+		{
+			expanded = expand_quoted_string(line, shell, QUOTE_NONE);
+			if (expanded)
+			{
+				ft_putendl_fd(expanded, pipefd[1]);
+				free(expanded);
+			}
+			else
+				ft_putendl_fd(line, pipefd[1]);
+		}
+		else
+			ft_putendl_fd(line, pipefd[1]);
+		free(line);
+	}
+	setup_signals_interactive();
+	close(pipefd[1]);  // Close write end
+	redir->fd = pipefd[0];  // Store read end
+	return (SUCCESS);
+}
+
 // Pre-process all heredocs in parent process before forking:
-// 1) Create secure temp file and process heredoc in parent
-// 2) Store file descriptor in redirect structure
-// 3) Keep delimiter in file field for reference but mark as processed 
-// 4) Convert heredoc to special heredoc input redirect
+// 1) Create pipe and process heredoc content in parent
+// 2) Store read file descriptor in redirect structure
+// 3) Convert heredoc to input redirect
 int	preprocess_heredocs(t_command *commands, t_shell *shell)
 {
 	t_command	*cmd;
 	t_redirect	*redir;
-	int			temp_fd;
 
 	cmd = commands;
 	while (cmd)
@@ -31,9 +71,8 @@ int	preprocess_heredocs(t_command *commands, t_shell *shell)
 		{
 			if (redir->type == REDIR_HEREDOC)
 			{
-				if (create_temp_file(redir, &temp_fd, shell) == ERROR)
+				if (process_heredoc_pipe(redir, shell) == ERROR)
 					return (ERROR);
-				redir->fd = temp_fd;
 				redir->type = REDIR_IN;
 			}
 			redir = redir->next;
@@ -43,7 +82,7 @@ int	preprocess_heredocs(t_command *commands, t_shell *shell)
 	return (SUCCESS);
 }
 
-// If temp_fd is provided (heredoc temp file), use it directly
+// If temp_fd is provided (heredoc pipe fd), use it directly
 // Don't close temp_fd, will be closed when command structure is freed
 // Else regular file input redirect
 static int	handle_input_redirect(char *file, int temp_fd)

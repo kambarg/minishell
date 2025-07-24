@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 10:50:26 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/23 18:25:30 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/25 00:33:23 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,6 @@ typedef struct s_command
 }						t_command;
 
 // program_name = argv[0]
-// temp_file_counter - counter for unique temp file names
 typedef struct s_shell
 {
 	char				**env;
@@ -91,7 +90,6 @@ typedef struct s_shell
 	int					exit_status;
 	int					running;
 	char				*program_name;
-	int					temp_file_counter;
 }						t_shell;
 
 // Global variables
@@ -203,10 +201,5 @@ int						is_whitespace_only(const char *str);
 void					free_tokens(t_token *tokens);
 void					free_commands(t_command *commands);
 void					free_array(char **array);
-
-// Temp file management
-char					*create_temp_path(t_shell *shell);
-int						create_temp_file(t_redirect *redir, int *temp_fd,
-							t_shell *shell);
 
 #endif

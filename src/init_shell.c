@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 00:25:13 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/18 00:25:14 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/25 00:33:33 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,6 +58,5 @@ void	init_shell(t_shell *shell, char **env, char *program_name)
 	shell->exit_status = 0;
 	shell->running = 1;
 	shell->program_name = ft_strdup(program_name);
-	shell->temp_file_counter = 0;
 	set_initial_pwd(shell);
 }
