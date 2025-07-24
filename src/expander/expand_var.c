@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   expand_var.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 14:10:06 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/15 14:11:19 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/21 20:34:10 by wuabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,36 @@ static char	*get_var_name(char *str, int *i)
 	return (name);
 }
 
+char	*expand_special_vars(char *var_name, t_shell *shell)
+{
+	if (ft_strncmp(var_name, "?", 2) == 0)
+		return (ft_itoa(shell->exit_status));
+	else if (ft_strncmp(var_name, "0", 2) == 0)
+	{
+		if (shell->program_name)
+			return (ft_strdup(shell->program_name));
+		else
+			return (ft_strdup("minishell"));
+	}
+	else
+		return (get_env_value(shell->env, var_name));
+}
+
+char	*expand_nonalpha(char *str, t_shell *shell, int *i)
+{
+	char	temp[2];
+	char	*result;
+
+	temp[0] = str[*i + 1];
+	temp[1] = '\0';
+	(*i)++;
+	result = get_env_value(shell->env, temp);
+	if (!result)
+		result = ft_strdup("");
+	(*i)++;
+	return (result);
+}
+
 char	*expand_var(char *str, t_shell *shell, int *i)
 {
 	char	*var_name;
@@ -45,20 +75,13 @@ char	*expand_var(char *str, t_shell *shell, int *i)
 
 	if (!str || !shell || !i)
 		return (ft_strdup("$"));
+	if (!ft_isalpha(str[*i + 1]) && str[*i + 1] != '_' && str[*i + 1] != '?'
+		&& str[*i + 1] != '0')
+		return (expand_nonalpha(str, shell, i));
 	var_name = get_var_name(str, i);
 	if (!var_name)
 		return (ft_strdup("$"));
-	if (ft_strlen(var_name) == 1 && ft_strncmp(var_name, "?", 1) == 0)
-		result = ft_itoa(shell->exit_status);
-	else if (ft_strlen(var_name) == 1 && ft_strncmp(var_name, "0", 1) == 0)
-	{
-		if (shell->program_name)
-			result = ft_strdup(shell->program_name);
-		else
-			result = ft_strdup("minishell");
-	}
-	else
-		result = get_env_value(shell->env, var_name);
+	result = expand_special_vars(var_name, shell);
 	free(var_name);
 	if (result)
 		return (result);
