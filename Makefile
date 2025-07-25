@@ -23,6 +23,9 @@ SRCS = 	src/main.c \
 		src/lexer/lexer.c \
 		src/lexer/token.c \
 		src/lexer/handle_operator.c \
+		src/lexer/handle_merged_word.c \
+		src/lexer/extract_quoted.c \
+		src/lexer/extract_word.c \
 		src/lexer/lexer_utils.c \
 		src/parser/parser.c \
 		src/parser/args.c \
