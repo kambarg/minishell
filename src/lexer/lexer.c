@@ -3,29 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   lexer.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/04 10:15:12 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/25 02:33:21 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/25 10:13:59 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
-
-int	is_whitespace(char c)
-{
-	return (c == ' ' || c == '\t' || c == '\n');
-}
-
-int	is_operator_char(char c)
-{
-	return (c == '|' || c == '<' || c == '>');
-}
-
-int	is_quotes(char c)
-{
-	return (c == '\'' || c == '\"');
-}
 
 // Extract quoted string content (without quotes)
 static char	*extract_quoted_content(char *input, int *i)
@@ -176,6 +161,7 @@ static int	handle_merged_word(char *input, int *i, t_token **tokens)
 	return (1);
 }
 
+// Note: handle_merged_word both in quotes and unquoted segments
 t_token	*lexer(char *input)
 {
 	int		i;
@@ -195,7 +181,6 @@ t_token	*lexer(char *input)
 		}
 		else
 		{
-			// Handle merged word (quotes and unquoted segments together)
 			if (!handle_merged_word(input, &i, &tokens))
 				return (free_tokens(tokens), NULL);
 		}
