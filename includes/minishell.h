@@ -6,7 +6,7 @@
 /*   By: root <root@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 10:50:26 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/25 09:52:38 by root             ###   ########.fr       */
+/*   Updated: 2025/07/25 09:58:09 by root             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,6 @@ void					run_shell(t_shell *shell);
 // Lexer functions
 t_token					*lexer(char *input);
 int						handle_operator(char *input, int *i, t_token **tokens);
-int						handle_word(char *input, int *i, t_token **tokens);
 t_token					*create_token(char *value, int type, int quote_type);
 void					add_token(t_token **head, t_token *new_token);
 int						is_whitespace(char c);
