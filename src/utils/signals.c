@@ -16,19 +16,14 @@ int	g_exec_status = 0;
 
 void	handle_signals(int signum)
 {
+	printf("handle_signals\n");
 	if (signum == SIGINT)
 	{
 		if (g_exec_status == 0)
 		{
 			write(STDOUT_FILENO, "\n", 1);
+			rl_replace_line("", 0);
 			rl_on_new_line();
-			write(1, "\33[2K\r]", 5);
-			rl_on_new_line();
-			rl_redisplay();
-			write(1, "\33[2K\r]", 5);
-			rl_on_new_line();
-			rl_redisplay();
-			rl_point = 0;
 			rl_redisplay();
 		}
 		else if (g_exec_status == 2)
@@ -37,12 +32,13 @@ void	handle_signals(int signum)
 			close(STDIN_FILENO);
 			g_exec_status = 0;
 		}
-		g_exec_status = 3;
+		//g_exec_status = 3;
 	}
 }
 
 void	setup_signals_interactive(void)
 {
+	printf("setup_signals_interactive\n");
 	g_exec_status = 0;
 	signal(SIGINT, handle_signals);
 	signal(SIGQUIT, SIG_IGN);

@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 00:25:25 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/19 15:51:26 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/26 10:32:27 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,15 @@
 
 static int	handle_input_exit(t_shell *shell, char *input)
 {
-	if (!input || g_exec_status == 3)
+	if (!input)
 	{
-		if (!input)
-			printf("exit\n");
-		if (g_exec_status == 3)
-			shell->exit_status = 130;
-		if (input)
-			free(input);
+		printf("exit\n");
 		return (1);
+	}
+	if (g_exec_status == 3)
+	{
+		shell->exit_status = 130;
+		g_exec_status = 0;
 	}
 	return (0);
 }
@@ -70,7 +70,7 @@ void	run_shell(t_shell *shell)
 
 	while (shell->running)
 	{
-		setup_signals_interactive();
+		//setup_signals_interactive();
 		input = readline("minishell$ ");
 		if (handle_input_exit(shell, input))
 			break ;
