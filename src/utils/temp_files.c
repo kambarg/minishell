@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   temp_files.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gkambarb <gkambarb@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/16 15:17:36 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/19 22:27:37 by gkambarb         ###   ########.fr       */
+/*   Created: 2025/07/28 03:19:54 by gkambarb          #+#    #+#             */
+/*   Updated: 2025/07/28 03:24:10 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,7 @@ static void	write_heredoc_loop(int write_fd, t_redirect *redir, t_shell *shell)
 	while (1)
 	{
 		line = readline("> ");
-		if (!line \
-|| ft_strncmp(line, redir->file, ft_strlen(redir->file) + 1) == 0)
+		if (handle_line_exit(shell, line, redir))
 			break ;
 		if (redir->quote_type == QUOTE_NONE)
 		{

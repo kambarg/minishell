@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gkambarb <gkambarb@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 10:50:26 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/24 19:08:26 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/28 03:40:14 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -196,6 +196,8 @@ void					setup_signals_interactive(void);
 void					setup_signals_executing(void);
 void					setup_signals_heredoc(void);
 void					reset_signals_default(void);
+int						handle_line_exit(t_shell *shell, char *line,
+							t_redirect *redir);
 char					*get_env_value(char **env, const char *name);
 void					set_env_value(t_shell *shell, const char *name,
 							const char *value);

@@ -38,6 +38,7 @@ SRCS =  \
 	src/executor/redirections.c \
 	src/executor/pipes.c \
 	src/utils/signals.c \
+	src/utils/heredoc_signals.c \
 	src/utils/get_env_value.c \
 	src/utils/set_env_value.c \
 	src/utils/set_env_value_helper.c \
@@ -81,7 +82,7 @@ re: fclean all
 leaks : debug
 		valgrind --show-leak-kinds=all --leak-check=full --suppressions=vg_rlsuppressions.supp ./$(NAME)
 
-debug : C_FLAGS += -g3
+debug : CFLAGS += -g3
 debug : re
 
 .PHONY: all clean fclean re leaks debug

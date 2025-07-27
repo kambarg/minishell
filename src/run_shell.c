@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   run_shell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gkambarb <gkambarb@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/18 00:25:25 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/26 10:32:27 by gkambarb         ###   ########.fr       */
+/*   Created: 2025/07/28 03:19:17 by gkambarb          #+#    #+#             */
+/*   Updated: 2025/07/28 03:19:20 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,29 @@
 
 static int	handle_input_exit(t_shell *shell, char *input)
 {
+	int	tty_fd;
+
+	if (g_exec_status == 3)
+	{
+		tty_fd = open("/dev/tty", O_RDONLY);
+		if (tty_fd == -1)
+		{
+			perror("open /dev/tty");
+			exit(EXIT_FAILURE);
+		}
+		if (tty_fd != STDIN_FILENO)
+		{
+			dup2(tty_fd, STDIN_FILENO);
+			close(tty_fd);
+		}
+		shell->exit_status = 130;
+		g_exec_status = 0;
+		return (0);
+	}
 	if (!input)
 	{
 		printf("exit\n");
 		return (1);
-	}
-	if (g_exec_status == 3)
-	{
-		shell->exit_status = 130;
-		g_exec_status = 0;
 	}
 	return (0);
 }
@@ -70,7 +84,7 @@ void	run_shell(t_shell *shell)
 
 	while (shell->running)
 	{
-		//setup_signals_interactive();
+		setup_signals_interactive();
 		input = readline("minishell$ ");
 		if (handle_input_exit(shell, input))
 			break ;
