@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 10:50:26 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/28 17:23:05 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/28 17:44:53 by wuabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -218,4 +218,6 @@ int						create_temp_file(t_redirect *redir, int *temp_fd,
 							t_shell *shell);
 
 char					*get_quoted_str(char *input, int *i, char quote);
+int						ft_strcmp(const char *s1, const char *s2);
+
 #endif
