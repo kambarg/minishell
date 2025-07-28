@@ -42,39 +42,6 @@ int	operator_hun(t_arg_info *cur_arg, t_token **tokens, char *input, int *i)
 	return (1);
 }
 
-// int	quotes_hun(t_arg_info *cur_arg, char *input, int *i)
-// {
-// 	char	*quoted;
-// 	char	*tmp;
-// 	char	quote_char;
-
-// 	quote_char = input[*i];
-// 	quoted = get_quoted_str(input, i, quote_char);
-// 	if (!quoted)
-// 	{
-// 		free(cur_arg->value);
-// 		cur_arg->value = NULL;
-// 		return (0);
-// 	}
-// 	if (!cur_arg->value)
-// 		cur_arg->value = ft_strdup("");
-// 	tmp = ft_strjoin(cur_arg->value, quoted);
-// 	free(cur_arg->value);
-// 	cur_arg->value = tmp;
-// 	free(quoted);
-// 	if (cur_arg->quote_type == QUOTE_NONE)
-// 	{
-// 		if (quote_char == '\'')
-// 			cur_arg->quote_type = QUOTE_SINGLE;
-// 		else if (quote_char == '"')
-// 			cur_arg->quote_type = QUOTE_DOUBLE;
-// 	}
-// 	else if ((cur_arg->quote_type == QUOTE_SINGLE && quote_char != '\'')
-// 		|| (cur_arg->quote_type == QUOTE_DOUBLE && quote_char != '"'))
-// 		cur_arg->quote_type = QUOTE_NONE;
-// 	return (1);
-// }
-
 static void	handle_quote_type(t_arg_info *cur_arg, char quote_char)
 {
 	if (cur_arg->quote_type == QUOTE_NONE)
