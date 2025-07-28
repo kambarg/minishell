@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   lexer_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gkambarb <gkambarb@student.42abudhabi.a    +#+  +:+       +#+        */
+/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/21 20:37:00 by wuabdull          #+#    #+#             */
-/*   Updated: 2025/07/28 05:30:04 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/28 17:30:34 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ static void	handle_quote_type(t_arg_info *cur_arg, char quote_char)
 			cur_arg->quote_type = QUOTE_DOUBLE;
 	}
 	else if ((cur_arg->quote_type == QUOTE_SINGLE && quote_char != '\'')
-			|| (cur_arg->quote_type == QUOTE_DOUBLE && quote_char != '"'))
+		|| (cur_arg->quote_type == QUOTE_DOUBLE && quote_char != '"'))
 	{
 		cur_arg->quote_type = QUOTE_NONE;
 	}
