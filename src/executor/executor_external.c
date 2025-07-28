@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor_external.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 16:49:57 by wuabdull          #+#    #+#             */
-/*   Updated: 2025/07/28 17:44:25 by wuabdull         ###   ########.fr       */
+/*   Updated: 2025/07/28 18:27:52 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,13 @@
 
 int	ft_strcmp(const char *s1, const char *s2)
 {
-	int	i = 0;
+	int	i;
 
+	i = 0;
 	while (s1[i] && s1[i] == s2[i])
 		i++;
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
-
 
 static void	exec_external_cmd(t_command *cmd, t_shell *shell)
 {
