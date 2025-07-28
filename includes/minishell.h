@@ -107,9 +107,6 @@ void					run_shell(t_shell *shell);
 // Lexer functions
 t_token					*lexer(char *input);
 int						handle_operator(char *input, int *i, t_token **tokens);
-int						handle_quoted_string(char *input, int *i,
-							t_token **tokens);
-int						handle_word(char *input, int *i, t_token **tokens);
 t_token					*create_token(char *value, int type, int quote_type);
 void					add_token(t_token **head, t_token *new_token);
 int						is_whitespace(char c);
