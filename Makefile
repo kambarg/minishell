@@ -25,6 +25,7 @@ SRCS =  \
 	src/lexer/lexer.c \
 	src/lexer/token.c \
 	src/lexer/handle_operator.c \
+	src/lexer/handle_quoted_string.c \
 	src/lexer/is_functions.c \
 	src/lexer/lexer_utils.c \
 	src/parser/parser.c \
