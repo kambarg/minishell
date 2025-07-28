@@ -3,14 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   executor_external.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 16:49:57 by wuabdull          #+#    #+#             */
-/*   Updated: 2025/07/24 19:14:05 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/28 17:44:25 by wuabdull         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
+
+int	ft_strcmp(const char *s1, const char *s2)
+{
+	int	i = 0;
+
+	while (s1[i] && s1[i] == s2[i])
+		i++;
+	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
+}
+
 
 static void	exec_external_cmd(t_command *cmd, t_shell *shell)
 {
@@ -27,7 +37,7 @@ static void	exec_external_cmd(t_command *cmd, t_shell *shell)
 	}
 	reset_signals_default();
 	execve(cmd_path, argv, shell->env);
-	if (strcmp(cmd->args[0].value, ".") == 0 || strcmp(cmd->args[0].value,
+	if (ft_strcmp(cmd->args[0].value, ".") == 0 || ft_strcmp(cmd->args[0].value,
 			"..") == 0)
 		print_error(cmd->args[0].value, "command not found");
 	else if (cmd->args[0].value[0] == '/')
