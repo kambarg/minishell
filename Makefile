@@ -3,7 +3,8 @@ NAME = minishell
 CC = gcc
 CFLAGS = -Wall -Wextra -Werror
 LDFLAGS = -L/opt/vagrant/embedded/lib -lreadline -lhistory
-INCLUDES = -I./includes -I$(LIBFT_DIR) -I/opt/vagrant/embedded/include/readline/readline.h 
+INCLUDES = -I./includes -I$(LIBFT_DIR) -I/opt/vagrant/embedded/include
+# -I/opt/vagrant/embedded/include/readline/readline.h 
 # -I/usr/local/include 
 RM = rm -f
 
