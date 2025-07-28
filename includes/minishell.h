@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 10:50:26 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/28 03:40:14 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/28 05:24:45 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,12 +115,12 @@ void					add_token(t_token **head, t_token *new_token);
 int						is_whitespace(char c);
 int						is_operator_char(char c);
 int						is_quotes(char c);
-int						whitespace_hun(char **arg_buf, t_token **tokens,
+int						whitespace_hun(t_arg_info *cur_arg, t_token **tokens,
 							int *i);
-int						operator_hun(char **arg_buf, t_token **tokens,
+int						operator_hun(t_arg_info *cur_arg, t_token **tokens,
 							char *input, int *i);
-int						quotes_hun(char **arg_buf, char *input, int *i);
-int						word_hun(char **arg_buf, char *input, int *i);
+int						quotes_hun(t_arg_info *cur_arg, char *input, int *i);
+int						word_hun(t_arg_info *cur_arg, char *input, int *i);
 
 // Parser functions
 t_command				*parser(t_token *tokens);

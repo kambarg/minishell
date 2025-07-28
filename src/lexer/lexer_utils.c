@@ -3,34 +3,38 @@
 /*                                                        :::      ::::::::   */
 /*   lexer_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gkambarb <gkambarb@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/21 20:37:00 by wuabdull          #+#    #+#             */
-/*   Updated: 2025/07/21 20:39:10 by wuabdull         ###   ########.fr       */
+/*   Updated: 2025/07/28 05:30:04 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-int	whitespace_hun(char **arg_buf, t_token **tokens, int *i)
+int	whitespace_hun(t_arg_info *cur_arg, t_token **tokens, int *i)
 {
-	if (*arg_buf && (*arg_buf)[0])
+	if (cur_arg->value && cur_arg->value[0])
 	{
-		add_token(tokens, create_token(*arg_buf, T_WORD, QUOTE_NONE));
-		free(*arg_buf);
-		*arg_buf = NULL;
+		add_token(tokens, create_token(cur_arg->value, T_WORD,
+				cur_arg->quote_type));
+		free(cur_arg->value);
+		cur_arg->value = NULL;
+		cur_arg->quote_type = QUOTE_NONE;
 	}
 	(*i)++;
 	return (1);
 }
 
-int	operator_hun(char **arg_buf, t_token **tokens, char *input, int *i)
+int	operator_hun(t_arg_info *cur_arg, t_token **tokens, char *input, int *i)
 {
-	if (*arg_buf && (*arg_buf)[0])
+	if (cur_arg->value && cur_arg->value[0])
 	{
-		add_token(tokens, create_token(*arg_buf, T_WORD, QUOTE_NONE));
-		free(*arg_buf);
-		*arg_buf = NULL;
+		add_token(tokens, create_token(cur_arg->value, T_WORD,
+				cur_arg->quote_type));
+		free(cur_arg->value);
+		cur_arg->value = NULL;
+		cur_arg->quote_type = QUOTE_NONE;
 	}
 	if (!handle_operator(input, i, tokens))
 		return (0);
@@ -38,28 +42,80 @@ int	operator_hun(char **arg_buf, t_token **tokens, char *input, int *i)
 	return (1);
 }
 
-int	quotes_hun(char **arg_buf, char *input, int *i)
+// int	quotes_hun(t_arg_info *cur_arg, char *input, int *i)
+// {
+// 	char	*quoted;
+// 	char	*tmp;
+// 	char	quote_char;
+
+// 	quote_char = input[*i];
+// 	quoted = get_quoted_str(input, i, quote_char);
+// 	if (!quoted)
+// 	{
+// 		free(cur_arg->value);
+// 		cur_arg->value = NULL;
+// 		return (0);
+// 	}
+// 	if (!cur_arg->value)
+// 		cur_arg->value = ft_strdup("");
+// 	tmp = ft_strjoin(cur_arg->value, quoted);
+// 	free(cur_arg->value);
+// 	cur_arg->value = tmp;
+// 	free(quoted);
+// 	if (cur_arg->quote_type == QUOTE_NONE)
+// 	{
+// 		if (quote_char == '\'')
+// 			cur_arg->quote_type = QUOTE_SINGLE;
+// 		else if (quote_char == '"')
+// 			cur_arg->quote_type = QUOTE_DOUBLE;
+// 	}
+// 	else if ((cur_arg->quote_type == QUOTE_SINGLE && quote_char != '\'')
+// 		|| (cur_arg->quote_type == QUOTE_DOUBLE && quote_char != '"'))
+// 		cur_arg->quote_type = QUOTE_NONE;
+// 	return (1);
+// }
+
+static void	handle_quote_type(t_arg_info *cur_arg, char quote_char)
+{
+	if (cur_arg->quote_type == QUOTE_NONE)
+	{
+		if (quote_char == '\'')
+			cur_arg->quote_type = QUOTE_SINGLE;
+		else if (quote_char == '"')
+			cur_arg->quote_type = QUOTE_DOUBLE;
+	}
+	else if ((cur_arg->quote_type == QUOTE_SINGLE && quote_char != '\'')
+			|| (cur_arg->quote_type == QUOTE_DOUBLE && quote_char != '"'))
+	{
+		cur_arg->quote_type = QUOTE_NONE;
+	}
+}
+
+int	quotes_hun(t_arg_info *cur_arg, char *input, int *i)
 {
 	char	*quoted;
 	char	*tmp;
+	char	quote_char;
 
-	quoted = get_quoted_str(input, i, input[*i]);
+	quote_char = input[*i];
+	quoted = get_quoted_str(input, i, quote_char);
 	if (!quoted)
 	{
-		free(*arg_buf);
-		*arg_buf = NULL;
+		free(cur_arg->value);
+		cur_arg->value = NULL;
 		return (0);
 	}
-	if (!*arg_buf)
-		*arg_buf = ft_strdup("");
-	tmp = ft_strjoin(*arg_buf, quoted);
-	free(*arg_buf);
-	*arg_buf = tmp;
+	if (!cur_arg->value)
+		cur_arg->value = ft_strdup("");
+	tmp = ft_strjoin(cur_arg->value, quoted);
+	free(cur_arg->value);
+	cur_arg->value = tmp;
 	free(quoted);
+	handle_quote_type(cur_arg, quote_char);
 	return (1);
 }
 
-int	word_hun(char **arg_buf, char *input, int *i)
+int	word_hun(t_arg_info *cur_arg, char *input, int *i)
 {
 	int		start;
 	int		len;
@@ -75,11 +131,13 @@ int	word_hun(char **arg_buf, char *input, int *i)
 	if (!word)
 		return (0);
 	ft_strlcpy(word, input + start, len + 1);
-	if (!*arg_buf)
-		*arg_buf = ft_strdup("");
-	tmp = ft_strjoin(*arg_buf, word);
-	free(*arg_buf);
-	*arg_buf = tmp;
+	if (!cur_arg->value)
+		cur_arg->value = ft_strdup("");
+	tmp = ft_strjoin(cur_arg->value, word);
+	free(cur_arg->value);
+	cur_arg->value = tmp;
 	free(word);
+	if (cur_arg->quote_type != QUOTE_NONE)
+		cur_arg->quote_type = QUOTE_NONE;
 	return (1);
 }
