@@ -6,33 +6,12 @@
 /*   By: gkambarb <gkambarb@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 03:19:54 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/28 03:24:10 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/29 11:53:54 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/minishell.h"
 
-static int	open_write_fd(char *temp_path)
-{
-	int	fd;
-
-	fd = open(temp_path, O_WRONLY);
-	if (fd == -1)
-		print_error("heredoc", strerror(errno));
-	return (fd);
-}
-
-static int	open_read_fd(char *temp_path)
-{
-	int	fd;
-
-	fd = open(temp_path, O_RDONLY);
-	if (fd == -1)
-		print_error("heredoc", strerror(errno));
-	return (fd);
-}
-
-// Note: expand variables in heredoc text only if delimiter was not quoted
 static void	write_heredoc_loop(int write_fd, t_redirect *redir, t_shell *shell)
 {
 	char	*line;
@@ -61,42 +40,19 @@ static void	write_heredoc_loop(int write_fd, t_redirect *redir, t_shell *shell)
 	free(line);
 }
 
-static int	handle_heredoc_file(char *temp_path, int *temp_fd)
-{
-	int	read_fd;
-
-	read_fd = open_read_fd(temp_path);
-	if (read_fd == -1)
-	{
-		unlink(temp_path);
-		free(temp_path);
-		return (ERROR);
-	}
-	unlink(temp_path);
-	free(temp_path);
-	*temp_fd = read_fd;
-	return (SUCCESS);
-}
-
 int	create_temp_file(t_redirect *redir, int *temp_fd, t_shell *shell)
 {
-	char	*temp_path;
-	int		write_fd;
-	int		status;
+	int	pipe_fd[2];
 
-	temp_path = create_temp_path(shell);
-	if (!temp_path)
+	if (pipe(pipe_fd) == -1)
 	{
-		print_error("heredoc", "failed to create temp file");
+		print_error("heredoc", strerror(errno));
 		return (ERROR);
 	}
-	write_fd = open_write_fd(temp_path);
-	if (write_fd == -1)
-		return (free(temp_path), ERROR);
 	setup_signals_heredoc();
-	write_heredoc_loop(write_fd, redir, shell);
+	write_heredoc_loop(pipe_fd[1], redir, shell);
 	setup_signals_interactive();
-	close(write_fd);
-	status = handle_heredoc_file(temp_path, temp_fd);
-	return (status);
+	close(pipe_fd[1]);
+	*temp_fd = pipe_fd[0];
+	return (SUCCESS);
 }
