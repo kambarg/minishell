@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/17 10:50:26 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/28 17:44:53 by wuabdull         ###   ########.fr       */
+/*   Updated: 2025/07/29 20:32:22 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,6 +92,7 @@ typedef struct s_shell
 	int					running;
 	char				*program_name;
 	int					temp_file_counter;
+	char				*pwd;
 }						t_shell;
 
 // Global variables

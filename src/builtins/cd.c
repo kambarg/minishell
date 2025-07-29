@@ -2,9 +2,12 @@
 /*                                                                            */
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
+/*                                                    +:+ +:+        
+	+:+     */
+/*   By: wuabdull <wuabdull@student.42.fr>          +#+  +:+      
+	+#+        */
+/*                                                +#+#+#+#+#+  
+	+#+           */
 /*   Created: 2025/07/15 15:41:41 by wuabdull          #+#    #+#             */
 /*   Updated: 2025/07/15 15:41:41 by wuabdull         ###   ########.fr       */
 /*                                                                            */
@@ -12,28 +15,40 @@
 
 #include "../../includes/minishell.h"
 
-static int	cd_get_oldpwd(char *cwd, char **old_pwd_copy)
+static int cd_get_oldpwd(char *cwd, char **old_pwd_copy, t_shell *shell)
 {
-	char	*old_pwd;
+    char *old_pwd;
 
-	old_pwd = getcwd(cwd, sizeof(char) * 4096);
-	if (!old_pwd)
-	{
-		print_error("cd", strerror(errno));
-		return (ERROR);
-	}
-	*old_pwd_copy = ft_strdup(old_pwd);
-	if (!*old_pwd_copy)
-	{
-		print_error("cd", strerror(errno));
-		return (ERROR);
-	}
-	return (SUCCESS);
+    old_pwd = getcwd(cwd, 4096);
+    if (!old_pwd)
+    {
+        // getcwd failed, fall back to logical pwd
+        if (!shell->pwd)
+        {
+            print_error("cd", "PWD is not set");
+            return (ERROR);
+        }
+        *old_pwd_copy = ft_strdup(shell->pwd);
+        if (!*old_pwd_copy)
+        {
+            print_error("cd", strerror(errno));
+            return (ERROR);
+        }
+        return (SUCCESS);
+    }
+
+    *old_pwd_copy = ft_strdup(old_pwd);
+    if (!*old_pwd_copy)
+    {
+        print_error("cd", strerror(errno));
+        return (ERROR);
+    }
+    return (SUCCESS);
 }
 
 static char	*cd_choose_path(t_arg_info *args, int arg_count, t_shell *shell)
 {
-	char	*path;
+	char *path;
 
 	if (arg_count < 2)
 		path = get_env_value(shell->env, "HOME");
@@ -63,7 +78,7 @@ static int	cd_handle_no_path(t_arg_info *args, int arg_count,
 
 static int	cd_update_env(t_shell *shell, char *old_pwd_copy, char *cwd)
 {
-	char	*new_pwd;
+	char *new_pwd;
 
 	new_pwd = getcwd(cwd, sizeof(char) * 4096);
 	if (!new_pwd)
@@ -80,22 +95,26 @@ static int	cd_update_env(t_shell *shell, char *old_pwd_copy, char *cwd)
 
 int	ft_cd(t_arg_info *args, int arg_count, t_shell *shell)
 {
-	char	cwd[4096];
-	char	*old_pwd_copy;
-	char	*path;
+	char cwd[4096];
+	char *old_pwd_copy;
+	char *path;
 
-	if (cd_get_oldpwd(cwd, &old_pwd_copy) == ERROR)
-		return (ERROR);
+	printf("DEBUG: ft_cd called with %s args\n", args[1].value);
+	if (cd_get_oldpwd(cwd, &old_pwd_copy, shell) == ERROR)
+    	return (ERROR);
 	path = cd_choose_path(args, arg_count, shell);
+	printf("DEBUG: path is %s\n", path);
 	if (!path)
 		return (cd_handle_no_path(args, arg_count, old_pwd_copy));
 	if (chdir(path) == -1)
 	{
+		printf("DEBUG: no path: %s\n", path);
 		print_error("cd", strerror(errno));
 		free(path);
 		free(old_pwd_copy);
 		return (ERROR);
 	}
+
 	free(path);
 	return (cd_update_env(shell, old_pwd_copy, cwd));
 }

@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 00:25:13 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/18 00:25:14 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/29 21:08:26 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,8 @@ static void	copy_env(t_shell *shell, char **env)
 
 void	init_shell(t_shell *shell, char **env, char *program_name)
 {
+	char cwd[4096];
+	
 	copy_env(shell, env);
 	shell->commands = NULL;
 	shell->exit_status = 0;
@@ -60,4 +62,8 @@ void	init_shell(t_shell *shell, char **env, char *program_name)
 	shell->program_name = ft_strdup(program_name);
 	shell->temp_file_counter = 0;
 	set_initial_pwd(shell);
+	if (getcwd(cwd, sizeof(cwd)))
+    	shell->pwd = ft_strdup(cwd);
+	else
+    	shell->pwd = ft_strdup("/");
 }
