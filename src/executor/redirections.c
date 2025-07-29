@@ -22,6 +22,7 @@ int	preprocess_heredocs(t_command *commands, t_shell *shell)
 	t_command	*cmd;
 	t_redirect	*redir;
 	int			temp_fd;
+	int			hd_status;
 
 	cmd = commands;
 	while (cmd)
@@ -31,8 +32,10 @@ int	preprocess_heredocs(t_command *commands, t_shell *shell)
 		{
 			if (redir->type == REDIR_HEREDOC)
 			{
-				if (create_temp_file(redir, &temp_fd, shell) == ERROR)
-					return (ERROR);
+				temp_fd = -1;
+				hd_status = create_temp_file(redir, &temp_fd, shell);
+				if (hd_status != SUCCESS)
+					return (hd_status);
 				redir->fd = temp_fd;
 				redir->type = REDIR_IN;
 			}

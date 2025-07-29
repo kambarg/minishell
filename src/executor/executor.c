@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gkambarb <gkambarb@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 16:33:49 by wuabdull          #+#    #+#             */
-/*   Updated: 2025/07/16 13:16:05 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/29 12:32:31 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,9 +31,11 @@ int	execute_commands(t_shell *shell)
 	int		stdout_backup;
 	pid_t	last_pid;
 	int		last_status;
+	int		hd_status;
 
-	if (preprocess_heredocs(shell->commands, shell) == ERROR)
-		return (ERROR);
+	hd_status = preprocess_heredocs(shell->commands, shell);
+	if (hd_status != SUCCESS)
+		return (hd_status);
 	stdin_backup = dup(STDIN_FILENO);
 	stdout_backup = dup(STDOUT_FILENO);
 	init_pipe_fds_loop(shell->commands);

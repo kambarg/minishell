@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 03:19:54 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/29 11:53:54 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/07/29 12:23:49 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,11 @@ int	create_temp_file(t_redirect *redir, int *temp_fd, t_shell *shell)
 	write_heredoc_loop(pipe_fd[1], redir, shell);
 	setup_signals_interactive();
 	close(pipe_fd[1]);
+	if (shell->exit_status == 130)
+	{
+		close(pipe_fd[0]);
+		return (130);
+	}
 	*temp_fd = pipe_fd[0];
 	return (SUCCESS);
 }
