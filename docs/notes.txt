@@ -1,4 +1,25 @@
-test
+===Reading resources========================================
+
+https://www.gnu.org/software/bash/manual/bash.html
+
+https://www.cs.purdue.edu/homes/grr/SystemsProgrammingBook/Book/Chapter5-WritingYourOwnShell.pdf
+
+https://pubs.opengroup.org/onlinepubs/009695399/utilities/xcu_chap02.html
+
+https://harm-smits.github.io/42docs/projects/minishell
+
+https://m4nnb3ll.medium.com/minishell-building-a-mini-bash-a-42-project-b55a10598218
+
+https://42-cursus.gitbook.io/guide/rank-03/minishell
+
+
+====Video resources=========================================
+
+https://youtu.be/ubt-UjcQUYg?si=aB3oQ4Q9Uk1jvLpL
+
+https://youtu.be/SToUyjAsaFk?si=U2hdyE4ggTWkpGr-
+
+
 ===memory leaks checks with valgrind================
 To check for memory leaks run:
 make leaks
@@ -8,6 +29,10 @@ In modern compilers, using an undeclared function (rl_clear_history) leads to an
 On Linux, Readline is installed and provides rl_clear_history(), so no error occurs.
 MacOS provides BSD libedit by default, which is not fully compatible with GNU Readline.
 rl_clear_history() is missing, but clear_history() exists.
+
+== Notice!==
+MacOS in 42 Labs in abu Dhabi have readline in /opt/vagrant/embedded/include 
+If you need to install readline on your MacOS there are different ways:
 
 == Install GNU Readline on MacOS (with sudo) ==
 brew install readline
@@ -38,25 +63,17 @@ CFLAGS += -I$(HOME)/.local/include
 LDFLAGS += -L$(HOME)/.local/lib -lreadline
 
 
-===exit code/ exit status handling========================
 
-in executor.c:
-...
-/* Wait for all child processes to complete */
- 	last_status = 0;
-/* Wait for the last command specifically to get its exit status */
-	if (last_pid != -1)
-	{
-		waitpid(last_pid, &status, 0);
-		
-		/* Manual implementation of status checking without macros */
-		/* or */
-		/* Macros implementation */
-			
-		/* Then wait for any other remaining children */
-		while (waitpid(-1, NULL, 0) > 0)
-			;
-	}
+===Syntax error exit code (< or | alone)=================
+When Bash encounters a syntax error, it returns an exit code based on the formula:
+256+(error code)
+In many cases (including < or | alone), syntax errors return 2, meaning:
+256+2=258
+
+Bash is internally using error code 2 for syntax errors, and because exit 
+statuses are stored in an 8-bit integer (0-255), they wrap around modulo 256, 
+leading to 258 being displayed. The value 258 is derived from Bash’s internal handling of syntax errors, 
+not from a child process that has exited with 2.
 
 ==Macros implementation==
 if (WIFEXITED(status))
@@ -76,14 +93,3 @@ else if (((status & 0x7f) + 1) >> 1 > 0) /* Process terminated by signal (equiva
 {
 	last_status = 128 + (status & 0x7f); /* 128 + signal number (equivalent to WTERMSIG) */
 }
-
-== Syntax error exit code (< or | alone) =======
-When Bash encounters a syntax error, it returns an exit code based on the formula:
-256+(error code)
-In many cases (including < or | alone), syntax errors return 2, meaning:
-256+2=258
-
-Bash is internally using error code 2 for syntax errors, and because exit 
-statuses are stored in an 8-bit integer (0-255), they wrap around modulo 256, 
-leading to 258 being displayed. The value 258 is derived from Bash’s internal handling of syntax errors, 
-not from a child process that has exited with 2.

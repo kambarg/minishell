@@ -1,3 +1,5 @@
+# Treacky test cases from the mock test by Mariam
+
 ~ => home directoriey  => case :  echo ~/123
 
 -nnnnnnnnnnn flag with echo => case :
