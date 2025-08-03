@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gkambarb <gkambarb@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 00:10:38 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/26 10:32:33 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/08/03 18:34:07 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ static void	cleanup_shell(t_shell *shell)
 		free_commands(shell->commands);
 	if (shell->program_name)
 		free(shell->program_name);
+	if (shell->pwd)
+		free(shell->pwd);
 	clear_history();
 }
 

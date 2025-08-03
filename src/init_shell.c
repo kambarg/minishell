@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_shell.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: gkambarb <gkambarb@student.42.fr>          +#+  +:+       +#+        */
+/*   By: gkambarb <gkambarb@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 00:25:13 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/07/29 21:08:26 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/08/03 18:19:04 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,37 @@ static void	copy_env(t_shell *shell, char **env)
 	shell->env[i] = NULL;
 }
 
+static void	increment_shlvl(t_shell *shell)
+{
+	char	*value;
+	long	lvl;
+	char	*new_value;
+
+	value = get_env_value(shell->env, "SHLVL");
+	if (value == NULL)
+		lvl = 0;
+	else
+	{
+		lvl = ft_atoi(value);
+		free(value);
+		if (lvl < 0)
+			lvl = 0;
+	}
+	lvl++;
+	new_value = ft_itoa((int)lvl);
+	if (!new_value)
+		return ;
+	set_env_value(shell, "SHLVL", new_value);
+	free(new_value);
+}
+
+
 void	init_shell(t_shell *shell, char **env, char *program_name)
 {
 	char cwd[4096];
 	
 	copy_env(shell, env);
+	increment_shlvl(shell);
 	shell->commands = NULL;
 	shell->exit_status = 0;
 	shell->running = 1;
