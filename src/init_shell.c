@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/18 00:25:13 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/08/03 18:19:04 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/08/03 18:40:03 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,11 +75,10 @@ static void	increment_shlvl(t_shell *shell)
 	free(new_value);
 }
 
-
 void	init_shell(t_shell *shell, char **env, char *program_name)
 {
-	char cwd[4096];
-	
+	char	cwd[4096];
+
 	copy_env(shell, env);
 	increment_shlvl(shell);
 	shell->commands = NULL;
@@ -89,7 +88,7 @@ void	init_shell(t_shell *shell, char **env, char *program_name)
 	shell->temp_file_counter = 0;
 	set_initial_pwd(shell);
 	if (getcwd(cwd, sizeof(cwd)))
-    	shell->pwd = ft_strdup(cwd);
+		shell->pwd = ft_strdup(cwd);
 	else
-    	shell->pwd = ft_strdup("/");
+		shell->pwd = ft_strdup("/");
 }

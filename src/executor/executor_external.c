@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/15 16:49:57 by wuabdull          #+#    #+#             */
-/*   Updated: 2025/08/03 18:02:02 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/08/03 18:41:44 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,9 +22,9 @@ int	ft_strcmp(const char *s1, const char *s2)
 	return ((unsigned char)s1[i] - (unsigned char)s2[i]);
 }
 
-static int cmd_is_dir(char *cmd)
+static int	cmd_is_dir(char *cmd)
 {
-	struct stat cmd_stat;
+	struct stat	cmd_stat;
 
 	ft_memset(&cmd_stat, 0, sizeof(cmd_stat));
 	stat(cmd, &cmd_stat);

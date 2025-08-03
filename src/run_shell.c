@@ -6,7 +6,7 @@
 /*   By: gkambarb <gkambarb@student.42abudhabi.a    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 03:19:17 by gkambarb          #+#    #+#             */
-/*   Updated: 2025/08/03 18:00:26 by gkambarb         ###   ########.fr       */
+/*   Updated: 2025/08/03 18:36:53 by gkambarb         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,6 @@ static void	process_input_line(t_shell *shell, char *input)
 {
 	t_token	*tokens;
 
-	printf("DEBUG: input = %s\n", input);
 	if (input == NULL)
 		input = "exit\n";
 	if (*input && !is_whitespace_only(input))
